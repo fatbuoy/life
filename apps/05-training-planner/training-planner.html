@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sahani Run Log</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../../shared/base.css">
 <style>
 /* ── Training app theme: dark slate + orange ── */
 :root {
@@ -78,7 +76,7 @@
   <div class="container">
     <div class="header-row">
       <div class="header-left">
-        <a class="header-home" href="../index.html">⌂</a>
+        <a class="header-home" href="../../index.html">⌂</a>
         <span class="header-title">Run Log</span>
       </div>
       <div class="header-right">
@@ -109,7 +107,7 @@
   <div id="weekCards"></div>
 </div>
 
-<script src="../shared/utils.js"></script>
+<script src="../../shared/utils.js"></script>
 <script>
 const TYPE_LABELS = { easy:'Easy', tempo:'Tempo', long:'Long Run', interval:'Intervals', race:'Race', rest:'Rest', cross:'Cross' };
 const TYPE_COLORS = { easy:'#3b6d11', tempo:'#ef9f27', long:'#185fa5', interval:'#c0392b', race:'#7f77dd', cross:'#20a080', rest:'#aaa' };
@@ -260,7 +258,7 @@ function renderWeeks() {
 
 /* ── Init ────────────────────────────────────────────────────────── */
 (async () => {
-  const raw = await fetchData('../data/training-data.json');
+  const raw = await fetchData('../../data/training.json');
   if (!raw) return;
   PROFILE = raw.profile || {};
   WEEKS   = raw.weeks   || [];

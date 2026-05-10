@@ -161,7 +161,7 @@ function togglePrivacy() {
     // Turn ON — no password needed
     document.body.classList.add('privacy');
     const btn = document.getElementById('privacyBtn');
-    if (btn) btn.textContent = '🙈';
+    if (btn) btn.textContent = '🔐';
     // Re-render sections that use innerHTML so .num-private nodes exist
     if (typeof onPrivacyChange === 'function') onPrivacyChange(true);
   } else {
@@ -177,7 +177,7 @@ function togglePrivacy() {
 function _applyPrivacyOff() {
   document.body.classList.remove('privacy');
   const btn = document.getElementById('privacyBtn');
-  if (btn) btn.textContent = '👁';
+  if (btn) btn.textContent = '🔒';
   if (typeof onPrivacyChange === 'function') onPrivacyChange(false);
 }
 

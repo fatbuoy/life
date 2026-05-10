@@ -169,163 +169,98 @@
   <div class="sec-lbl">Key principles</div>
   <div class="principles-grid" id="principles"></div>
   <div class="footer">FatBoy's Fuel Plan · Jura Marathon 14 Jun 2026 · Built for a 47yo vegetarian machine</div>
-  <a href="FatBoysKitchen.html" class="btn">FatBoy's Kitchen</a>
+  
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════
-// ACTIVITY SCHEDULE — parsed from CSV, week-by-week
-// Each entry: { date, label, detail, type, pill, kcal, pb, alc, training, tagline, b, l, s, d, r, carbLoad, marathonDay }
-// type: walk|run|hike|cycle|longrun|rest|marathon|taper|recovery
+// DATA — loaded from fuel_plan_data.json
+// Edit schedule.csv / phases.csv, run csv_to_json.py to update.
 // ═══════════════════════════════════════════════════════
-
-// Helper to build a date
-function d(day,mon,yr){return new Date(yr||2026,mon-1,day)}
 
 // Activity type → bar colour
 const BAR_COL={walk:'#888780',run:'#185fa5',hike:'#ef9f27',cycle:'#3b6d11',longrun:'#7f77dd',rest:'#c8c4bc',marathon:'#4020a0',taper:'#d08030',recovery:'#20a080'};
 const PILL_CLS={walk:'pill-walk',run:'pill-run',hike:'pill-hike',cycle:'pill-cycle',longrun:'pill-longrun',rest:'pill-rest',marathon:'pill-marathon',taper:'pill-taper',recovery:'pill-recovery'};
 const PILL_LBL={walk:'Walk',run:'Run',hike:'Hike',cycle:'Cycle',longrun:'Long run',rest:'Rest',marathon:'Marathon',taper:'Taper',recovery:'Recovery'};
 
-// ── FULL SCHEDULE ──────────────────────────────────────
-// Structured week by week; weeks keyed by Monday date
-// Each week = array of 7 days [Mon..Sun]
-const SCHEDULE = [
-  // WEEK of 13 Apr
-  {mon:d(13,4), days:[
-    {label:'Mon 13',act:'Rest + walk',det:'Easy 8k walk',type:'walk',kcal:1750,pb:15,alc:false,tagline:'Softest day of the week. Move gently, eat clean.',b:360,l:560,s:360,d:470,r:0,tr:null,zw:null},
-    {label:'Tue 14',act:'Easy run',det:'Steady 6.4k',type:'run',kcal:1900,pb:20,alc:false,tagline:'Short and steady. Fuel the legs, not the ego.',b:390,l:590,s:390,d:570,r:0,tr:{l:'Pre-run',d:'Banana + 2 dates, electrolytes during'},zw:null},
-    {label:'Wed 15',act:'Short hike',det:'Easy day',type:'hike',kcal:1850,pb:25,alc:false,tagline:'Legs moving, lungs open. Light fuel, light pace.',b:380,l:570,s:380,d:520,r:0,tr:{l:'Hike snack',d:'Nuts or PB toast before heading out'},zw:null},
-    {label:'Thu 16',act:'Easy run',det:'13k',type:'run',kcal:1950,pb:20,alc:false,tagline:'Longer today — eat the lunch properly.',b:390,l:600,s:400,d:560,r:0,tr:{l:'Pre-run',d:'Banana before, electrolytes during'},zw:null},
-    {label:'Fri 17',act:'Rest day',det:'Easy recovery',type:'rest',kcal:1700,pb:15,alc:false,tagline:'Full rest. Let the legs repair. Walk if restless.',b:350,l:540,s:340,d:470,r:0,tr:null,zw:null},
-    {label:'Sat 18',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2100,pb:25,alc:false,tagline:'Big hike. Pack the trail snacks. Protect tonight — big run tomorrow.',b:400,l:640,s:430,d:630,r:0,tr:{l:'On-hike fuel',d:'Nuts, dates, banana mid-hike. Big carb dinner tonight.'},zw:null},
-    {label:'Sun 19',act:'Long run',det:'21.1k',type:'longrun',kcal:2300,pb:30,alc:true,tagline:'Half marathon effort. Recover hard — shake within 30 min.',b:420,l:660,s:420,d:650,r:150,tr:{l:'Recovery (30 min)',d:'Chocolate milk or lassi + banana immediately after'},zw:{l:'Zum Wohl',d:'Well earned — 1–2 drinks this evening'}},
-  ]},
-  // WEEK of 20 Apr
-  {mon:d(20,4), days:[
-    {label:'Mon 20',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1750,pb:15,alc:false,tagline:'Post-long-run Monday. Move but don\'t push.',b:360,l:560,s:360,d:470,r:0,tr:null,zw:null},
-    {label:'Tue 21',act:'Easy run',det:'10k easy',type:'run',kcal:1950,pb:20,alc:false,tagline:'Shake out the long-run legs. Easy effort.',b:390,l:600,s:390,d:570,r:0,tr:{l:'Pre-run',d:'Banana + 2 dates, electrolytes during'},zw:null},
-    {label:'Wed 22',act:'Short hike',det:'Easy day',type:'hike',kcal:1850,pb:25,alc:false,tagline:'Midweek breather. Stay loose.',b:380,l:570,s:380,d:520,r:0,tr:{l:'Hike snack',d:'Nuts or PB toast before heading out'},zw:null},
-    {label:'Thu 23',act:'3/1 intervals',det:'10k',type:'run',kcal:1950,pb:20,alc:false,tagline:'Intervals today — quality session. Fuel it properly.',b:390,l:600,s:400,d:560,r:0,tr:{l:'Pre-run',d:'Banana before. Electrolytes. Intervals need fuel.'},zw:null},
-    {label:'Fri 24',act:'Bike ride',det:'30–50k, 500–600m',type:'cycle',kcal:2200,pb:25,alc:true,tagline:'Big effort on the bike. Fuel the climb. Zum Wohl tonight.',b:410,l:660,s:450,d:680,r:0,tr:{l:'On-bike fuel',d:'Banana + dates mid-ride. Extra snack post-ride.'},zw:{l:'Zum Wohl',d:'Post-ride reward — 1–2 drinks'}},
-    {label:'Sat 25',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2150,pb:25,alc:false,tagline:'Big hike. Big dinner tonight — 25k tomorrow.',b:400,l:650,s:440,d:660,r:0,tr:{l:'On-hike fuel',d:'Trail snacks. Tonight: big carb pre-load for 25k run.'},zw:null},
-    {label:'Sun 26',act:'Long run',det:'25k',type:'longrun',kcal:2550,pb:30,alc:true,tagline:'25k — biggest run so far. Recover aggressively.',b:450,l:720,s:460,d:770,r:150,tr:{l:'Recovery (non-negotiable)',d:'Chocolate milk or lassi + banana within 30 min'},zw:{l:'Zum Wohl',d:'Well earned rest evening — 1–2 drinks'}},
-  ]},
-  // WEEK of 27 Apr
-  {mon:d(27,4), days:[
-    {label:'Mon 27',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1800,pb:15,alc:false,tagline:'Post-25k Monday. Mandatory easy day.',b:370,l:570,s:370,d:490,r:0,tr:null,zw:null},
-    {label:'Tue 28',act:'Easy run',det:'Steady 6.4k',type:'run',kcal:2000,pb:20,alc:false,tagline:'Short shakeout. Keep it conversational.',b:400,l:610,s:400,d:590,r:0,tr:{l:'Pre-run',d:'Banana + dates, light warm-up'},zw:null},
-    {label:'Wed 29',act:'Short hike',det:'Easy day',type:'hike',kcal:1900,pb:25,alc:false,tagline:'Midweek easy. Body building while you\'re walking.',b:390,l:580,s:390,d:540,r:0,tr:{l:'Hike snack',d:'Nuts or PB toast'},zw:null},
-    {label:'Thu 30',act:'Easy run',det:'13k',type:'run',kcal:2050,pb:20,alc:false,tagline:'Thursday 13k. Eat the lunch. Don\'t skip it.',b:400,l:620,s:410,d:620,r:0,tr:{l:'Pre-run',d:'Banana before, electrolytes during'},zw:null},
-    {label:'Fri 1',act:'Bike ride',det:'30–50k, 500–600m',type:'cycle',kcal:2250,pb:25,alc:true,tagline:'May Day ride. Earn those climbs. Zum Wohl tonight.',b:420,l:670,s:460,d:700,r:0,tr:{l:'On-bike fuel',d:'Dates + banana mid-ride. Recovery snack after.'},zw:{l:'Zum Wohl',d:'Friday post-ride — 1–2 drinks'}},
-    {label:'Sat 2',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2200,pb:25,alc:false,tagline:'Long hike. Big pre-load dinner — 21k tomorrow.',b:410,l:660,s:450,d:680,r:0,tr:{l:'On-hike fuel',d:'Trail snacks. Carb-heavy dinner tonight.'},zw:null},
-    {label:'Sun 3',act:'Long run',det:'21.1k',type:'longrun',kcal:2350,pb:30,alc:true,tagline:'21k to close out the phase. Recover, refuel, relax.',b:430,l:680,s:440,d:650,r:150,tr:{l:'Recovery (30 min)',d:'Chocolate milk or lassi + banana immediately'},zw:{l:'Zum Wohl',d:'Phase wrap-up — 1–2 drinks'}},
-  ]},
-  // WEEK of 4 May — PHASE 2 STARTS
-  {mon:d(4,5), days:[
-    {label:'Mon 4',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1850,pb:15,alc:false,tagline:'Start of Phase 2. Calories step up on training days.',b:370,l:580,s:380,d:520,r:0,tr:null,zw:null},
-    {label:'Tue 5',act:'Easy run',det:'10k easy',type:'run',kcal:2100,pb:20,alc:false,tagline:'Phase 2 run. Feel the extra fuel — use it.',b:410,l:650,s:430,d:610,r:0,tr:{l:'Pre-run',d:'Banana + dates. Electrolytes.'},zw:null},
-    {label:'Wed 6',act:'Short hike',det:'Easy day',type:'hike',kcal:2000,pb:25,alc:false,tagline:'Midweek move. Steady and consistent.',b:400,l:620,s:410,d:570,r:0,tr:{l:'Hike snack',d:'PB toast or nuts before heading out'},zw:null},
-    {label:'Thu 7',act:'3/1 intervals',det:'10k',type:'run',kcal:2100,pb:20,alc:false,tagline:'Interval Thursday. Short but sharp.',b:410,l:650,s:430,d:610,r:0,tr:{l:'Pre-run',d:'Banana. Intervals need more fuel than easy runs.'},zw:null},
-    {label:'Fri 8',act:'Rest day',det:'Easy',type:'rest',kcal:1800,pb:15,alc:false,tagline:'No bike this week — rest and prep for 28k Sunday.',b:370,l:570,s:370,d:490,r:0,tr:null,zw:null},
-    {label:'Sat 9',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2250,pb:25,alc:false,tagline:'28k tomorrow. Tonight\'s dinner is race prep.',b:420,l:670,s:460,d:700,r:0,tr:{l:'On-hike fuel + pre-load',d:'Trail snacks. Tonight: biggest dinner of the week — 28k fuel.'},zw:null},
-    {label:'Sun 10',act:'Long run',det:'28k',type:'longrun',kcal:2700,pb:30,alc:true,tagline:'28k — new distance high. Recover hard, eat big.',b:470,l:780,s:490,d:810,r:150,tr:{l:'Recovery (non-negotiable)',d:'Within 30 min: chocolate milk or lassi + banana'},zw:{l:'Zum Wohl',d:'28k deserves a drink — 1–2 max'}},
-  ]},
-  // WEEK of 11 May
-  {mon:d(11,5), days:[
-    {label:'Mon 11',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1850,pb:15,alc:false,tagline:'Post-28k Monday. Keep it very easy.',b:370,l:580,s:380,d:520,r:0,tr:null,zw:null},
-    {label:'Tue 12',act:'Easy run',det:'Steady 6.4k',type:'run',kcal:2050,pb:20,alc:false,tagline:'Short shakeout after the big weekend.',b:410,l:630,s:420,d:590,r:0,tr:{l:'Pre-run',d:'Light snack. Easy effort.'},zw:null},
-    {label:'Wed 13',act:'Rest day',det:'Easy day',type:'rest',kcal:1800,pb:15,alc:false,tagline:'Mid-week rest. Body adapting to 28k.',b:370,l:570,s:370,d:490,r:0,tr:null,zw:null},
-    {label:'Thu 14',act:'Easy run',det:'16k',type:'run',kcal:2200,pb:20,alc:false,tagline:'16k Thursday — step up mid-week. Eat accordingly.',b:430,l:670,s:450,d:650,r:0,tr:{l:'Pre-run',d:'Banana + dates. 16k needs proper fuelling.'},zw:null},
-    {label:'Fri 15',act:'Rest day',det:'Easy',type:'rest',kcal:1800,pb:15,alc:false,tagline:'Rest before hike and 21k. Bank the energy.',b:370,l:570,s:370,d:490,r:0,tr:null,zw:null},
-    {label:'Sat 16',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2200,pb:25,alc:false,tagline:'Hike + pre-load combo. Carbs tonight.',b:420,l:660,s:450,d:670,r:0,tr:{l:'On-hike fuel + pre-load',d:'Trail snacks. Big carb dinner for 21k tomorrow.'},zw:null},
-    {label:'Sun 17',act:'Long run',det:'21.1k',type:'longrun',kcal:2400,pb:30,alc:true,tagline:'21k. Clean effort, clean recovery.',b:440,l:700,s:460,d:650,r:150,tr:{l:'Recovery (30 min)',d:'Chocolate milk or lassi + banana immediately'},zw:{l:'Zum Wohl',d:'Earned — 1–2 drinks'}},
-  ]},
-  // WEEK of 18 May — PHASE 3 PEAK LOAD
-  {mon:d(18,5), days:[
-    {label:'Mon 18',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1950,pb:15,alc:false,tagline:'Phase 3. Biggest training block. Start well.',b:380,l:600,s:400,d:570,r:0,tr:null,zw:null},
-    {label:'Tue 19',act:'Easy run',det:'10k easy',type:'run',kcal:2200,pb:20,alc:false,tagline:'Keep it easy — 32k is coming Sunday.',b:430,l:670,s:450,d:650,r:0,tr:{l:'Pre-run',d:'Banana + dates. Easy pace.'},zw:null},
-    {label:'Wed 20',act:'Rest day',det:'Easy day',type:'rest',kcal:1900,pb:15,alc:false,tagline:'Rest mid-week. Conserve for peak Sunday.',b:380,l:590,s:390,d:540,r:0,tr:null,zw:null},
-    {label:'Thu 21',act:'3/1 intervals',det:'10k',type:'run',kcal:2200,pb:20,alc:false,tagline:'Last quality session before 32k. Fuel it well.',b:430,l:670,s:450,d:650,r:0,tr:{l:'Pre-run',d:'Banana + dates. Intervals need fuel.'},zw:null},
-    {label:'Fri 22',act:'Bike ride',det:'30–50k, 500–600m',type:'cycle',kcal:2400,pb:25,alc:true,tagline:'Big bike day. Eat the climbs. Light Zum Wohl — big weekend ahead.',b:450,l:720,s:480,d:750,r:0,tr:{l:'On-bike fuel',d:'Dates + banana mid-ride. Recovery snack after.'},zw:{l:'Zum Wohl (light)',d:'1 drink max — 32k Sunday'}},
-    {label:'Sat 23',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2450,pb:25,alc:false,tagline:'★ Pre-load night. 32k tomorrow. Biggest dinner of the plan.',b:460,l:730,s:490,d:770,r:0,tr:{l:'On-hike fuel + pre-load',d:'Trail snacks. Tonight: pasta/rice + dal + extra roti. Biggest meal of the plan.'},zw:null},
-    {label:'Sun 24',act:'Long run',det:'32k — PEAK',type:'longrun',kcal:3050,pb:30,alc:false,tagline:'★ Peak run. Longest of the plan. Recover like a pro.',b:520,l:880,s:540,d:960,r:150,tr:{l:'Recovery (non-negotiable)',d:'Within 30 min: chocolate milk or lassi + banana. Then full recovery meal.'},zw:{l:'Zum Wohl',d:'After 32k you\'ve earned it — 1–2 drinks'}},
-  ]},
-  // WEEK of 25 May
-  {mon:d(25,5), days:[
-    {label:'Mon 25',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1950,pb:15,alc:false,tagline:'Post-32k recovery Monday. Very easy.',b:380,l:600,s:400,d:570,r:0,tr:null,zw:null},
-    {label:'Tue 26',act:'Easy run',det:'Steady 6.4k',type:'run',kcal:2150,pb:20,alc:false,tagline:'Gentle shakeout. Legs will feel it.',b:420,l:650,s:440,d:640,r:0,tr:{l:'Pre-run',d:'Light snack. Very easy pace.'},zw:null},
-    {label:'Wed 27',act:'Short hike',det:'Easy day',type:'hike',kcal:2050,pb:25,alc:false,tagline:'Move and recover. Build nothing new today.',b:410,l:630,s:430,d:580,r:0,tr:{l:'Hike snack',d:'Nuts or PB toast'},zw:null},
-    {label:'Thu 28',act:'Easy run',det:'13k',type:'run',kcal:2200,pb:20,alc:false,tagline:'13k — steady Thursday. Jura is 2.5 weeks away.',b:430,l:670,s:450,d:650,r:0,tr:{l:'Pre-run',d:'Banana + dates. Electrolytes.'},zw:null},
-    {label:'Fri 29',act:'Bike ride',det:'30–50k, 500–600m',type:'cycle',kcal:2400,pb:25,alc:true,tagline:'Last big bike before taper. Earn the Zum Wohl.',b:450,l:720,s:480,d:750,r:0,tr:{l:'On-bike fuel',d:'Banana + dates mid-ride. Recovery snack after.'},zw:{l:'Zum Wohl',d:'Friday tradition — 1–2 drinks post-ride'}},
-    {label:'Sat 30',act:'Weekend hike',det:'10–15k, 800–1200m',type:'hike',kcal:2300,pb:25,alc:false,tagline:'Last big hike. Pre-load for 21k tomorrow.',b:440,l:690,s:460,d:710,r:0,tr:{l:'On-hike fuel + pre-load',d:'Trail snacks. Big carb dinner — last long run before taper.'},zw:null},
-    {label:'Sun 31',act:'Long run',det:'21.1k',type:'longrun',kcal:2450,pb:30,alc:true,tagline:'Last 21k before taper. Strong finish.',b:450,l:710,s:470,d:670,r:150,tr:{l:'Recovery (30 min)',d:'Chocolate milk or lassi + banana immediately'},zw:{l:'Zum Wohl',d:'May done. Jura in 2 weeks — 1–2 drinks'}},
-  ]},
-  // WEEK of 1 Jun — taper begins
-  {mon:d(1,6), days:[
-    {label:'Mon 1',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1850,pb:15,alc:false,tagline:'Taper begins. Legs are loaded — trust the rest.',b:370,l:580,s:380,d:520,r:0,tr:null,zw:null},
-    {label:'Tue 2',act:'Easy run',det:'Steady 6.4k',type:'run',kcal:2000,pb:20,alc:false,tagline:'Short and sharp. Quality over quantity now.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Pre-run',d:'Light snack. Legs should feel fresh.'},zw:null},
-    {label:'Wed 3',act:'Short hike',det:'Easy day',type:'hike',kcal:1950,pb:25,alc:false,tagline:'Easy movement. No hero efforts this week.',b:390,l:600,s:400,d:560,r:0,tr:{l:'Hike snack',d:'Light snack. Easy pace.'},zw:null},
-    {label:'Thu 4',act:'3/1 intervals',det:'10k',type:'run',kcal:2000,pb:20,alc:false,tagline:'Intervals to keep sharpness. Not volume.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Pre-run',d:'Banana + dates. Keep the snap.'},zw:null},
-    {label:'Fri 5',act:'Rest day',det:'Easy',type:'rest',kcal:1750,pb:15,alc:false,tagline:'Full rest. Legs will thank you race day.',b:360,l:560,s:360,d:470,r:0,tr:null,zw:null},
-    {label:'Sat 6',act:'Short hike',det:'Easy day',type:'hike',kcal:1900,pb:25,alc:false,tagline:'Light legs out. Jura next Sunday.',b:390,l:590,s:390,d:530,r:0,tr:{l:'Hike snack',d:'Easy walk. Stay loose.'},zw:null},
-    {label:'Sun 7',act:'Easy run',det:'13k easy',type:'run',kcal:2050,pb:20,alc:true,tagline:'Last moderate run. Easy effort. Week of Jura starts tomorrow.',b:400,l:630,s:420,d:600,r:0,tr:{l:'Post-run',d:'Light snack after. Jura week starts Mon.'},zw:{l:'Zum Wohl',d:'Last drink before race week — 1 max'}},
-  ]},
-  // WEEK of 8 Jun — TAPER + CARB LOAD
-  {mon:d(8,6), days:[
-    {label:'Mon 8',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1850,pb:15,alc:false,tagline:'Race week. No heroics. Walk and hydrate.',b:370,l:580,s:380,d:520,r:0,tr:null,zw:null},
-    {label:'Tue 9',act:'Easy run',det:'10k easy',type:'run',kcal:2000,pb:20,alc:false,tagline:'Last proper run. Easy. Feel the sharpness.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Pre-run',d:'Banana. Easy pace. Last run with intent.'},zw:null},
-    {label:'Wed 10',act:'Short hike',det:'Easy day',type:'hike',kcal:2100,pb:25,alc:false,carbLoad:true,tagline:'Carb load begins. Add rice/pasta/roti at every meal.',b:400,l:660,s:380,d:660,r:0,tr:{l:'Carb focus',d:'Increase rice/pasta portions. Cut fat slightly.'},zw:null},
-    {label:'Thu 11',act:'Taper + stretch',det:'Light stretch only',type:'taper',kcal:2400,pb:15,alc:false,carbLoad:true,tagline:'Pure carb loading. No running. Eat the pasta.',b:420,l:740,s:380,d:860,r:0,tr:{l:'Carb load day',d:'65%+ carbs. Rice, pasta, roti, banana, oats. Cut fat + protein.'},zw:null},
-    {label:'Fri 12',act:'Rest day',det:'Full rest',type:'rest',kcal:2300,pb:15,alc:false,carbLoad:true,tagline:'Rest + carb top-up. Stay off your feet. Eat well.',b:420,l:720,s:360,d:800,r:0,tr:{l:'Carb load',d:'Keep loading carbs. Plenty of water. Light walk only.'},zw:null},
-    {label:'Sat 13',act:'Short hike',det:'Easy legs',type:'hike',kcal:2600,pb:15,alc:false,carbLoad:true,tagline:'★ Race eve. Big pasta dinner tonight. Early bed. Alles gut.',b:430,l:780,s:380,d:1010,r:0,tr:{l:'Pre-race dinner',d:'★ Biggest carb meal of the week. Pasta/rice + dal. Early to bed.'},zw:null},
-    {label:'Sun 14',act:'Jura Marathon',det:'42.2k — RACE DAY',type:'marathon',kcal:3800,pb:30,alc:true,tagline:'★ RACE DAY. You\'re ready. Trust the training. Bon courage!',b:650,l:0,s:0,d:900,r:500,tr:{l:'During race',d:'Gels every 40–45 min. Sports drink at stations. Banana if available.'},zw:{l:'Zum Wohl!',d:'You finished a marathon. Celebrate well tonight.'}},
-  ]},
-  // WEEK of 15 Jun — post-marathon recovery
-  {mon:d(15,6), days:[
-    {label:'Mon 15',act:'Rest + walk',det:'Very easy',type:'walk',kcal:1850,pb:15,alc:false,tagline:'Post-marathon Monday. Your legs ran 42k yesterday.',b:370,l:580,s:380,d:520,r:0,tr:null,zw:null},
-    {label:'Tue 16',act:'Easy run',det:'6.4k recovery',type:'recovery',kcal:2000,pb:20,alc:false,tagline:'First post-race run. Shuffle if you have to.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Recovery run',d:'No pace pressure. Just move and flush the legs.'},zw:null},
-    {label:'Wed 17',act:'Short hike',det:'Easy day',type:'hike',kcal:1950,pb:25,alc:false,tagline:'Easy movement. Body still repairing.',b:390,l:600,s:400,d:560,r:0,tr:null,zw:null},
-    {label:'Thu 18',act:'Easy run',det:'10k easy',type:'recovery',kcal:2050,pb:20,alc:false,tagline:'Building back. No pressure, just consistency.',b:410,l:630,s:420,d:590,r:0,tr:{l:'Easy run',d:'Comfortable pace. Legs adapting.'},zw:null},
-    {label:'Fri 19',act:'Bike ride',det:'30–50k, 500–600m',type:'cycle',kcal:2200,pb:25,alc:true,tagline:'Back on the bike. Gentler than pre-race. Zum Wohl!',b:430,l:670,s:450,d:650,r:0,tr:{l:'On-bike fuel',d:'Easy to moderate effort. Dates + banana.'},zw:{l:'Zum Wohl',d:'Post-marathon celebration continues — 1–2 drinks'}},
-    {label:'Sat 20',act:'Short hike',det:'Easy day',type:'hike',kcal:1900,pb:25,alc:false,tagline:'Easy hike. Legs coming back.',b:390,l:590,s:390,d:530,r:0,tr:null,zw:null},
-    {label:'Sun 21',act:'Easy run',det:'13k easy',type:'recovery',kcal:2100,pb:20,alc:true,tagline:'Recovery long run. Building the base again.',b:410,l:640,s:430,d:620,r:0,tr:{l:'Post-run',d:'Light recovery snack after.'},zw:{l:'Zum Wohl',d:'Sunday rest — 1 drink'}},
-  ]},
-  // WEEK of 22 Jun
-  {mon:d(22,6), days:[
-    {label:'Mon 22',act:'Rest + walk',det:'5–10k walk',type:'walk',kcal:1800,pb:15,alc:false,tagline:'Recovery week continues. Easy does it.',b:360,l:570,s:370,d:500,r:0,tr:null,zw:null},
-    {label:'Tue 23',act:'Easy run',det:'10k easy',type:'recovery',kcal:2000,pb:20,alc:false,tagline:'Steady Tuesday. Back to routine.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Pre-run',d:'Banana + dates. Easy pace.'},zw:null},
-    {label:'Wed 24',act:'Short hike',det:'Easy day',type:'hike',kcal:1950,pb:25,alc:false,tagline:'Midweek move. Feeling more normal.',b:390,l:600,s:400,d:560,r:0,tr:null,zw:null},
-    {label:'Thu 25',act:'Easy run',det:'10k easy',type:'recovery',kcal:2000,pb:20,alc:false,tagline:'Easy double-digits. Strength returning.',b:400,l:610,s:410,d:580,r:0,tr:{l:'Pre-run',d:'Banana. Easy effort.'},zw:null},
-    {label:'Fri 26',act:'Rest day',det:'Easy',type:'rest',kcal:1750,pb:15,alc:false,tagline:'Rest and prep for the weekend.',b:360,l:560,s:360,d:470,r:0,tr:null,zw:null},
-    {label:'Sat 27',act:'Short hike',det:'Easy day',type:'hike',kcal:1900,pb:25,alc:false,tagline:'Easy hike to close the week.',b:390,l:590,s:390,d:530,r:0,tr:null,zw:null},
-    {label:'Sun 28',act:'Easy run',det:'13k easy',type:'recovery',kcal:2100,pb:20,alc:true,tagline:'Sunday run. Routine re-established.',b:410,l:640,s:430,d:620,r:0,tr:{l:'Post-run',d:'Light snack after. Good week.'},zw:{l:'Zum Wohl',d:'Sunday wind-down — 1–2 drinks'}},
-  ]},
-];
+// ── LOAD JSON DATA ────────────────────────────────────────────────────────
+let SCHEDULE = [];
+let PHASES   = [];
+let _dataLoaded = false;
 
-// ── PHASE DEFINITIONS (aligned to training load) ──────────────────────────
-const PHASES = [
-  { label:'Phase 1: Detox',   sub:'13 Apr – 3 May',   avg:1900,
-    desc:'Flat baseline — clean eating habits, no differentiation by day yet. Alcohol, desserts and biscuits cut. Training load is moderate; the goal is consistency and gut health.',
-    wks:[0,1,2], // week indices in SCHEDULE
-    restK:1750, runK:1950, longK:2300 },
-  { label:'Phase 2: Building', sub:'4 May – 17 May',  avg:2150,
-    desc:'First real differentiation. Rest days stay low, training days step up. Longer long runs (28k peak) mean Sunday fuelling increases noticeably. Body learns to expect more on hard days.',
-    wks:[3,4],
-    restK:1850, runK:2100, longK:2700 },
-  { label:'Phase 3: Peak load',sub:'18 May – 7 Jun',  avg:2350,
-    desc:'Highest sustained training load. 32k peak on 24 May — biggest calorie day of the entire plan. Bike + hike + long run weeks stack up. Fuel aggressively, especially Friday–Sunday.',
-    wks:[5,6,7],
-    restK:1950, runK:2200, longK:3050 },
-  { label:'Phase 4: Taper + Race', sub:'8–14 Jun',    avg:2300,
-    desc:'Volume drops sharply but calories stay moderate-high — carb loading kicks in Wed–Sat. Race day is 3,800 kcal with gels during. Protect sleep, cut alcohol, eat the pasta.',
-    wks:[8],
-    restK:1850, runK:2000, longK:3800 },
-  { label:'Phase 5: Recovery', sub:'From 15 Jun',     avg:2000,
-    desc:'Post-marathon rebuild. Easy running, short hikes. Calories settle back to ~2,000 avg. No pressure on pace or volume — just move, eat well, and let the body absorb what you did.',
-    wks:[9,10],
-    restK:1800, runK:2050, longK:2100 },
-];
+function _buildScheduleFromJSON(data) {
+  // Convert JSON weeks → SCHEDULE array matching original shape
+  SCHEDULE = data.weeks.map(wk => {
+    const monParts = wk.week_start.split('-');
+    const mon = new Date(+monParts[0], +monParts[1]-1, +monParts[2]);
+    const days = wk.days.map(day => ({
+      label: day.label,
+      act:   day.activity,
+      det:   day.detail,
+      type:  day.type,
+      kcal:  day.kcal,
+      pb:    day.pb_g,
+      alc:   day.alc,
+      tagline: day.tagline,
+      b: day.b_kcal, l: day.l_kcal, s: day.s_kcal, d: day.d_kcal, r: day.r_kcal,
+      tr: day.tr_label ? { l: day.tr_label, d: day.tr_detail } : null,
+      zw: day.zw_note  ? { l: 'Zum Wohl',   d: day.zw_note }   : null,
+      carbLoad:   day.type === 'taper' || (day.zw_note === '' && day.d_kcal > 700 && ['hike','rest'].includes(day.type) && day.l_kcal > 650),
+      marathonDay: day.type === 'marathon',
+    }));
+    return { mon, days };
+  });
+
+  PHASES = data.phases.map((p, idx) => {
+    const startParts = p.start_date.split('-');
+    const endParts   = p.end_date.split('-');
+    const start = new Date(+startParts[0], +startParts[1]-1, +startParts[2]);
+    const end   = new Date(+endParts[0],   +endParts[1]-1,   +endParts[2]);
+    // Map phase to week indices by date overlap
+    const wks = SCHEDULE.reduce((acc, wk, wi) => {
+      const wkEnd = new Date(wk.mon); wkEnd.setDate(wk.mon.getDate()+6);
+      if (wk.mon <= end && wkEnd >= start) acc.push(wi);
+      return acc;
+    }, []);
+    return {
+      label: p.label, sub: p.sub, avg: p.avg_kcal,
+      desc: p.description,
+      wks,
+      restK: p.rest_kcal, runK: p.run_kcal, longK: p.long_kcal,
+    };
+  });
+}
+
+function _showLoadError(msg) {
+  document.body.innerHTML = `<div style="font-family:sans-serif;padding:40px;max-width:600px;margin:0 auto">
+    <h2 style="color:#c00;margin-bottom:12px">Could not load plan data</h2>
+    <p style="color:#444;line-height:1.6">${msg}</p>
+    <p style="margin-top:16px;color:#666;font-size:13px">
+      <strong>To run locally:</strong> open a terminal in this folder and run:<br>
+      <code style="background:#f0f0f0;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px">python3 -m http.server 8080</code><br>
+      Then visit <a href="http://localhost:8080/fatboys-fuel-plan.html">http://localhost:8080/fatboys-fuel-plan.html</a>
+    </p>
+  </div>`;
+}
+
+async function _loadData() {
+  try {
+    const resp = await fetch('../../data/calories.json');
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    _buildScheduleFromJSON(data);
+    _dataLoaded = true;
+    _init();
+  } catch(e) {
+    // Friendly error with instructions
+    _showLoadError(
+      `<strong>calories.json</strong> could not be fetched: <em>${e.message}</em><br><br>
+       Make sure <code>calories.json</code> is in the same folder as the HTML file.
+       Browsers block local file reads for security — you need a local web server.`
+    );
+  }
+
+}
 
 // ── DATE UTILS ─────────────────────────────────────────
 const TODAY = new Date(); TODAY.setHours(0,0,0,0);
@@ -359,13 +294,12 @@ function findPhaseForWeek(wi){
   return PHASES.length-1;
 }
 
-const todayWeekIdx = findTodayWeek();
-const todayDayIdx  = jsDayToIdx(TODAY.getDay());
-
-let currentWeekIdx = todayWeekIdx;
-let selectedDayIdx = todayDayIdx;
-let currentPhaseIdx= findPhaseForWeek(currentWeekIdx);
-
+const todayWeekIdx_ref = { v: 0 }; // set after load
+let todayWeekIdx = 0;
+let todayDayIdx    = 0;
+let currentWeekIdx = 0;
+let selectedDayIdx = 0;
+let currentPhaseIdx= 0;
 const MAX_K = 3800;
 
 // ── RENDER ─────────────────────────────────────────────
@@ -545,9 +479,17 @@ function render(){
 
 // Expose findPhaseForWeek globally for inline onclick
 window.findPhaseForWeek = findPhaseForWeek;
+function _init() {
+  todayWeekIdx   = findTodayWeek();
+  todayDayIdx    = jsDayToIdx(TODAY.getDay());  // ← was missing, caused header to always show Monday
+  currentWeekIdx = todayWeekIdx;
+  selectedDayIdx = todayDayIdx;
+  currentPhaseIdx = findPhaseForWeek(currentWeekIdx);
+  render();
+}
 
-render();
+// Kick off — fetch JSON then render
+_loadData();
 </script>
-<script src="../shared/utils.js"></script>
 </body>
 </html>
