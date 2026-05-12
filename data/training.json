@@ -7,18 +7,143 @@
   "profile": {
     "weeklyTargetKm": 50,
     "longRunDay": "Sunday",
-    "raceGoal": { "name": "Marathon du Jura 2026", "date": "2026-06-14", "targetTime": "3:30:00" }
+    "raceGoal": { "name": "Marathon du Jura 2026", "date": "2026-06-14", "targetTime": "3:30:00" },
+    "planName": "Hal Higdon Senior 9-week plan"
   },
   "weeks": [
     {
-      "weekStart": "2026-05-04",
-      "phase": "Base building",
-      "targetKm": 48,
+      "weekStart": "2026-04-13",
+      "weekNumber": 9,
+      "phase": "Build - Peak training",
+      "targetKm": 40.7,
       "sessions": [
-        { "date": "2026-05-04", "type": "easy",    "plannedKm": 10, "actualKm": 0, "notes": "" },
-        { "date": "2026-05-06", "type": "tempo",   "plannedKm": 10, "actualKm": 0, "notes": "" },
-        { "date": "2026-05-08", "type": "easy",    "plannedKm": 8,  "actualKm": 0, "notes": "" },
-        { "date": "2026-05-10", "type": "long",    "plannedKm": 20, "actualKm": 0, "notes": "" }
+        { "date": "2026-04-13", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-14", "type": "easy",     "plannedKm": 6.6, "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-04-15", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-16", "type": "tempo",    "plannedKm": 13,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-04-17", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-18", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-04-19", "type": "long",     "plannedKm": 21.1, "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-04-20",
+      "weekNumber": 8,
+      "phase": "Build - Peak training",
+      "targetKm": 45,
+      "sessions": [
+        { "date": "2026-04-20", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-21", "type": "easy",     "plannedKm": 10,  "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-04-22", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-23", "type": "tempo",    "plannedKm": 10,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-04-24", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-25", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-04-26", "type": "long",     "plannedKm": 25,  "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-04-27",
+      "weekNumber": 7,
+      "phase": "Build - Peak training",
+      "targetKm": 40.7,
+      "sessions": [
+        { "date": "2026-04-27", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-28", "type": "easy",     "plannedKm": 6.6, "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-04-29", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-04-30", "type": "tempo",    "plannedKm": 13,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-05-01", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-02", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-05-03", "type": "long",     "plannedKm": 21.1, "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-05-04",
+      "weekNumber": 6,
+      "phase": "Build - Peak training",
+      "targetKm": 45,
+      "sessions": [
+        { "date": "2026-05-04", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-05", "type": "easy",     "plannedKm": 10,  "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-05-06", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-07", "type": "tempo",    "plannedKm": 10,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-05-08", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-09", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-05-10", "type": "long",     "plannedKm": 28,  "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-05-11",
+      "weekNumber": 5,
+      "phase": "Build - Peak training",
+      "targetKm": 40.7,
+      "sessions": [
+        { "date": "2026-05-11", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-12", "type": "easy",     "plannedKm": 6.6, "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-05-13", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-14", "type": "interval",  "plannedKm": 16,  "actualKm": 0, "notes": "Interval training" },
+        { "date": "2026-05-15", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-16", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-05-17", "type": "long",     "plannedKm": 21.1, "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-05-18",
+      "weekNumber": 4,
+      "phase": "Taper - reduce volume",
+      "targetKm": 45,
+      "sessions": [
+        { "date": "2026-05-18", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-19", "type": "easy",     "plannedKm": 10,  "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-05-20", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-21", "type": "tempo",    "plannedKm": 10,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-05-22", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-23", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-05-24", "type": "long",     "plannedKm": 32,  "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-05-25",
+      "weekNumber": 3,
+      "phase": "Taper - reduce volume",
+      "targetKm": 40.7,
+      "sessions": [
+        { "date": "2026-05-25", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-26", "type": "easy",     "plannedKm": 6.6, "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-05-27", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-28", "type": "tempo",    "plannedKm": 13,  "actualKm": 0, "notes": "Tempo run" },
+        { "date": "2026-05-29", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-05-30", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest/Cross-training" },
+        { "date": "2026-05-31", "type": "long",     "plannedKm": 21.1, "actualKm": 0, "notes": "Long run" }
+      ]
+    },
+    {
+      "weekStart": "2026-06-01",
+      "weekNumber": 2,
+      "phase": "Taper - final week",
+      "targetKm": 23.1,
+      "sessions": [
+        { "date": "2026-06-01", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-02", "type": "easy",     "plannedKm": 6.6, "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-06-03", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-04", "type": "easy",     "plannedKm": 10,  "actualKm": 0, "notes": "Easy run" },
+        { "date": "2026-06-05", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-06", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-07", "type": "long",     "plannedKm": 13,  "actualKm": 0, "notes": "Easy run" }
+      ]
+    },
+    {
+      "weekStart": "2026-06-08",
+      "weekNumber": 1,
+      "phase": "Race week",
+      "targetKm": 42.2,
+      "sessions": [
+        { "date": "2026-06-08", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-09", "type": "easy",     "plannedKm": 10,  "actualKm": 0, "notes": "Shakeout run" },
+        { "date": "2026-06-10", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-11", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-12", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-13", "type": "rest",     "plannedKm": 0,   "actualKm": 0, "notes": "Rest day" },
+        { "date": "2026-06-14", "type": "race",     "plannedKm": 42.2, "actualKm": 0, "notes": "RACE DAY" }
       ]
     }
   ]
