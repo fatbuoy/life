@@ -304,24 +304,7 @@
           "items": ["Passport + visa if required", "Company credit card", "Hotel booking ref", "Travel insurance", "Universal adaptor", "Phone + charger"]
         }
       ]
-    },
-    {
-      "type":  "anniversary",
-      "label": "Anniversary / Romantic",
-      "categories": [
-        {
-          "name": "Special Touches",
-          "items": ["Restaurant reservation confirmed", "Surprise / gift packed", "Occasion card"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["Smart evening outfits x2", "Casual outfits x3", "Comfortable shoes", "Something dressier for dinner"]
-        },
-        {
-          "name": "Essentials",
-          "items": ["Passport", "Hotel confirmation", "Flights / transport", "Phone + charger", "Camera"]
-        }
-      ]
     }
+   
   ]
 }
