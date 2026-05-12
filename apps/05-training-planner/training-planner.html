@@ -2,273 +2,395 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marathon du Jura - Training Planner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Marathon du Jura — Training</title>
 <link rel="stylesheet" href="../../shared/base.css">
 <style>
 :root {
-  --app-primary:    #1a2535;
-  --app-primary2:   #2a3d55;
-  --app-primary3:   #3a5575;
-  --app-accent:     #d06020;
-  --app-on-primary:    #ffffff;
-  --app-on-primary2:   #b8cce0;
-  --app-on-primary3:   #8aaac8;
+  --navy:   #1a2535;
+  --navy2:  #243047;
+  --navy3:  #3a5575;
+  --orange: #d06020;
+  --green:  #27ae60;
+  --on-nav: #ffffff;
+  --on-n2:  #b8cce0;
+  --on-n3:  #7aaabb;
+  --r:      9px;
 }
 
+/* ── Global resets for tight mobile layout ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; color: #1a1a2e; }
+.app { max-width: 480px; margin: 0 auto; padding-bottom: 32px; }
+
+/* ── Header ── */
+.topbar {
+  background: var(--navy);
+  color: var(--on-nav);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3px }
+.unit-toggle { display: flex; border: 1px solid var(--navy3); border-radius: 20px; overflow: hidden; font-size: 0.7rem }
+.u-btn { padding: 4px 11px; cursor: pointer; background: transparent; color: var(--on-n3); transition: all 0.15s }
+.u-btn.active { background: var(--orange); color: #fff; }
+
+/* ── Hero banner ── */
+.hero {
+  background: var(--navy2);
+  padding: 14px 16px 10px;
+  color: var(--on-nav);
+}
+.hero-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px }
+.hero-dist { font-size: 1.8rem; font-weight: 900; color: var(--orange); line-height: 1 }
+.hero-unit { font-size: 0.75rem; color: var(--on-n3); margin-left: 3px }
+.hero-goal { font-size: 0.75rem; color: var(--on-n3) }
+.rail { height: 10px; background: rgba(255,255,255,0.12); border-radius: 5px; overflow: hidden; margin-bottom: 6px }
+.rail-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.6s ease }
+.hero-stats { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--on-n3); text-transform: uppercase; letter-spacing: 0.8px }
+
+/* ── Sparkline chart ── */
+.chart-wrap {
+  background: var(--navy);
+  padding: 10px 16px 8px;
+}
+.chart-label { font-size: 0.6rem; color: var(--on-n3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px }
+.bars-row { display: flex; align-items: flex-end; gap: 3px; height: 52px }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer }
+.bar-outer { width: 100%; border-radius: 3px 3px 0 0; background: rgba(255,255,255,0.08); position: relative; overflow: hidden; flex: 1; min-height: 4px }
+.bar-inner { position: absolute; bottom: 0; left: 0; right: 0; background: var(--navy3); border-radius: 3px 3px 0 0; transition: height 0.4s ease }
+.bar-inner.done { background: var(--green) }
+.bar-inner.partial { background: var(--orange) }
+.bar-label { font-size: 0.55rem; color: var(--on-n3); white-space: nowrap }
+.bar-col.selected .bar-label { color: var(--orange); font-weight: 700 }
+.bar-col.selected .bar-outer { outline: 1px solid var(--orange); border-radius: 3px 3px 0 0 }
+
+/* ── Week tab strip ── */
+.week-strip-wrap {
+  background: var(--navy);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 16px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.week-strip-wrap::-webkit-scrollbar { display: none }
+.week-strip { display: flex; gap: 5px; width: max-content }
+.wtab {
+  padding: 5px 11px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--on-n3);
+  background: transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  position: relative;
+}
+.wtab.is-current { border-color: var(--orange); color: var(--orange) }
+.wtab.active { background: var(--orange); border-color: var(--orange); color: #fff }
+.wtab .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle }
+
+/* ── Week panel ── */
+.week-panel { padding: 12px 16px }
+.week-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px }
+.week-heading { font-size: 0.85rem; font-weight: 700; color: var(--navy) }
+.week-phase { font-size: 0.65rem; color: #888; margin-top: 1px }
+.week-progress { text-align: right; font-size: 0.7rem; color: #555 }
+.week-pct { font-size: 1.1rem; font-weight: 800; color: var(--navy); display: block }
+
+/* ── Session rows ── */
+.sessions { background: #fff; border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06) }
+.sess-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid #f0f0f4;
+  transition: background 0.15s;
+}
+.sess-row:last-child { border-bottom: none }
+.sess-row.is-done { background: #fafafa }
+.sess-row.is-rest { opacity: 0.55 }
+.sess-check { width: 22px; height: 22px; flex-shrink: 0; accent-color: var(--orange); cursor: pointer }
+.sess-day { width: 34px; flex-shrink: 0 }
+.sess-day-name { font-size: 0.58rem; text-transform: uppercase; color: #aaa; display: block }
+.sess-day-num { font-size: 0.9rem; font-weight: 700; color: #333 }
+.pill { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 0.62rem; font-weight: 700; white-space: nowrap; flex-shrink: 0 }
 .type-easy     { background:#e2f0d6; color:#27500a }
 .type-tempo    { background:#faeeda; color:#633806 }
 .type-long     { background:#deeaf7; color:#0c447c }
 .type-interval { background:#fde8e8; color:#7c0c0c }
 .type-race     { background:#2d0a6e; color:#d4c8ff }
-.type-rest     { background:#f0ede8; color:#888 }
+.type-rest     { background:#f0ede8; color:#aaa }
 .type-cross    { background:#e0f5f0; color:#0a5040 }
+.sess-info { flex: 1; min-width: 0 }
+.sess-note { font-size: 0.78rem; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.sess-note.done-text { color: #bbb; text-decoration: line-through }
+.sess-dist { font-size: 0.85rem; font-weight: 800; color: #222; flex-shrink: 0; text-align: right; min-width: 44px }
+.sess-dist.done-dist { color: var(--green) }
+.sess-dist span { display: block; font-size: 0.58rem; font-weight: 400; color: #aaa }
 
-.hero-status { background:var(--app-primary2); padding:16px; border-radius:10px; border:1px solid #444; margin-bottom:14px }
-.hero-main { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:8px }
-.hero-val { font-size:2rem; font-weight:900; color:var(--app-accent) }
-.hero-target { font-size:0.9rem; color:var(--app-on-primary3) }
-.progress-rail { height:12px; background:#333; border-radius:6px; overflow:hidden; position:relative; margin-bottom:10px }
-.progress-fill { height:100%; background:linear-gradient(90deg, var(--app-accent), #2ecc71); transition:0.5s ease }
-.hero-footer { display:flex; justify-content:space-between; font-size:0.75rem; color:var(--app-on-primary3); text-transform:uppercase; letter-spacing:1px }
-
-.unit-toggle { font-size:0.7rem; border:1px solid var(--app-primary3); border-radius:20px; overflow:hidden; display:flex }
-.u-btn { padding:4px 12px; cursor:pointer; background:#222; color:var(--app-on-primary3); }
-.u-btn.active { background:var(--app-accent); color:white; }
-
-.week-sect { background:var(--white); border-radius:10px; margin-bottom:8px; border:1px solid var(--border); overflow:hidden }
-.week-header { padding:12px 15px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; background:#f5f5f5; transition:background 0.2s; user-select:none }
-.week-header:hover { background:#efefef }
-.week-header.active-week { border-left:4px solid var(--app-accent); background:#fafafa }
-.week-title { font-size:0.9rem; font-weight:bold }
-.week-summary { font-size:0.7rem; color:#999 }
-.week-toggle { font-size:0.8rem; color:#666; width:20px; text-align:center; transition:transform 0.2s }
-.week-toggle.open { transform:rotate(180deg) }
-
-.week-content { display:none; max-height:0; overflow:hidden; transition:max-height 0.3s ease; padding:0 }
-.week-content.open { display:block; padding:0 10px; max-height:2000px }
-
-.day-row { display:flex; align-items:center; padding:12px 5px; border-bottom:1px solid #eee; gap:10px }
-.day-row:last-child { border:none }
-.day-checkbox { width:22px; height:22px; flex-shrink:0; cursor:pointer; accent-color:var(--app-accent) }
-.date-box { width:50px; flex-shrink:0 }
-.d-name { font-size:0.6rem; color:#999; display:block; text-transform:uppercase }
-.d-num { font-size:0.9rem; font-weight:bold; color:var(--text) }
-
-.workout-text { flex-grow:1; font-size:0.85rem }
-.dist-bold { font-weight:800; color:#000 }
-.completed { color:#999 !important; text-decoration:line-through }
-
-.session-type { flex-shrink:0 }
-.pill { display:inline-block; padding:2px 6px; border-radius:3px; font-size:9px; font-weight:600; white-space:nowrap }
-
-.btn-reset { width:100%; padding:10px; background:transparent; color:#666; border:1px solid #ddd; border-radius:8px; margin-top:20px; font-size:0.8rem; cursor:pointer; transition:all 0.2s }
-.btn-reset:hover { background:#f5f5f5 }
-
-.accordion-controls { display:flex; gap:8px; margin-bottom:14px; justify-content:flex-end }
-.accordion-btn { font-size:11px; font-weight:600; padding:6px 12px; border:1px solid var(--border); border-radius:6px; background:var(--white); cursor:pointer; transition:all 0.2s }
-.accordion-btn:hover { background:var(--app-primary); color:var(--app-on-primary); border-color:var(--app-primary) }
-
-.section-sep { height:1px; background:var(--border); margin:14px 0 }
+/* ── Bottom controls ── */
+.bottom-bar { padding: 16px 16px 0; display: flex; gap: 8px }
+.btn-sm { flex: 1; padding: 9px 0; font-size: 0.75rem; font-weight: 600; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #555; cursor: pointer }
+.btn-sm:hover { background: #f5f5f5 }
+.btn-sm.danger { color: #c0392b; border-color: #f5c6c6 }
 </style>
 </head>
 <body>
+<div class="app">
 
-<header class="header">
-  <div class="container">
-    <div class="header-row">
-      <div class="header-left">
-        <a class="header-home" href="../../index.html">⌂</a>
-        <span class="header-title">Jura Marathon Planner</span>
-      </div>
-      <div class="header-right">
-        <div class="unit-toggle" onclick="toggleUnits()">
-          <div id="u-km" class="u-btn active">km</div>
-          <div id="u-mi" class="u-btn">mi</div>
-        </div>
-      </div>
+  <div class="topbar">
+    <span class="topbar-title">Marathon du Jura</span>
+    <div class="unit-toggle" onclick="toggleUnits()">
+      <div id="u-km" class="u-btn active">km</div>
+      <div id="u-mi" class="u-btn">mi</div>
     </div>
   </div>
-</header>
 
-<div class="container" id="app">
-  <div id="raceCountdown"></div>
-
-  <div class="hero-status">
-    <div class="hero-main">
+  <!-- Hero banner -->
+  <div class="hero">
+    <div class="hero-row">
       <div>
-        <span class="hero-val" id="hero-done">0</span>
-        <span style="font-size: 0.8rem; color:var(--app-on-primary3);" id="hero-unit">KM</span>
+        <span class="hero-dist" id="hero-done">0</span><span class="hero-unit" id="hero-unit">KM</span>
+        <div style="font-size:0.65rem;color:var(--on-n3);margin-top:2px">of <span id="hero-goal">0</span> planned</div>
       </div>
-      <div class="hero-target">Goal: <span id="hero-goal">0</span></div>
+      <div style="text-align:right">
+        <div style="font-size:1.4rem;font-weight:900;color:var(--orange)" id="hero-days">34</div>
+        <div style="font-size:0.62rem;color:var(--on-n3);text-transform:uppercase;letter-spacing:0.6px">days to race</div>
+      </div>
     </div>
-    <div class="progress-rail"><div class="progress-fill" id="hero-fill"></div></div>
-    <div class="hero-footer">
-      <span id="hero-percent">0% COMPLETE</span>
-      <span id="hero-countdown">0 DAYS TO RACE</span>
+    <div class="rail"><div class="rail-fill" id="hero-fill" style="width:0%"></div></div>
+    <div class="hero-stats">
+      <span id="hero-pct">0% complete</span>
+      <span id="hero-sessions">0 / 0 sessions</span>
     </div>
   </div>
 
-  <div class="accordion-controls">
-    <button class="accordion-btn" onclick="expandAllWeeks()">Expand all</button>
-    <button class="accordion-btn" onclick="collapseAllWeeks()">Collapse all</button>
+  <!-- Sparkline chart -->
+  <div class="chart-wrap">
+    <div class="chart-label">Weekly volume</div>
+    <div class="bars-row" id="barsRow"></div>
   </div>
 
-  <div id="dashboard"></div>
-  <button class="btn-reset" onclick="resetPlan()">Reset Data</button>
+  <!-- Week tab strip -->
+  <div class="week-strip-wrap">
+    <div class="week-strip" id="weekStrip"></div>
+  </div>
+
+  <!-- Selected week panel -->
+  <div class="week-panel">
+    <div class="week-meta">
+      <div>
+        <div class="week-heading" id="panelTitle">Week —</div>
+        <div class="week-phase" id="panelPhase"></div>
+      </div>
+      <div class="week-progress">
+        <span class="week-pct" id="panelPct">0%</span>
+        <span id="panelKm"></span>
+      </div>
+    </div>
+    <div class="sessions" id="sessionsPanel"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn-sm" onclick="prevWeek()">← Prev</button>
+    <button class="btn-sm" onclick="nextWeek()">Next →</button>
+    <button class="btn-sm danger" onclick="resetPlan()">Reset</button>
+  </div>
+
 </div>
 
 <script src="../../shared/utils.js"></script>
 <script>
 const TYPE_LABELS = { easy:'Easy', tempo:'Tempo', long:'Long run', interval:'Intervals', race:'Race', rest:'Rest', cross:'Cross' };
-const TYPE_COLORS = { easy:'#3b6d11', tempo:'#ef9f27', long:'#185fa5', interval:'#c0392b', race:'#7f77dd', cross:'#20a080', rest:'#aaa' };
 const miToKm = 1.60934;
 
-let WEEKS = [];
-let PROFILE = {};
+let WEEKS = [], PROFILE = {};
 let useKm = localStorage.getItem('unitPref') !== 'mi';
+let activeWkNum = null;
 
+/* ── Persistence helpers ── */
+const sessKey = (wkNum, date) => `jura-session-${wkNum}-${date}`;
+const isDone   = (wkNum, date) => localStorage.getItem(sessKey(wkNum, date)) === 'true';
+const setDone  = (wkNum, date, val) => localStorage.setItem(sessKey(wkNum, date), val ? 'true' : 'false');
+
+/* ── Unit helpers ── */
+const disp = km => useKm ? km : km / miToKm;
+const unitStr = () => useKm ? 'km' : 'mi';
+
+/* ── Totals ── */
+function getTotals() {
+  let totalKm = 0, doneKm = 0, totalSess = 0, doneSess = 0;
+  WEEKS.forEach(wk => wk.sessions.forEach(s => {
+    totalKm += s.plannedKm || 0;
+    totalSess++;
+    if (isDone(wk.weekNumber, s.date)) { doneKm += s.plannedKm || 0; doneSess++; }
+  }));
+  return { totalKm, doneKm, totalSess, doneSess };
+}
+
+/* ── Hero ── */
+function renderHero() {
+  const { totalKm, doneKm, totalSess, doneSess } = getTotals();
+  const raceDate = new Date((PROFILE.raceGoal || {}).date || '2026-06-14');
+  const daysLeft = Math.max(0, Math.ceil((raceDate - new Date()) / 86400000));
+  const pct = totalKm > 0 ? Math.round(doneKm / totalKm * 100) : 0;
+
+  document.getElementById('hero-done').textContent = disp(doneKm).toFixed(1);
+  document.getElementById('hero-unit').textContent = ' ' + unitStr().toUpperCase();
+  document.getElementById('hero-goal').textContent = disp(totalKm).toFixed(1) + ' ' + unitStr();
+  document.getElementById('hero-days').textContent = daysLeft;
+  document.getElementById('hero-fill').style.width = pct + '%';
+  document.getElementById('hero-pct').textContent = pct + '% complete';
+  document.getElementById('hero-sessions').textContent = doneSess + ' / ' + totalSess + ' sessions';
+  document.getElementById('u-km').className = useKm ? 'u-btn active' : 'u-btn';
+  document.getElementById('u-mi').className = !useKm ? 'u-btn active' : 'u-btn';
+}
+
+/* ── Sparkline bars ── */
+function renderBars() {
+  const maxKm = Math.max(...WEEKS.map(w => w.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0)));
+  const row = document.getElementById('barsRow');
+  row.innerHTML = WEEKS.map(wk => {
+    const planned = wk.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0);
+    const done    = wk.sessions.filter(s => isDone(wk.weekNumber, s.date)).reduce((s, x) => s + (x.plannedKm || 0), 0);
+    const pct     = planned > 0 ? done / planned : 0;
+    const heightPct = planned > 0 ? Math.round(planned / maxKm * 100) : 4;
+    const fillCls = pct >= 1 ? 'done' : pct > 0 ? 'partial' : '';
+    const fillH   = Math.round(pct * 100);
+    const isSel   = wk.weekNumber === activeWkNum;
+    return `<div class="bar-col${isSel ? ' selected' : ''}" onclick="selectWeek(${wk.weekNumber})" title="W${wk.weekNumber}: ${planned.toFixed(0)} km">
+      <div class="bar-outer" style="height:${heightPct}%">
+        <div class="bar-inner ${fillCls}" style="height:${fillH}%"></div>
+      </div>
+      <div class="bar-label">W${wk.weekNumber}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Week tab strip ── */
+function renderStrip() {
+  const now = new Date();
+  document.getElementById('weekStrip').innerHTML = WEEKS.map(wk => {
+    const ws = new Date(wk.weekStart + 'T00:00:00');
+    const we = new Date(ws.getTime() + 7 * 86400000);
+    const isCurrent = now >= ws && now < we;
+    const anyDone = wk.sessions.some(s => isDone(wk.weekNumber, s.date));
+    const isActive = wk.weekNumber === activeWkNum;
+    return `<div class="wtab${isCurrent ? ' is-current' : ''}${isActive ? ' active' : ''}" onclick="selectWeek(${wk.weekNumber})">
+      W${wk.weekNumber}${anyDone ? '<span class="dot"></span>' : ''}
+    </div>`;
+  }).join('');
+  // Scroll active tab into view
+  setTimeout(() => {
+    const strip = document.getElementById('weekStrip');
+    const active = strip.querySelector('.wtab.active');
+    if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }, 50);
+}
+
+/* ── Session panel ── */
+function renderPanel() {
+  const wk = WEEKS.find(w => w.weekNumber === activeWkNum);
+  if (!wk) return;
+  const planned = wk.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0);
+  const done    = wk.sessions.filter(s => isDone(wk.weekNumber, s.date)).reduce((s, x) => s + (x.plannedKm || 0), 0);
+  const pct     = planned > 0 ? Math.round(done / planned * 100) : 0;
+
+  document.getElementById('panelTitle').textContent = 'Week ' + wk.weekNumber;
+  document.getElementById('panelPhase').textContent = wk.phase || '';
+  document.getElementById('panelPct').textContent = pct + '%';
+  document.getElementById('panelKm').textContent = disp(done).toFixed(1) + ' / ' + disp(planned).toFixed(1) + ' ' + unitStr();
+
+  document.getElementById('sessionsPanel').innerHTML = wk.sessions.map(s => {
+    const done_ = isDone(wk.weekNumber, s.date);
+    const d = new Date(s.date + 'T00:00:00');
+    const dayName = d.toLocaleDateString('en-US', {weekday:'short'});
+    const dayNum  = d.getDate();
+    const isRest  = s.type === 'rest';
+    const km      = disp(s.plannedKm).toFixed(1);
+    const key     = sessKey(wk.weekNumber, s.date);
+    return `<div class="sess-row${done_ ? ' is-done' : ''}${isRest ? ' is-rest' : ''}">
+      <input type="checkbox" class="sess-check" ${done_ ? 'checked' : ''} ${isRest ? 'disabled' : ''} onchange="toggleSess('${key}', ${wk.weekNumber}, '${s.date}')">
+      <div class="sess-day">
+        <span class="sess-day-name">${dayName}</span>
+        <span class="sess-day-num">${dayNum}</span>
+      </div>
+      <span class="pill type-${s.type || 'rest'}">${TYPE_LABELS[s.type] || s.type}</span>
+      <div class="sess-info">
+        <div class="sess-note${done_ ? ' done-text' : ''}">${s.notes || TYPE_LABELS[s.type] || ''}</div>
+      </div>
+      ${s.plannedKm > 0
+        ? `<div class="sess-dist${done_ ? ' done-dist' : ''}"><span class="sess-km-val">${km}</span><span>${unitStr()}</span></div>`
+        : `<div class="sess-dist" style="color:#ccc">—</div>`}
+    </div>`;
+  }).join('');
+}
+
+/* ── Select / prev / next ── */
+function selectWeek(num) {
+  activeWkNum = num;
+  renderBars();
+  renderStrip();
+  renderPanel();
+}
+function prevWeek() {
+  const idx = WEEKS.findIndex(w => w.weekNumber === activeWkNum);
+  if (idx > 0) selectWeek(WEEKS[idx - 1].weekNumber);
+}
+function nextWeek() {
+  const idx = WEEKS.findIndex(w => w.weekNumber === activeWkNum);
+  if (idx < WEEKS.length - 1) selectWeek(WEEKS[idx + 1].weekNumber);
+}
+
+/* ── Toggle session ── */
+function toggleSess(key, wkNum, date) {
+  const cur = localStorage.getItem(key) === 'true';
+  localStorage.setItem(key, cur ? 'false' : 'true');
+  renderHero();
+  renderBars();
+  renderStrip();
+  renderPanel();
+}
+
+/* ── Unit toggle ── */
 function toggleUnits() {
   useKm = !useKm;
   localStorage.setItem('unitPref', useKm ? 'km' : 'mi');
-  document.getElementById('u-km').className = useKm ? 'u-btn active' : 'u-btn';
-  document.getElementById('u-mi').className = !useKm ? 'u-btn active' : 'u-btn';
-  render();
+  renderHero();
+  renderPanel();
 }
 
-function render() {
-  const container = document.getElementById('dashboard');
-  container.innerHTML = '';
-  let totalKm = 0, doneKm = 0;
-  const now = new Date();
-  const raceDate = new Date(PROFILE.raceGoal ? PROFILE.raceGoal.date : '2026-06-14');
-  const daysLeft = Math.ceil((raceDate - now) / 86400000);
-
-  WEEKS.forEach((wk, wkIdx) => {
-    let wkDoneCount = 0;
-    const wkStart = new Date(wk.weekStart + 'T00:00:00');
-    const wkEnd = new Date(wkStart.getTime() + (7 * 86400000));
-    const isCurrentWeek = now >= wkStart && now < wkEnd;
-
-    let wkRowsHtml = '';
-    wk.sessions.forEach((session, dIdx) => {
-      const id = `jura-session-${wk.weekNumber}-${session.date}`;
-      const isDone = localStorage.getItem(id) === 'true';
-      const d = new Date(session.date + 'T00:00:00');
-      
-      const displayDist = useKm ? session.plannedKm.toFixed(1) : (session.plannedKm / miToKm).toFixed(1);
-      const unit = useKm ? 'km' : 'mi';
-      const distText = session.plannedKm > 0 ? `<span class="dist-bold">${displayDist} ${unit}</span> — ` : '';
-
-      totalKm += session.plannedKm;
-      if(isDone) { doneKm += session.plannedKm; wkDoneCount++; }
-
-      const typeClass = `type-${session.type || 'rest'}`;
-      
-      wkRowsHtml += `
-        <div class="day-row">
-          <input type="checkbox" class="day-checkbox" ${isDone ? 'checked' : ''} onchange="toggle('${id}')">
-          <div class="date-box">
-            <span class="d-name">${d.toLocaleDateString('en-US', {weekday:'short'})}</span>
-            <span class="d-num">${d.getDate()}</span>
-          </div>
-          <div class="session-type"><span class="pill ${typeClass}">${TYPE_LABELS[session.type] || session.type}</span></div>
-          <div class="workout-text ${isDone ? 'completed' : ''}">
-            ${distText}${session.notes || (isDone ? '✓ Done' : 'Planned')}
-          </div>
-        </div>`;
-    });
-
-    const manualState = localStorage.getItem(`wk-open-${wk.weekNumber}`);
-    const isOpen = manualState === 'true' || (manualState === null && isCurrentWeek);
-
-    const weekDiv = document.createElement('div');
-    weekDiv.className = 'week-sect';
-    
-    const wkPlanned = wk.sessions.reduce((sum, s) => sum + (s.plannedKm || 0), 0);
-    const wkDone = wk.sessions.filter(s => localStorage.getItem(`jura-session-${wk.weekNumber}-${s.date}`) === 'true').reduce((sum, s) => sum + (s.plannedKm || 0), 0);
-    
-    weekDiv.innerHTML = `
-      <div class="week-header ${isCurrentWeek ? 'active-week' : ''}" onclick="toggleWeek(${wk.weekNumber})">
-        <div style="flex:1">
-          <div class="week-title">Week ${wk.weekNumber} ${isCurrentWeek ? ' <span style="color:var(--app-accent); font-size:0.6rem;">• CURRENT</span>' : ''}</div>
-          <div class="week-summary">${wkDoneCount}/7 Completed</div>
-        </div>
-        <div style="text-align:right; margin-right:12px">
-          <div style="font-size:0.85rem; font-weight:bold">${(useKm ? wkDone : wkDone/miToKm).toFixed(1)} / ${(useKm ? wkPlanned : wkPlanned/miToKm).toFixed(1)} ${useKm ? 'km' : 'mi'}</div>
-          <div style="font-size:0.7rem; color:#999">${wkPlanned > 0 ? Math.round(wkDone/wkPlanned*100) : 0}%</div>
-        </div>
-        <div class="week-toggle ${isOpen ? 'open' : ''}">▼</div>
-      </div>
-      <div class="week-content ${isOpen ? 'open' : ''}">${wkRowsHtml}</div>
-    `;
-    container.appendChild(weekDiv);
-  });
-
-  // Update hero banner
-  const goalDist = useKm ? totalKm : (totalKm / miToKm);
-  const runDist = useKm ? doneKm : (doneKm / miToKm);
-  const percent = Math.round((doneKm / totalKm) * 100);
-
-  document.getElementById('hero-done').innerText = runDist.toFixed(1);
-  document.getElementById('hero-goal').innerText = goalDist.toFixed(1);
-  document.getElementById('hero-unit').innerText = useKm ? 'KM' : 'MI';
-  document.getElementById('hero-fill').style.width = percent + '%';
-  document.getElementById('hero-percent').innerText = percent + '% COMPLETE';
-  document.getElementById('hero-countdown').innerText = (daysLeft > 0 ? daysLeft : 0) + ' DAYS TO RACE';
-  document.getElementById('u-km').className = useKm ? 'u-btn active' : 'u-btn';
-  document.getElementById('u-mi').className = !useKm ? 'u-btn active' : 'u-btn';
-}
-
-function toggle(id) {
-  const current = localStorage.getItem(id) === 'true';
-  localStorage.setItem(id, current ? 'false' : 'true');
-  render();
-}
-
-function toggleWeek(wkNum) {
-  const key = `wk-open-${wkNum}`;
-  const current = localStorage.getItem(key) === 'true';
-  localStorage.setItem(key, current ? 'false' : 'true');
-  render();
-}
-
-function expandAllWeeks() {
-  WEEKS.forEach(w => localStorage.setItem(`wk-open-${w.weekNumber}`, 'true'));
-  render();
-}
-
-function collapseAllWeeks() {
-  WEEKS.forEach(w => localStorage.setItem(`wk-open-${w.weekNumber}`, 'false'));
-  render();
-}
-
+/* ── Reset ── */
 function resetPlan() {
-  if(confirm("Wipe all logged data?")) {
-    for (let key in localStorage) {
-      if (key.startsWith('jura-session-') || key.startsWith('wk-open-')) {
-        localStorage.removeItem(key);
-      }
-    }
-    render();
-  }
+  if (!confirm('Clear all logged sessions?')) return;
+  Object.keys(localStorage).filter(k => k.startsWith('jura-')).forEach(k => localStorage.removeItem(k));
+  renderHero(); renderBars(); renderStrip(); renderPanel();
 }
 
+/* ── Init ── */
 (async () => {
   const raw = await fetchData('../../data/training.json');
-  if (!raw) return;
+  if (!raw) { document.getElementById('sessionsPanel').textContent = 'Could not load training.json'; return; }
   PROFILE = raw.profile || {};
-  WEEKS = raw.weeks || [];
+  WEEKS   = raw.weeks   || [];
+  if (!WEEKS.length) return;
 
-  if (!WEEKS.length) {
-    document.getElementById('app').innerHTML = '<div style="color:var(--muted);font-size:13px">No training weeks in training.json yet.</div>';
-    return;
-  }
+  // Default to current week, fall back to first week
+  const now = new Date();
+  const cur = WEEKS.find(w => {
+    const ws = new Date(w.weekStart + 'T00:00:00');
+    return now >= ws && now < new Date(ws.getTime() + 7 * 86400000);
+  });
+  activeWkNum = (cur || WEEKS[0]).weekNumber;
 
-  document.getElementById('u-km').className = useKm ? 'u-btn active' : 'u-btn';
-  document.getElementById('u-mi').className = !useKm ? 'u-btn active' : 'u-btn';
-
-  render();
+  renderHero();
+  renderBars();
+  renderStrip();
+  renderPanel();
 })();
 </script>
 </body>
