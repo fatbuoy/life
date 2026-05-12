@@ -1,28 +1,325 @@
 {
   "meta": {
-    "app": "travel",
+    "lastUpdated": "2026-01-01",
     "currency": "CHF",
-    "version": 1
+    "defaultYear": 2026,
+    "note": "Place this file at life-suite/data/travel.json"
   },
+
   "trips": [
     {
-      "id": "t001",
-      "name": "Hartford & NYC",
-      "status": "planned",
-      "startDate": "2026-05-10",
-      "endDate": "2026-05-21",
-      "countries": ["USA"],
-      "budget": 5000,
-      "spent": 0,
-      "tags": ["work", "reunion", "Cigna"],
-      "days": [
+      "_comment": "── FIELD GUIDE ───────────────────────────────────────────────────────",
+      "_id":            "trp_{year}_{slug}  — e.g. trp_2026_barcelona",
+      "_destination":   "City, Country — free text",
+      "_type":          "leisure | race | active | bikepacking | family | visitors | work | anniversary | holiday",
+      "_startDate":     "YYYY-MM-DD",
+      "_endDate":       "YYYY-MM-DD",
+      "_status":        "Planned | Confirmed | TBC | Completed",
+      "_budgetTag":     "slug that must match tags[] on budget.json months for cost linkage",
+      "_raceEventId":   "ref to training.json events[].id — only set for race trips, else null"
+    },
+    {
+      "id":             "trp_2026_granada_jan",
+      "destination":    "Granada, Spain",
+      "type":           "leisure",
+      "startDate":      "2026-01-10",
+      "endDate":        "2026-01-31",
+      "status":         "Confirmed",
+      "description":    "Long stay — Living in Granada",
+      "accommodation":  "Private apartment, Realejo district",
+      "who":            "Sahani Family",
+      "budgetTag":      "granada-jan-2026",
+      "budgetEstimate": 4200,
+      "budgetActual":   3870,
+      "raceEventId":    null,
+      "notes":          "Visit Alhambra early morning to avoid crowds. Sierra Nevada 45 min away.",
+      "flights": [
+        { "direction": "Out",  "time": "06:30", "route": "ZRH → GRX", "ref": "IB2341", "date": "2026-01-10" },
+        { "direction": "Back", "time": "18:45", "route": "GRX → ZRH", "ref": "IB2342", "date": "2026-01-31" }
+      ]
+    },
+    {
+      "id":             "trp_2026_ireland_jan",
+      "destination":    "Ireland",
+      "type":           "family",
+      "startDate":      "2026-01-01",
+      "endDate":        "2026-01-04",
+      "status":         "Confirmed",
+      "description":    "Rishi in India, Marion in Ireland — New Year",
+      "accommodation":  "Family home",
+      "who":            "Marion + family",
+      "budgetTag":      "ireland-jan-2026",
+      "budgetEstimate": 600,
+      "budgetActual":   null,
+      "raceEventId":    null,
+      "notes":          "",
+      "flights": []
+    },
+    {
+      "id":             "trp_2026_bcn_marathon",
+      "destination":    "Barcelona, Spain",
+      "type":           "race",
+      "startDate":      "2026-03-14",
+      "endDate":        "2026-03-15",
+      "status":         "Confirmed",
+      "description":    "Barcelona Marathon 2026",
+      "accommodation":  "Hotel Arts Barcelona",
+      "who":            "Rishi",
+      "budgetTag":      "bcn-marathon-2026",
+      "budgetEstimate": 800,
+      "budgetActual":   null,
+      "raceEventId":    "evt_barcelona_marathon_2026",
+      "notes":          "Expo Saturday 10-18h. Race Sunday 08:30. Finish at Barceloneta.",
+      "flights": [
+        { "direction": "Out",  "time": "07:00", "route": "ZRH → BCN", "ref": "VY1234", "date": "2026-03-13" },
+        { "direction": "Back", "time": "20:15", "route": "BCN → ZRH", "ref": "VY1235", "date": "2026-03-15" }
+      ]
+    },
+    {
+      "id":             "trp_2026_ireland_may",
+      "destination":    "Ireland",
+      "type":           "family",
+      "startDate":      "2026-05-07",
+      "endDate":        "2026-05-21",
+      "status":         "Confirmed",
+      "description":    "Arthur's Communion + Marion family time",
+      "accommodation":  "Family home",
+      "who":            "Sahani Family",
+      "budgetTag":      "ireland-may-2026",
+      "budgetEstimate": 3000,
+      "budgetActual":   null,
+      "raceEventId":    null,
+      "notes":          "Arthur's Communion 10 May. Book restaurant for family dinner.",
+      "flights": []
+    },
+    {
+      "id":             "trp_2026_us_may",
+      "destination":    "United States",
+      "type":           "active",
+      "startDate":      "2026-05-11",
+      "endDate":        "2026-05-21",
+      "status":         "Planned",
+      "description":    "Rishi in US — training camp / races",
+      "accommodation":  "TBC",
+      "who":            "Rishi",
+      "budgetTag":      "us-may-2026",
+      "budgetEstimate": 2500,
+      "budgetActual":   null,
+      "raceEventId":    null,
+      "notes":          "",
+      "flights": []
+    },
+    {
+      "id":             "trp_2026_via_alpina",
+      "destination":    "Via Alpina, Switzerland",
+      "type":           "bikepacking",
+      "startDate":      "2026-07-10",
+      "endDate":        "2026-08-02",
+      "status":         "Planned",
+      "description":    "Via Alpina bikepacking route",
+      "accommodation":  "Mountain huts + wild camping",
+      "who":            "Rishi",
+      "budgetTag":      "via-alpina-2026",
+      "budgetEstimate": 3500,
+      "budgetActual":   null,
+      "raceEventId":    null,
+      "notes":          "Book popular huts by May. Check Swiss Pass for transport sections.",
+      "flights": []
+    }
+  ],
+
+  "visitors": [
+    {
+      "id":            "vis_2026_herricks_mar",
+      "who":           "Herricks",
+      "arrivalDate":   "2026-03-16",
+      "departureDate": "2026-03-22",
+      "sleeping":      "Guest room",
+      "activities":    ["Barcelona day trip", "Hiking", "Fondue dinner"],
+      "notes":         "Spain with Herricks (TBC)"
+    }
+  ],
+
+  "packingTemplates": [
+    {
+      "type":  "race",
+      "label": "Race Trip",
+      "categories": [
         {
-          "date": "2026-05-10",
-          "location": "Hartford",
-          "activities": [],
-          "accommodation": { "name": "", "cost": 0 },
-          "meals": [],
-          "transport": []
+          "name": "Race Gear",
+          "items": [
+            "Race kit (vest + shorts)",
+            "Race shoes",
+            "Bib + chip (collect at expo)",
+            "GPS watch + charger",
+            "Race gels / nutrition",
+            "Electrolyte tabs",
+            "Safety pins x6",
+            "Body Glide / Vaseline",
+            "Compression socks (travel)"
+          ]
+        },
+        {
+          "name": "Clothing",
+          "items": [
+            "Casual trousers x2",
+            "T-shirts x3",
+            "Warm layer / fleece",
+            "Underwear x4",
+            "Socks (race + casual)",
+            "Smart casual for dinner"
+          ]
+        },
+        {
+          "name": "Essentials",
+          "items": [
+            "Passport / ID",
+            "Travel insurance card",
+            "Phone + charger",
+            "Earplugs",
+            "Sunscreen",
+            "Paracetamol / ibuprofen",
+            "Blister plasters"
+          ]
+        },
+        {
+          "name": "Pre-Race Checklist",
+          "items": [
+            "Carb-load dinner booked",
+            "Breakfast plan ready (oats + banana)",
+            "Race briefing downloaded",
+            "Course map saved offline",
+            "Hotel → start line route checked",
+            "Bag drop logistics confirmed",
+            "Post-race food / drink planned"
+          ]
+        }
+      ]
+    },
+    {
+      "type":  "leisure",
+      "label": "Leisure / City Break",
+      "categories": [
+        {
+          "name": "Documents",
+          "items": ["Passport", "Travel insurance", "Boarding passes", "Hotel confirmation", "Local currency / card"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["T-shirts x4", "Trousers / jeans x2", "Smart casual outfit x1", "Light jacket", "Comfortable walking shoes", "Swimwear", "Sunglasses"]
+        },
+        {
+          "name": "Toiletries & Tech",
+          "items": ["Toiletry bag", "Sunscreen SPF50", "Medication", "Phone + charger", "Camera + memory cards", "Universal adaptor"]
+        },
+        {
+          "name": "Activities",
+          "items": ["Guidebook / maps saved offline", "Restaurant shortlist", "Museum tickets pre-booked", "Run shoes + kit (if running)"]
+        }
+      ]
+    },
+    {
+      "type":  "family",
+      "label": "Family / Visitors",
+      "categories": [
+        {
+          "name": "Gifts & Extras",
+          "items": ["Swiss chocolate / souvenirs", "Gifts for family", "Kids gifts if applicable", "Cards"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["Smart casual for family meals x2", "Comfortable casual x3", "Rain jacket", "Shoes x2"]
+        },
+        {
+          "name": "Essentials",
+          "items": ["Passport", "Flight details", "Phone + charger", "Adaptor if needed", "Medications"]
+        }
+      ]
+    },
+    {
+      "type":  "bikepacking",
+      "label": "Bikepacking",
+      "categories": [
+        {
+          "name": "Bike & Kit",
+          "items": [
+            "Bike serviced pre-trip",
+            "Helmet",
+            "Cycling shoes + cleats",
+            "Bike computer charged",
+            "Lights (front + rear)",
+            "Lock"
+          ]
+        },
+        {
+          "name": "Repairs",
+          "items": ["Spare tubes x3", "Tyre levers", "Mini pump / CO2", "Chain lube", "Multi-tool", "Patch kit", "Spoke wrench"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["Bib shorts x3", "Cycling jerseys x3", "Gilet / wind jacket", "Arm warmers", "Gloves (summer + cold)", "Cycling socks x4", "Casual clothes (off bike) x2", "Waterproof jacket"]
+        },
+        {
+          "name": "Camping",
+          "items": ["Sleeping bag (appropriate rating)", "Bivvy / lightweight tent", "Sleeping mat", "Cooking kit + fuel", "Water filter / purification tabs", "Head torch + spare batteries", "First aid kit"]
+        },
+        {
+          "name": "Nutrition",
+          "items": ["Gels / bars x30+", "Electrolyte powder", "Emergency food (nuts, dates)", "Water bottles x2", "Frame bag snacks"]
+        }
+      ]
+    },
+    {
+      "type":  "active",
+      "label": "Active / Training Trip",
+      "categories": [
+        {
+          "name": "Sports",
+          "items": ["Run shoes", "Training kit x3", "GPS watch + charger", "Foam roller / bands", "Protein powder", "Gels / race nutrition"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["Casual clothes x3", "Smart casual x1", "Comfortable shoes", "Rain jacket"]
+        },
+        {
+          "name": "Essentials",
+          "items": ["Passport", "Flights + hotel confirmation", "Phone + charger", "Sunscreen", "Medication", "Travel insurance"]
+        }
+      ]
+    },
+    {
+      "type":  "work",
+      "label": "Work Trip",
+      "categories": [
+        {
+          "name": "Work",
+          "items": ["Laptop + charger", "Notebook + pens", "Business cards", "Presentation saved offline", "Expense tracker / receipts wallet"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["Smart business outfits x2", "Business casual x2", "Dress shoes", "Ties / accessories if needed"]
+        },
+        {
+          "name": "Essentials",
+          "items": ["Passport + visa if required", "Company credit card", "Hotel booking ref", "Travel insurance", "Universal adaptor", "Phone + charger"]
+        }
+      ]
+    },
+    {
+      "type":  "anniversary",
+      "label": "Anniversary / Romantic",
+      "categories": [
+        {
+          "name": "Special Touches",
+          "items": ["Restaurant reservation confirmed", "Surprise / gift packed", "Occasion card"]
+        },
+        {
+          "name": "Clothing",
+          "items": ["Smart evening outfits x2", "Casual outfits x3", "Comfortable shoes", "Something dressier for dinner"]
+        },
+        {
+          "name": "Essentials",
+          "items": ["Passport", "Hotel confirmation", "Flights / transport", "Phone + charger", "Camera"]
         }
       ]
     }
