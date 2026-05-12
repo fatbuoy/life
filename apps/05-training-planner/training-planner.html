@@ -21,7 +21,9 @@
 /* ── Global resets for tight mobile layout ── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; color: #1a1a2e; }
-.app { max-width: 480px; margin: 0 auto; padding-bottom: 32px; }
+.app { max-width: 100%; padding-bottom: 32px; }
+.app-inner { max-width: 480px; margin: 0 auto; }
+@media (min-width: 700px) { .app-inner { max-width: 720px; } }
 
 /* ── Header ── */
 .topbar {
@@ -31,6 +33,14 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   padding: 12px 16px;
   position: sticky; top: 0; z-index: 50;
 }
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-home {
+  font-size: 1rem; color: var(--on-n2); text-decoration: none;
+  background: rgba(255,255,255,0.08); border-radius: 6px;
+  padding: 3px 8px; line-height: 1.4;
+  transition: background 0.15s;
+}
+.topbar-home:hover { background: rgba(255,255,255,0.18); }
 .topbar-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3px }
 .unit-toggle { display: flex; border: 1px solid var(--navy3); border-radius: 20px; overflow: hidden; font-size: 0.7rem }
 .u-btn { padding: 4px 11px; cursor: pointer; background: transparent; color: var(--on-n3); transition: all 0.15s }
@@ -130,7 +140,7 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 .sess-note.done-text { color: #bbb; text-decoration: line-through }
 .sess-dist { font-size: 0.85rem; font-weight: 800; color: #222; flex-shrink: 0; text-align: right; min-width: 44px }
 .sess-dist.done-dist { color: var(--green) }
-.sess-dist span { display: block; font-size: 0.58rem; font-weight: 400; color: #aaa }
+.sess-dist span { display: block; font-size: 0.78rem; font-weight: 600; color: #222 }
 
 /* ── Bottom controls ── */
 .bottom-bar { padding: 16px 16px 0; display: flex; gap: 8px }
@@ -143,12 +153,17 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 <div class="app">
 
   <div class="topbar">
-    <span class="topbar-title">Marathon du Jura</span>
+    <div class="topbar-left">
+      <a class="topbar-home" href="../../index.html">⌂</a>
+      <span class="topbar-title">Marathon du Jura</span>
+    </div>
     <div class="unit-toggle" onclick="toggleUnits()">
       <div id="u-km" class="u-btn active">km</div>
       <div id="u-mi" class="u-btn">mi</div>
     </div>
   </div>
+
+  <div class="app-inner">
 
   <!-- Hero banner -->
   <div class="hero">
@@ -201,6 +216,7 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
     <button class="btn-sm danger" onclick="resetPlan()">Reset</button>
   </div>
 
+  </div><!-- /app-inner -->
 </div>
 
 <script src="../../shared/utils.js"></script>
