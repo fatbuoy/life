@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{PROJECT_NAME}} — Build Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════════════════
+   COLOUR PALETTE
+   Replace the three --pillar-X values with your project's
+   key theme colours. Everything else cascades from them.
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --pillar-1: #C8553D;   /* {{PILLAR_1_COLOUR}} — e.g. the first strand of your project */
+  --pillar-2: #3D7A8A;   /* {{PILLAR_2_COLOUR}} */
+  --pillar-3: #6B8F5E;   /* {{PILLAR_3_COLOUR}} */
+
+  /* Base palette — rarely needs changing */
+  --bg:     #F5F0E8;
+  --ink:    #1A1A18;
+  --mid:    #6B6860;
+  --line:   #D8D2C4;
+  --paper:  #FDFAF4;
+  --accent: #E8B84B;
+}
+
+/* ── RESET ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════════════════════════
+   HEADER
+   ══════════════════════════════════════════════════════════ */
+header {
+  background: var(--ink);
+  color: var(--bg);
+  padding: 3rem 4rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: 30%;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.02);
+}
+.header-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.pillar-pills {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+  color: white;
+}
+.pill-1 { background: var(--pillar-1); }
+.pill-2 { background: var(--pillar-2); }
+.pill-3 { background: var(--pillar-3); }
+.header-sub {
+  font-size: 0.9rem;
+  color: rgba(245,240,232,0.6);
+  margin-top: 1.5rem;
+  max-width: 580px;
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAV TABS
+   ══════════════════════════════════════════════════════════ */
+nav {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  padding: 0 4rem;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+nav button {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  color: var(--mid);
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+nav button:hover { color: var(--ink); }
+nav button.active { color: var(--ink); border-bottom-color: var(--accent); font-weight: 500; }
+
+/* ══════════════════════════════════════════════════════════
+   MAIN LAYOUT
+   ══════════════════════════════════════════════════════════ */
+main { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+section { display: none; }
+section.active { display: block; }
+
+/* ── Section header ── */
+.section-header { margin-bottom: 2.5rem; }
+.section-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.section-header p { color: var(--mid); font-size: 0.9rem; max-width: 600px; }
+
+/* ── Phase divider ── */
+.phase { margin-bottom: 3rem; }
+.phase-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.phase-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* ══════════════════════════════════════════════════════════
+   CARDS  (used in Overview, Build, Architecture)
+   ══════════════════════════════════════════════════════════ */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.25rem 1.4rem;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  gap: 0.5rem;
+}
+.card h4 { font-size: 0.88rem; font-weight: 500; line-height: 1.4; }
+.card p  { font-size: 0.8rem; color: var(--mid); line-height: 1.5; }
+
+/* ── Badges ── */
+.badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Pillar-matched badge colours — auto-derived from pillar vars */
+.badge-1    { background: #f9ebe8; color: var(--pillar-1); }
+.badge-2    { background: #e8f2f5; color: var(--pillar-2); }
+.badge-3    { background: #edf2ea; color: var(--pillar-3); }
+.badge-core { background: #f5f0e0; color: #8a7a3a; }
+.badge-arch { background: #ece8f5; color: #5a4a8a; }
+.badge-data { background: #e8f0f5; color: #2a5a7a; }
+
+/* ── Effort dots ── */
+.effort { margin-top: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+.effort-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--mid); letter-spacing: 0.05em; }
+.dots { display: flex; gap: 3px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.dot.filled { background: var(--accent); }
+
+/* ── Priority flag ── */
+.priority-flag {
+  position: absolute;
+  top: 0; right: 1rem;
+  font-size: 0.55rem;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em;
+  color: var(--pillar-1);
+  text-transform: uppercase;
+  padding: 0.2rem 0.4rem;
+  background: #f9ebe8;
+  border-radius: 0 0 4px 4px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   OVERVIEW — App / Component cards
+   ══════════════════════════════════════════════════════════ */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.app-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.app-card-top {
+  padding: 1.25rem 1.4rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.app-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--mid);
+  letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
+}
+.app-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.app-card .app-desc { font-size: 0.78rem; color: var(--mid); }
+.status-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.4rem; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.built     { background: var(--pillar-3); }
+.status-dot.planned   { background: var(--line); }
+.status-dot.inprogress{ background: var(--accent); }
+.status-text { font-size: 0.72rem; font-family: 'DM Mono', monospace; color: var(--mid); }
+
+/* ══════════════════════════════════════════════════════════
+   ROADMAP — Timeline
+   ══════════════════════════════════════════════════════════ */
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+  content: ''; position: absolute;
+  left: 0.45rem; top: 0.5rem; bottom: 0.5rem;
+  width: 2px; background: var(--line);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 2rem;
+  padding-left: 1.5rem;
+}
+.tl-item::before {
+  content: ''; position: absolute;
+  left: -1.55rem; top: 0.4rem;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--line);
+}
+/* Status dot colours */
+.tl-item.done::before  { background: var(--pillar-3); border-color: var(--pillar-3); }
+.tl-item.now::before   { background: var(--accent);   border-color: var(--accent);
+                          box-shadow: 0 0 0 4px rgba(232,184,75,0.2); }
+.tl-item.soon::before  { background: var(--pillar-2); border-color: var(--pillar-2); }
+.tl-item.future::before{ background: var(--line);     border-color: var(--line); }
+
+.tl-header { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+.tl-title  { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; }
+.tl-period { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--mid); letter-spacing: 0.1em; }
+.tl-body   { font-size: 0.83rem; color: var(--mid); line-height: 1.6; }
+.tl-tags   { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+.tl-tag    { font-size: 0.7rem; padding: 0.2rem 0.55rem; border-radius: 4px;
+             background: var(--bg); border: 1px solid var(--line); color: var(--mid); }
+
+/* ══════════════════════════════════════════════════════════
+   ARCHITECTURE — Workflow steps
+   ══════════════════════════════════════════════════════════ */
+.workflow-step {
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  align-items: flex-start;
+}
+.step-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--line);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 2.5rem;
+  text-align: center;
+}
+.step-content h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.3rem; }
+.step-content p  { font-size: 0.8rem; color: var(--mid); line-height: 1.5; }
+.step-content ul { margin-top: 0.4rem; padding-left: 1rem; font-size: 0.78rem; color: var(--mid); }
+.step-content li { margin-bottom: 0.2rem; }
+
+/* ══════════════════════════════════════════════════════════
+   PRINCIPLES — Icon cards grid
+   ══════════════════════════════════════════════════════════ */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.principle {
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.principle .icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+.principle h4    { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.3rem; }
+.principle p     { font-size: 0.75rem; color: var(--mid); line-height: 1.5; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  header { padding: 2rem 1.5rem; }
+  nav    { padding: 0 1rem; }
+  main   { padding: 2rem 1rem 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     HEADER
+     Fill in: PROJECT_TAG, headline, PILLAR labels, subtitle
+     ══════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-tag">{{PROJECT_TAG}} — Build Plan {{YEAR}}</div>
+  <h1>{{HEADLINE_LINE_1}}<br>{{HEADLINE_LINE_2}}</h1>
+  <div class="pillar-pills">
+    <span class="pill pill-1">{{PILLAR_1_LABEL}}</span>
+    <span class="pill pill-2">{{PILLAR_2_LABEL}}</span>
+    <span class="pill pill-3">{{PILLAR_3_LABEL}}</span>
+  </div>
+  <p class="header-sub">{{PROJECT_SUBTITLE}}</p>
+</header>
+
+<!-- ══════════════════════════════════════════════════════
+     NAV — add/remove tabs to match your sections
+     ══════════════════════════════════════════════════════ -->
+<nav>
+  <button class="active" onclick="show('overview')">Overview</button>
+  <button onclick="show('build')">Build Plan</button>
+  <button onclick="show('architecture')">Architecture</button>
+  <button onclick="show('roadmap')">Roadmap</button>
+  <button onclick="show('principles')">Principles</button>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1 — OVERVIEW
+     Purpose: what you're building and its current state.
+     Patterns available: app-grid (component cards), cards grid
+     ══════════════════════════════════════════════════════ -->
+<section id="overview" class="active">
+  <div class="section-header">
+    <h2>Project Overview</h2>
+    <p>{{OVERVIEW_INTRO}}</p>
+  </div>
+
+  <!-- ── Component / App cards ──
+       Status dots: built | inprogress | planned
+       Repeat .app-card block for each component -->
+  <div class="app-grid">
+
+    <div class="app-card">
+      <div class="app-card-top">
+        <div class="app-number">COMPONENT 01 · {{PILLAR_1_LABEL}}</div>
+        <h3>{{COMPONENT_1_NAME}}</h3>
+        <p class="app-desc">{{COMPONENT_1_DESC}}</p>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot built"></div>
+        <span class="status-text">BUILT — Enhance in Phase 2</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-card-top">
+        <div class="app-number">COMPONENT 02 · {{PILLAR_2_LABEL}}</div>
+        <h3>{{COMPONENT_2_NAME}}</h3>
+        <p class="app-desc">{{COMPONENT_2_DESC}}</p>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot inprogress"></div>
+        <span class="status-text">IN PROGRESS — Phase 2</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-card-top">
+        <div class="app-number">COMPONENT 03 · {{PILLAR_3_LABEL}}</div>
+        <h3>{{COMPONENT_3_NAME}}</h3>
+        <p class="app-desc">{{COMPONENT_3_DESC}}</p>
+      </div>
+      <div class="status-bar">
+        <div class="status-dot planned"></div>
+        <span class="status-text">PLANNED — Phase 3</span>
+      </div>
+    </div>
+
+    <!-- Add more .app-card blocks as needed -->
+
+  </div>
+
+  <!-- ── Shared foundation / cross-cutting concerns ── -->
+  <div class="phase-label">Shared Foundation</div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <h4>{{FOUNDATION_1_TITLE}}</h4>
+        <span class="badge badge-core">CORE</span>
+      </div>
+      <p>{{FOUNDATION_1_DESC}}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <h4>{{FOUNDATION_2_TITLE}}</h4>
+        <span class="badge badge-core">CORE</span>
+      </div>
+      <p>{{FOUNDATION_2_DESC}}</p>
+    </div>
+
+    <!-- Add more foundation cards as needed -->
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2 — BUILD PLAN
+     Purpose: what to build, in priority order, for each component.
+     Patterns: phase-label divider + cards grid.
+     Effort dots: 1–5 filled dots (change .dot.filled count)
+     Badges: badge-1, badge-2, badge-3, badge-core, badge-arch, badge-data
+     ══════════════════════════════════════════════════════ -->
+<section id="build">
+  <div class="section-header">
+    <h2>Build Plan</h2>
+    <p>{{BUILD_INTRO}}</p>
+  </div>
+
+  <!-- ── Component 1 ── -->
+  <div class="phase">
+    <div class="phase-label">{{COMPONENT_1_NAME}} — MVP Core</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="priority-flag">Start here</div>
+        <div class="card-top">
+          <h4>{{TASK_1_TITLE}}</h4>
+          <span class="badge badge-1">{{PILLAR_1_LABEL}}</span>
+        </div>
+        <p>{{TASK_1_DESC}}</p>
+        <div class="effort">
+          <span class="effort-label">Effort</span>
+          <div class="dots">
+            <div class="dot filled"></div><div class="dot filled"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <h4>{{TASK_2_TITLE}}</h4>
+          <span class="badge badge-1">{{PILLAR_1_LABEL}}</span>
+        </div>
+        <p>{{TASK_2_DESC}}</p>
+        <div class="effort">
+          <span class="effort-label">Effort</span>
+          <div class="dots">
+            <div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div>
+            <div class="dot"></div><div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add more task cards as needed -->
+
+    </div>
+  </div>
+
+  <!-- ── Component 2 ── -->
+  <div class="phase">
+    <div class="phase-label">{{COMPONENT_2_NAME}} — MVP Core</div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="priority-flag">Start here</div>
+        <div class="card-top">
+          <h4>{{TASK_3_TITLE}}</h4>
+          <span class="badge badge-2">{{PILLAR_2_LABEL}}</span>
+        </div>
+        <p>{{TASK_3_DESC}}</p>
+        <div class="effort">
+          <span class="effort-label">Effort</span>
+          <div class="dots">
+            <div class="dot filled"></div><div class="dot filled"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add more task cards as needed -->
+
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3 — ARCHITECTURE
+     Purpose: data workflows, technical decisions, file structure.
+     Patterns: workflow-step (numbered) + cards grid for decisions
+     ══════════════════════════════════════════════════════ -->
+<section id="architecture">
+  <div class="section-header">
+    <h2>Architecture</h2>
+    <p>{{ARCHITECTURE_INTRO}}</p>
+  </div>
+
+  <!-- ── Recurring workflows ── -->
+  <div class="phase-label">Key Workflows</div>
+
+  <div class="workflow-step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>{{WORKFLOW_1_TITLE}}</h4>
+      <p>{{WORKFLOW_1_CADENCE}}</p>
+      <ul>
+        <li>{{WORKFLOW_1_STEP_A}}</li>
+        <li>{{WORKFLOW_1_STEP_B}}</li>
+        <li>{{WORKFLOW_1_STEP_C}}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="workflow-step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>{{WORKFLOW_2_TITLE}}</h4>
+      <p>{{WORKFLOW_2_CADENCE}}</p>
+      <ul>
+        <li>{{WORKFLOW_2_STEP_A}}</li>
+        <li>{{WORKFLOW_2_STEP_B}}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Add more workflow-step blocks as needed -->
+
+  <!-- ── Technical / Architecture decisions ── -->
+  <div class="phase-label">Technical Decisions</div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-top">
+        <h4>{{DECISION_1_TITLE}}</h4>
+        <span class="badge badge-arch">ARCH</span>
+      </div>
+      <p>{{DECISION_1_DESC}}</p>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <h4>{{DECISION_2_TITLE}}</h4>
+        <span class="badge badge-data">DATA</span>
+      </div>
+      <p>{{DECISION_2_DESC}}</p>
+    </div>
+
+    <!-- Add more decision cards as needed -->
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 4 — ROADMAP
+     Purpose: phased timeline with status dots.
+     tl-item classes: done | now | soon | future
+     ══════════════════════════════════════════════════════ -->
+<section id="roadmap">
+  <div class="section-header">
+    <h2>Phased Roadmap</h2>
+    <p>{{ROADMAP_INTRO}}</p>
+  </div>
+
+  <div class="timeline">
+
+    <div class="tl-item done">
+      <div class="tl-header">
+        <span class="tl-title">Phase 0 — {{PHASE_0_TITLE}}</span>
+        <span class="tl-period">COMPLETE</span>
+      </div>
+      <div class="tl-body">{{PHASE_0_DESC}}</div>
+      <div class="tl-tags">
+        <span class="tl-tag">{{PHASE_0_TAG_1}} ✓</span>
+        <span class="tl-tag">{{PHASE_0_TAG_2}} ✓</span>
+      </div>
+    </div>
+
+    <div class="tl-item now">
+      <div class="tl-header">
+        <span class="tl-title">Phase 1 — {{PHASE_1_TITLE}}</span>
+        <span class="tl-period">DO FIRST · {{PHASE_1_DURATION}}</span>
+      </div>
+      <div class="tl-body">{{PHASE_1_DESC}}</div>
+      <div class="tl-tags">
+        <span class="tl-tag">{{PHASE_1_TAG_1}}</span>
+        <span class="tl-tag">{{PHASE_1_TAG_2}}</span>
+        <span class="tl-tag">{{PHASE_1_TAG_3}}</span>
+      </div>
+    </div>
+
+    <div class="tl-item soon">
+      <div class="tl-header">
+        <span class="tl-title">Phase 2 — {{PHASE_2_TITLE}}</span>
+        <span class="tl-period">{{PHASE_2_DURATION}}</span>
+      </div>
+      <div class="tl-body">{{PHASE_2_DESC}}</div>
+      <div class="tl-tags">
+        <span class="tl-tag">{{PHASE_2_TAG_1}}</span>
+        <span class="tl-tag">{{PHASE_2_TAG_2}}</span>
+      </div>
+    </div>
+
+    <div class="tl-item future">
+      <div class="tl-header">
+        <span class="tl-title">Phase 3 — {{PHASE_3_TITLE}}</span>
+        <span class="tl-period">{{PHASE_3_DURATION}}</span>
+      </div>
+      <div class="tl-body">{{PHASE_3_DESC}}</div>
+      <div class="tl-tags">
+        <span class="tl-tag">{{PHASE_3_TAG_1}}</span>
+        <span class="tl-tag">{{PHASE_3_TAG_2}}</span>
+      </div>
+    </div>
+
+    <div class="tl-item future">
+      <div class="tl-header">
+        <span class="tl-title">Phase 4 — {{PHASE_4_TITLE}}</span>
+        <span class="tl-period">ONGOING</span>
+      </div>
+      <div class="tl-body">{{PHASE_4_DESC}}</div>
+      <div class="tl-tags">
+        <span class="tl-tag">{{PHASE_4_TAG_1}}</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5 — PRINCIPLES
+     Purpose: guiding rules that keep the project coherent.
+     Each .principle card has an emoji icon, title and 2–3 sentence rule.
+     ══════════════════════════════════════════════════════ -->
+<section id="principles">
+  <div class="section-header">
+    <h2>Guiding Principles</h2>
+    <p>{{PRINCIPLES_INTRO}}</p>
+  </div>
+
+  <div class="principles">
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_1_ICON}}</div>
+      <h4>{{PRINCIPLE_1_TITLE}}</h4>
+      <p>{{PRINCIPLE_1_DESC}}</p>
+    </div>
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_2_ICON}}</div>
+      <h4>{{PRINCIPLE_2_TITLE}}</h4>
+      <p>{{PRINCIPLE_2_DESC}}</p>
+    </div>
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_3_ICON}}</div>
+      <h4>{{PRINCIPLE_3_TITLE}}</h4>
+      <p>{{PRINCIPLE_3_DESC}}</p>
+    </div>
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_4_ICON}}</div>
+      <h4>{{PRINCIPLE_4_TITLE}}</h4>
+      <p>{{PRINCIPLE_4_DESC}}</p>
+    </div>
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_5_ICON}}</div>
+      <h4>{{PRINCIPLE_5_TITLE}}</h4>
+      <p>{{PRINCIPLE_5_DESC}}</p>
+    </div>
+
+    <div class="principle">
+      <div class="icon">{{PRINCIPLE_6_ICON}}</div>
+      <h4>{{PRINCIPLE_6_TITLE}}</h4>
+      <p>{{PRINCIPLE_6_DESC}}</p>
+    </div>
+
+    <!-- Add or remove .principle blocks freely -->
+
+  </div>
+</section>
+
+</main>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
