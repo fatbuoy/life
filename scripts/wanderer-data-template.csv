@@ -1,0 +1,80 @@
+WANDERER — CSV DATA TEMPLATES
+==============================
+Instructions: Fill in the sheets below and use the CSV→JSON converter tool
+(scripts/csv-to-json.html) to generate travel.json, OR fill travel.json directly.
+Save each section as a separate CSV file when converting.
+
+================================================================================
+SHEET 1: trips-source.csv
+================================================================================
+Fields explained:
+  id              → trp_{year}_{slug}  e.g. trp_2026_barcelona  (no spaces)
+  type            → leisure | race | active | bikepacking | family | visitors | work | anniversary | holiday
+  status          → Planned | Confirmed | TBC | Completed
+  startDate       → YYYY-MM-DD  e.g. 2026-03-14
+  endDate         → YYYY-MM-DD
+  budgetEstimate  → number only, no currency symbol  e.g. 1400
+  budgetActual    → number only, leave blank if not yet known
+  budgetTag       → slug matching your budget.json month tags  e.g. barcelona-2026
+  raceEventId     → training.json event ID if a race trip, else leave blank
+  flight_out      → "HH:MM ZRH→BCN / REF1234"  — free text, keep concise
+  flight_back     → "HH:MM BCN→ZRH / REF1235"
+
+id,destination,type,startDate,endDate,status,description,accommodation,who,budgetEstimate,budgetActual,budgetTag,raceEventId,flight_out,flight_back,notes
+trp_2026_granada_jan,"Granada, Spain",leisure,2026-01-10,2026-01-31,Confirmed,Living in Granada,Private apartment,Sahani Family,4200,3870,granada-jan-2026,,06:30 ZRH→GRX / IB2341,18:45 GRX→ZRH / IB2342,Visit Alhambra early morning
+trp_2026_bcn_marathon,"Barcelona, Spain",race,2026-03-14,2026-03-15,Confirmed,Barcelona Marathon,Hotel Arts,Rishi,800,,bcn-marathon-2026,evt_barcelona_marathon_2026,07:00 ZRH→BCN / VY1234,20:15 BCN→ZRH / VY1235,Expo Sat · Race Sun 08:30
+trp_2026_ireland_may,Ireland,family,2026-05-07,2026-05-21,Confirmed,Arthur's Communion,Family home,Sahani Family,3000,,,,,,"Arthur's Communion 10 May"
+trp_2026_us_may,United States,active,2026-05-11,2026-05-21,Planned,Rishi in US,TBC,Rishi,2500,,us-may-2026,,,,
+trp_2026_via_alpina,"Via Alpina, Switzerland",bikepacking,2026-07-10,2026-08-02,Planned,Via Alpina route,Mountain huts + camping,Rishi,3500,,via-alpina-2026,,,,Book huts by May
+
+================================================================================
+SHEET 2: visitors-source.csv
+================================================================================
+id,who,arrivalDate,departureDate,sleeping,activities,notes
+vis_2026_herricks_mar,Herricks,2026-03-16,2026-03-22,Guest room,"Barcelona day trip, Hiking, Fondue dinner",Spain with Herricks (TBC)
+
+================================================================================
+SHEET 3: budget-tags-reference.csv
+================================================================================
+Use this to cross-reference the budgetTag in trips-source with your budget.json.
+Add the same tag string to the tags[] array on the relevant month(s) in budget.json.
+
+budgetTag,tripId,monthsToTag,notes
+granada-jan-2026,trp_2026_granada_jan,"2026-01, 2026-02",Long stay spans 2 months
+bcn-marathon-2026,trp_2026_bcn_marathon,2026-03,Single weekend trip
+ireland-may-2026,trp_2026_ireland_may,2026-05,
+us-may-2026,trp_2026_us_may,2026-05,
+via-alpina-2026,trp_2026_via_alpina,"2026-07, 2026-08",Long trip spans 2 months
+
+================================================================================
+NOTES ON CONVERTING TO travel.json
+================================================================================
+
+1. OPTION A — Direct edit (recommended for travel data):
+   Open data/travel.json and copy/paste from the template structure already
+   provided in the file. Travel data changes infrequently enough that
+   direct JSON editing is often faster than a CSV conversion.
+
+2. OPTION B — CSV converter tool:
+   - Fill trips-source.csv and visitors-source.csv
+   - Open scripts/csv-to-json.html in Live Server
+   - Set Root array key to "trips" / "visitors" respectively
+   - Download output and merge into data/travel.json manually
+
+3. FLIGHTS:
+   The CSV stores flights as a single text field for simplicity.
+   When copying to travel.json, expand each flight into the array format:
+   { "direction": "Out", "time": "07:00", "route": "ZRH→BCN", "ref": "VY1234", "date": "2026-03-13" }
+
+4. PACKING TEMPLATES:
+   These are defined directly in travel.json — not managed via CSV.
+   Edit the packingTemplates[] array in travel.json to add/remove items.
+   Templates are keyed by trip type (race, leisure, family, etc.)
+
+5. BUDGET LINKAGE:
+   After adding trips, open data/budget/budget.json and add the budgetTag
+   string to the tags[] array for each relevant month. This connects trip
+   spend to the Pocket Change budget tracker automatically.
+
+   Example — in budget.json months[]:
+   { "month": "2026-03", "tags": ["bcn-marathon-2026"], "spending": { ... } }
