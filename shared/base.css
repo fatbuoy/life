@@ -710,3 +710,32 @@ body.privacy .num-private {
 .mb-2 { margin-bottom: var(--sp-2) } .mb-3 { margin-bottom: var(--sp-3) }
 .gap-2 { gap: var(--sp-2) }          .gap-3 { gap: var(--sp-3) }
 .w-full { width: 100% }
+
+/* Dashboard section headers — EAT | RUN | LIVE */
+.dash-section { margin-bottom: 28px }
+.dash-section-title { font-size: var(--t-lg); font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px }
+.dash-grid { display: grid; grid-template-columns: 1fr; gap: 10px }
+@media (min-width: 600px) { .dash-grid { grid-template-columns: 1fr 1fr } }
+
+/* Day tiles for week view */
+.day-tile { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-lg); padding: 12px 14px; cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent }
+.day-tile:hover { border-color: var(--app-accent); box-shadow: 0 2px 8px rgba(0,0,0,.08) }
+.day-tile.today { border-color: var(--app-accent); background: color-mix(in srgb, var(--app-accent) 5%, var(--white)) }
+.day-tile-date { font-size: var(--t-xs); font-weight: 600; color: var(--muted); text-transform: uppercase }
+.day-tile-label { font-size: var(--t-base); font-weight: 600; color: var(--text); margin: 4px 0 }
+.day-tile-stat { font-size: var(--t-sm); color: var(--app-accent); font-weight: 500 }
+
+/* Summary stat blocks (compact for dashboard) */
+.sum-stat { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: var(--t-sm) }
+.sum-stat-icon { font-size: 16px; margin-top: 1px }
+.sum-stat-content { flex: 1 }
+.sum-stat-label { color: var(--muted); font-size: 11px }
+.sum-stat-value { color: var(--text); font-weight: 600 }
+
+/* Quick list for dashboard items */
+.quick-list { list-style: none }
+.quick-list-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: var(--t-sm); border-bottom: 1px solid var(--border2) }
+.quick-list-item:last-child { border-bottom: none }
+.quick-list-emoji { font-size: 16px; min-width: 20px }
+.quick-list-label { color: var(--text); flex: 1 }
+.quick-list-value { color: var(--app-accent); font-weight: 600 }

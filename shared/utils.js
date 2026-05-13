@@ -460,3 +460,114 @@ window.addEventListener('resize', () => {
   clearTimeout(_resizeTimer);
   _resizeTimer = setTimeout(() => _redrawFns.forEach(fn => fn()), 150);
 });
+
+
+/* ─── CROSS-APP DATA HELPERS (for integration) ──────────────────────── */
+
+/**
+ * Load and filter recipe by ID from recipes.json.
+ * Used by calorie planner to look up macro info.
+ */
+async function getRecipeById(recipeId, dataPath = './data/recipes.json') {
+  try {
+    const data = await fetchData(dataPath);
+    return data?.recipes?.find(r => r.id === String(recipeId)) || null;
+  } catch(e) { console.error('getRecipeById:', e); return null; }
+}
+
+/**
+ * Get all recipes matching a category (e.g. 'Curry', 'Breakfast').
+ * Used by calorie planner to suggest recipes by meal type.
+ */
+async function getRecipesByCategory(category, dataPath = './data/recipes.json') {
+  try {
+    const data = await fetchData(dataPath);
+    return data?.recipes?.filter(r => r.category === category) || [];
+  } catch(e) { console.error('getRecipesByCategory:', e); return []; }
+}
+
+/**
+ * Get training session for a given date from training.json.
+ * Returns { type, plannedKm, notes } or null if not found.
+ */
+async function getTrainingForDate(dateStr, dataPath = './data/training.json') {
+  try {
+    const data = await fetchData(dataPath);
+    for (let week of (data?.weeks || [])) {
+      const session = week.sessions?.find(s => s.date === dateStr);
+      if (session) return session;
+    }
+    return null;
+  } catch(e) { console.error('getTrainingForDate:', e); return null; }
+}
+
+/**
+ * Get all training sessions in a week range (startDate → endDate).
+ * Returns array of { date, type, plannedKm, actualKm, notes }.
+ */
+async function getTrainingWeek(startDate, endDate, dataPath = './data/training.json') {
+  try {
+    const data = await fetchData(dataPath);
+    const result = [];
+    for (let week of (data?.weeks || [])) {
+      const filtered = (week.sessions || []).filter(s => s.date >= startDate && s.date <= endDate);
+      result.push(...filtered);
+    }
+    return result;
+  } catch(e) { console.error('getTrainingWeek:', e); return []; }
+}
+
+/**
+ * Get calorie phase that applies to a given date from calories.json.
+ * Returns { label, start_date, end_date, avg_kcal, rest_kcal, run_kcal, long_kcal }.
+ */
+async function getCaloriePhaseForDate(dateStr, dataPath = './data/calories.json') {
+  try {
+    const data = await fetchData(dataPath);
+    return (data?.phases || []).find(p => dateStr >= p.start_date && dateStr <= p.end_date) || null;
+  } catch(e) { console.error('getCaloriePhaseForDate:', e); return null; }
+}
+
+/**
+ * Get upcoming trip from travel.json with status = 'Planned' or 'Confirmed'.
+ * Used by dashboard to show next trip.
+ */
+async function getUpcomingTrips(limit = 3, dataPath = './data/travel.json') {
+  try {
+    const data = await fetchData(dataPath);
+    const now = new Date().toISOString().slice(0, 10);
+    return (data?.trips || [])
+      .filter(t => (t.status === 'Planned' || t.status === 'Confirmed') && t.startDate >= now)
+      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+      .slice(0, limit);
+  } catch(e) { console.error('getUpcomingTrips:', e); return []; }
+}
+
+/**
+ * Get current/active training race goal from training.json.
+ */
+async function getRaceGoal(dataPath = './data/training.json') {
+  try {
+    const data = await fetchData(dataPath);
+    return data?.profile?.raceGoal || null;
+  } catch(e) { console.error('getRaceGoal:', e); return null; }
+}
+
+/**
+ * Format date as "Mon 12" for dashboard tiles.
+ */
+function fmtDateShort(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const dayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()];
+  return `${dayName} ${d.getDate()}`;
+}
+
+/**
+ * Get days remaining until target date.
+ */
+function daysUntil(targetDate) {
+  const now = new Date();
+  const target = new Date(targetDate + 'T00:00:00');
+  const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+  return diff;
+}
