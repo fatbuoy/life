@@ -739,3 +739,57 @@ body.privacy .num-private {
 .quick-list-emoji { font-size: 16px; min-width: 20px }
 .quick-list-label { color: var(--text); flex: 1 }
 .quick-list-value { color: var(--app-accent); font-weight: 600 }
+
+
+/* Base Interactive Card Style */
+.hub-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--r-lg);
+  text-decoration: none !important; /* Ensure no underline */
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth spring animation */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover Animation: Lift & Glow */
+.hub-card:hover {
+  transform: translateY(-4px); /* Subtle lift */
+  border-color: transparent;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Pillar Specific Glows */
+/* EAT (Teal) */
+.dash-grid a[href*="calorie"]:hover, 
+.dash-grid a[href*="recipe"]:hover {
+  box-shadow: 0 8px 25px -5px rgba(13, 53, 53, 0.15);
+  border-color: var(--color-eat);
+}
+
+/* RUN (Orange) */
+.dash-grid a[href*="training"]:hover {
+  box-shadow: 0 8px 25px -5px rgba(208, 96, 32, 0.2);
+  border-color: var(--color-run);
+}
+
+/* LIVE (Green/Indigo) */
+.dash-grid a[href*="budget"]:hover {
+  box-shadow: 0 8px 25px -5px rgba(26, 58, 26, 0.15);
+  border-color: var(--color-live);
+}
+
+.dash-grid a[href*="travel"]:hover {
+  box-shadow: 0 8px 25px -5px rgba(26, 16, 80, 0.15);
+  border-color: var(--app-primary);
+}
+
+/* Tap effect for Mobile */
+.hub-card:active {
+  transform: scale(0.97);
+  transition: all 0.1s;
+}

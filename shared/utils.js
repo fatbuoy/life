@@ -571,3 +571,36 @@ function daysUntil(targetDate) {
   const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
   return diff;
 }
+
+function render() {
+  // 1. EAT: Strict Day Lookup for May 12 (Target: 2050)
+  if (allData.calories) {
+    // Flatten all weeks into a single array of days
+    const allDays = allData.calories.weeks.flatMap(w => w.days);
+    // Find today's specific entry
+    const dayEntry = allDays.find(d => d.date === today);
+    
+    if (dayEntry) {
+      document.getElementById('kcal-val').textContent = dayEntry.kcal; 
+      document.getElementById('kcal-label').textContent = dayEntry.activity.toUpperCase();
+    } else {
+      // Fallback to phase average if specific date is missing
+      const phase = allData.calories.phases.find(p => today >= p.start_date && today <= p.end_date);
+      document.getElementById('kcal-val').textContent = phase ? phase.avg_kcal : '---';
+      document.getElementById('kcal-label').textContent = 'PHASE AVG';
+    }
+    document.getElementById('recipe-count').textContent = allData.recipes?.meta?.count || 0;
+  }
+
+  // 2. LIVE: YTD Calculation (Summing all 2026 Actuals)
+  if (allData.budget) {
+    const ytdActuals = allData.budget.data.filter(d => 
+      d.year === curYear && 
+      d.source === 'Actuals'
+    );
+    const totalYTD = ytdActuals.reduce((sum, r) => sum + r.amount, 0);
+    document.getElementById('spend-val').textContent = `CHF ${Math.round(totalYTD).toLocaleString()}`;
+  }
+  
+  // ... rest of the render logic for Run and Travel
+}
