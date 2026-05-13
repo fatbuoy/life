@@ -573,9 +573,12 @@ function daysUntil(targetDate) {
 }
 
 function render(todayStr) {
+  // Add this safety check at the top of the function
+  if (typeof allData === 'undefined') return;
+  // 1. EAT: Correct Target for 12 May 2026
+  
   // 1. EAT: Correct Target for 12 May 2026
   if (allData.calories) {
-    // Flatten all weeks to find the specific day object
     const allDays = allData.calories.weeks.flatMap(w => w.days || []);
     const dayEntry = allDays.find(d => d.date === todayStr);
     
