@@ -2,352 +2,273 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fatboys LifeOS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FatBoy's LifeOS</title>
 <link rel="stylesheet" href="./shared/base.css">
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
 <style>
-/* Hub theme — navy default */
+/* ── LIGHT THEME PERFORMANCE TOKENS ── */
 :root {
-  --app-primary:    #0c2340;
-  --app-primary2:   #1a3a5c;
-  --app-primary3:   #2d5a8a;
-  --app-accent:     #185fa5;
-  --app-on-primary:    #ffffff;
-  --app-on-primary2:   #a8cfed;
-  --app-on-primary3:   #7fa8cc;
+  --app-bg: #f8fafc;
+  --app-card: #ffffff;
+  --app-border: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  
+  /* Pillar Brand Colors from Individual Apps */
+  --color-eat: #0d3535;    /* From calorie-planner.html */
+  --color-run: #d06020;    /* From training-planner.html */
+  --color-live: #1a3a1a;   /* From budget-tracker.html */
+  --color-travel: #1a1050; /* From travel-planner.html */
 }
 
-.greeting { font-size: var(--t-lg); font-weight: 600; color: var(--text); margin-bottom: 2px }
-.greeting-date { font-size: var(--t-sm); color: var(--muted); margin-bottom: 20px }
+body { 
+    background: var(--app-bg); 
+    color: var(--text-main); 
+    -webkit-font-smoothing: antialiased;
+}
 
-/* App grid — footer cards */
-.apps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px }
-@media (min-width: 600px) { .apps-grid { grid-template-columns: repeat(3, 1fr) } }
+.container { max-width: 480px; padding: 20px; margin: 0 auto; }
 
-.app-card.budget    .app-card-header { background: #1a3a1a }
-.app-card.calories  .app-card-header { background: #0d3535 }
-.app-card.recipes   .app-card-header { background: #3a1020 }
-.app-card.travel    .app-card-header { background: #1a1050 }
-.app-card.training  .app-card-header { background: #1a2535 }
+/* Global Header */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.brand { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+.today-pill { background: #fff; border: 1px solid var(--app-border); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--text-main); }
 
-/* Section divider */
-.dash-divider { height: 1px; background: var(--border); margin: 24px 0 }
+/* Pillar Headlines */
+.pillar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 32px 0 16px;
+}
+.pillar-label { 
+    font-size: 11px; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em;
+}
+.pillar-line { flex: 1; height: 1px; background: var(--app-border); }
+
+/* Dashboard Cards */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+.hub-card {
+    background: var(--app-card);
+    border: 1px solid var(--app-border);
+    padding: 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.1s ease;
+}
+.hub-card:active { transform: scale(0.98); }
+
+.kpi-val { font-size: 22px; font-weight: 800; color: var(--text-main); margin: 4px 0; }
+.kpi-lbl { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+.kpi-sub { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+
+/* Status Indicators */
+.status-bar { height: 4px; border-radius: 2px; background: #edf2f7; margin-top: 10px; overflow: hidden; }
+.status-fill { height: 100%; transition: width 0.5s ease; }
+
+/* List-style App Navigation */
+.app-link {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 14px;
+    border: 1px solid var(--app-border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: var(--text-main);
+}
+.app-link-icon { font-size: 20px; margin-right: 12px; }
+.app-link-text { flex: 1; font-weight: 600; font-size: 14px; }
+.app-link-arrow { color: var(--app-border); font-size: 18px; }
+
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="container">
-    <div class="header-row">
-      <div class="header-left">
-        <span class="header-title">Fatboys LifeOS</span>
-      </div>
-      <div class="header-right">
-        <span class="header-badge" id="todayBadge">—</span>
-      </div>
+<div class="container">
+    <nav class="top-nav">
+        <div class="brand">FatBoy's LifeOS</div>
+        <div class="today-pill" id="todayBadge">LOADING...</div>
+    </nav>
+
+    <header style="margin-bottom: 28px;">
+        <h1 id="greeting" style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0;">Good Morning</h1>
+        <p id="greetingSub" style="font-size: 14px; color: var(--text-muted); margin-top: 4px;"></p>
+    </header>
+
+    <div class="pillar-row">
+        <span class="iconify" data-icon="mdi:silverware-variant" style="color: var(--color-eat)"></span>
+        <span class="pillar-label" style="color: var(--color-eat)">Eat</span>
+        <div class="pillar-line"></div>
     </div>
-  </div>
-</header>
+    <div class="dash-grid">
+        <a href="./apps/01-calorie-planner/calorie-planner.html" class="hub-card">
+            <div class="kpi-lbl">Daily Target</div>
+            <div class="kpi-val" id="kcal-val">0</div>
+            <div class="kpi-sub" id="kcal-sub">LOCKED</div>
+        </a>
+        <a href="./apps/02-recipe-book.html" class="hub-card">
+            <div class="kpi-lbl">Library</div>
+            <div class="kpi-val" id="recipe-count">0</div>
+            <div class="kpi-sub">SAVED RECIPES</div>
+        </a>
+    </div>
 
-<div id="chartTooltip"></div>
-
-<div class="container" id="app">
-  <div class="greeting" id="greeting">—</div>
-  <div class="greeting-date" id="greetingDate">—</div>
-
-  <!-- EAT SECTION -->
-  <div class="dash-section" id="eatSection">
-    <div class="dash-section-title">🍽️ EAT</div>
-    <div class="dash-grid" id="eatContent">
-      <div class="card">
-        <div class="card-body">
-          <div style="color: var(--muted); font-size: var(--t-sm)">Loading nutrition plan…</div>
+    <div class="pillar-row">
+        <span class="iconify" data-icon="mdi:run-fast" style="color: var(--color-run)"></span>
+        <span class="pillar-label" style="color: var(--color-run)">Run</span>
+        <div class="pillar-line"></div>
+    </div>
+    <a href="./apps/05-training-planner/training-planner.html" class="hub-card" style="display: block; margin-bottom: 12px;">
+        <div class="kpi-lbl" id="run-phase">Current Phase</div>
+        <div class="kpi-val" id="today-session" style="font-size: 18px;">Rest Day</div>
+        <div class="kpi-sub" id="run-notes">Training plan active</div>
+    </a>
+    <div class="dash-grid">
+        <div class="hub-card">
+            <div class="kpi-lbl">Countdown</div>
+            <div class="kpi-val" id="race-days">0</div>
+            <div class="kpi-sub">DAYS TO JURA</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RUN SECTION -->
-  <div class="dash-section" id="runSection">
-    <div class="dash-section-title">🏃 RUN</div>
-    <div class="dash-grid" id="runContent">
-      <div class="card">
-        <div class="card-body">
-          <div style="color: var(--muted); font-size: var(--t-sm)">Loading training plan…</div>
+        <div class="hub-card">
+            <div class="kpi-lbl">Week Vol</div>
+            <div class="kpi-val" id="week-km">0.0</div>
+            <div class="kpi-sub">ACTUAL KM</div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- LIVE SECTION -->
-  <div class="dash-section" id="liveSection">
-    <div class="dash-section-title">🌍 LIVE</div>
-    <div class="dash-grid" id="liveContent">
-      <div class="card">
-        <div class="card-body">
-          <div style="color: var(--muted); font-size: var(--t-sm)">Loading life summary…</div>
-        </div>
-      </div>
+    <div class="pillar-row">
+        <span class="iconify" data-icon="mdi:view-dashboard-variant" style="color: var(--color-live)"></span>
+        <span class="pillar-label" style="color: var(--color-live)">Live</span>
+        <div class="pillar-line"></div>
     </div>
-  </div>
+    <div class="dash-grid">
+        <a href="./apps/03-budget-tracker/budget-tracker.html" class="hub-card">
+            <div class="kpi-lbl">MTD Spend</div>
+            <div class="kpi-val" id="spend-val" style="font-size: 18px;">CHF 0</div>
+            <div class="status-bar"><div id="spend-bar" class="status-fill" style="background: var(--color-live); width: 0%;"></div></div>
+            <div class="kpi-sub" style="margin-top:6px" id="spend-sub">VS BUDGET</div>
+        </a>
+        <a href="./apps/04-travel-planner.html" class="hub-card">
+            <div class="kpi-lbl">Next Trip</div>
+            <div class="kpi-val" id="next-trip" style="font-size: 18px;">---</div>
+            <div class="kpi-sub" id="trip-days">WANDERER</div>
+        </a>
+    </div>
 
-  <div class="dash-divider"></div>
-
-  <!-- Apps footer -->
-  <div class="sec-lbl" id="appsLabel">Apps</div>
-  <div class="apps-grid" id="appGrid"></div>
+    <div style="margin-top: 40px; margin-bottom: 12px;" class="pillar-label">System Access</div>
+    <nav id="appLinks"></nav>
 </div>
 
 <script src="./shared/utils.js"></script>
 <script>
 const APPS = [
-  { id: 'budget',   label: 'Pocket Change', icon: '🪙', sub: 'Budget & actuals',     path: './apps/03-budget-tracker/budget-tracker.html' },
-  { id: 'calories', label: 'Fuel Plan',     icon: '🔥', sub: 'Daily nutrition',      path: './apps/01-calorie-planner/calorie-planner.html' },
-  { id: 'recipes',  label: "FatBoy's Kitchen", icon: '🥘', sub: 'Recipes & macros', path: './apps/02-recipe-book/recipe-book.html' },
-  { id: 'travel',   label: 'Wanderer',      icon: '✈️',  sub: 'Trips & itineraries', path: './apps/04-travel-planner/travel-planner.html' },
-  { id: 'training', label: 'Run Log',       icon: '🏃', sub: 'Training & races',     path: './apps/05-training-planner/training-planner.html' },
+    { label: 'Fuel Plan', path: './apps/01-calorie-planner/calorie-planner.html', icon: 'mdi:fire', color: 'var(--color-eat)' },
+    { label: 'Run Log', path: './apps/05-training-planner/training-planner.html', icon: 'mdi:run', color: 'var(--color-run)' },
+    { label: 'Pocket Change', path: './apps/03-budget-tracker/budget-tracker.html', icon: 'mdi:cash-multiple', color: 'var(--color-live)' },
+    { label: 'Kitchen', path: './apps/02-recipe-book.html', icon: 'mdi:pot-steam', color: 'var(--color-eat)' },
+    { label: 'Wanderer', path: './apps/04-travel-planner.html', icon: 'mdi:map-marker-distance', color: 'var(--color-travel)' }
 ];
 
 const today = new Date().toISOString().slice(0, 10);
 let allData = {};
 
-/* ─── Greeting ──────────────────────────────────────────────────── */
-function renderGreeting() {
-  const now = new Date();
-  const hour = now.getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('greeting').textContent = greeting + ' 👋';
-  document.getElementById('greetingDate').textContent = 
-    now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('todayBadge').textContent =
-    now.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+async function loadSystemData() {
+    const keys = ['recipes', 'calories', 'training', 'budget', 'travel'];
+    await Promise.all(keys.map(async k => {
+        try { allData[k] = await fetchData(`./data/${k}.json`); } catch(e) { console.warn(`Missing ${k}.json`); }
+    }));
+    renderHub();
 }
 
-/* ─── App Grid ──────────────────────────────────────────────────── */
-function renderAppGrid() {
-  const grid = document.getElementById('appGrid');
-  grid.innerHTML = APPS.map(app => `
-    <a class="app-card ${app.id}" href="${app.path}">
-      <div class="app-card-header">
-        <div class="app-card-icon">${app.icon}</div>
-        <div class="app-card-title">${app.label}</div>
-        <div class="app-card-sub">${app.sub}</div>
-      </div>
-      <div class="app-card-body">
-        <div class="app-card-stat" id="stat-${app.id}">→ Open app</div>
-      </div>
-    </a>`).join('');
+function renderHub() {
+    const now = new Date();
+    document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
+    document.getElementById('greetingSub').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    // 1. Eat Surfaces (recipes.json + calories.json)
+    if (allData.recipes) document.getElementById('recipe-count').textContent = allData.recipes.meta.count;
+    if (allData.calories) {
+        const phase = allData.calories.phases.find(p => today >= p.start_date && today <= p.end_date);
+        const dayData = allData.calories.weeks.flatMap(w => w.days).find(d => d.date === today);
+        document.getElementById('kcal-val').textContent = dayData ? dayData.kcal : (phase ? phase.avg_kcal : '---');
+        document.getElementById('kcal-sub').textContent = phase ? phase.label.toUpperCase() : 'NO PHASE';
+    }
+
+    // 2. Run Surfaces (training.json)
+    if (allData.training) {
+        const goal = allData.training.profile.raceGoal;
+        const diff = Math.ceil((new Date(goal.date) - now) / 86400000);
+        document.getElementById('race-days').textContent = diff;
+        
+        const week = allData.training.weeks.find(w => {
+            const start = new Date(w.weekStart);
+            const end = new Date(start); end.setDate(start.getDate() + 7);
+            return now >= start && now < end;
+        });
+
+        if (week) {
+            document.getElementById('run-phase').textContent = week.phase.toUpperCase();
+            const session = week.sessions.find(s => s.date === today);
+            if (session) {
+                document.getElementById('today-session').textContent = `${session.plannedKm}km ${session.type.toUpperCase()}`;
+                document.getElementById('run-notes').textContent = session.notes;
+            }
+            const vol = week.sessions.reduce((acc, s) => acc + (s.actualKm || 0), 0);
+            document.getElementById('week-km').textContent = vol.toFixed(1);
+        }
+    }
+
+    // 3. Live Surfaces (budget.json + travel.json)
+    if (allData.budget) {
+        const curMonth = now.toLocaleString('default', { month: 'short' });
+        const curYear = now.getFullYear();
+        const actuals = allData.budget.data.filter(d => d.month === curMonth && d.year === curYear && d.source === 'Actual');
+        const budgets = allData.budget.data.filter(d => d.month === curMonth && d.year === curYear && d.source === 'Budget');
+        
+        const totalActual = actuals.reduce((sum, r) => sum + r.amount, 0);
+        const totalBudget = budgets.reduce((sum, r) => sum + r.amount, 0);
+        
+        document.getElementById('spend-val').textContent = `CHF ${Math.round(totalActual).toLocaleString()}`;
+        const perc = totalBudget > 0 ? Math.min(100, (totalActual / totalBudget) * 100) : 0;
+        document.getElementById('spend-bar').style.width = perc + '%';
+        document.getElementById('spend-sub').textContent = totalBudget > 0 ? `${Math.round(perc)}% OF BUDGET` : 'NO BUDGET SET';
+    }
+
+    if (allData.travel) {
+        const next = allData.travel.trips.filter(t => t.startDate >= today).sort((a,b) => new Date(a.startDate) - new Date(b.startDate))[0];
+        if (next) {
+            document.getElementById('next-trip').textContent = next.destination.split(',')[0];
+            const d = Math.ceil((new Date(next.startDate) - now) / 86400000);
+            document.getElementById('trip-days').textContent = `T-MINUS ${d} DAYS`;
+        }
+    }
+
+    // Navigation List
+    document.getElementById('appLinks').innerHTML = APPS.map(app => `
+        <a href="${app.path}" class="app-link">
+            <span class="iconify app-link-icon" data-icon="${app.icon}" style="color: ${app.color}"></span>
+            <span class="app-link-text">${app.label}</span>
+            <span class="app-link-arrow">→</span>
+        </a>
+    `).join('');
 }
 
-/* ─── EAT SECTION ───────────────────────────────────────────────── */
-async function renderEatSection() {
-  const recipes = allData.recipes || null;
-  const calories = allData.calories || null;
-  
-  if (!calories) {
-    document.getElementById('eatContent').innerHTML = 
-      `<div class="card"><div class="card-body"><div style="color:var(--muted)">No nutrition data</div></div></div>`;
-    return;
-  }
-
-  const phase = (calories.phases || []).find(p => today >= p.start_date && today <= p.end_date);
-  const week = (calories.weeks || []).find(w => today >= w.week_start && today <= w.week_end);
-  const dayData = week ? (week.days || []).find(d => d.date === today) : null;
-
-  let html = '';
-  if (phase && dayData) {
-    html = `
-      <div class="card">
-        <div class="card-body">
-          <div class="kpi-label">Today's Fuel</div>
-          <div class="kpi-value" style="font-size: var(--t-xl); margin: 6px 0">${dayData.target_kcal || phase.avg_kcal} kcal</div>
-          <div class="kpi-sub">${phase.label}</div>
-          <div style="margin-top: 8px; font-size: 11px; color: var(--muted)">
-            Protein ${dayData.target_protein || 110}g
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <div class="kpi-label">This Week</div>
-          <ul class="quick-list">
-            <li class="quick-list-item">
-              <span class="quick-list-emoji">📊</span>
-              <span class="quick-list-label">Avg daily</span>
-              <span class="quick-list-value">${phase.avg_kcal} kcal</span>
-            </li>
-            <li class="quick-list-item">
-              <span class="quick-list-emoji">🏃</span>
-              <span class="quick-list-label">Run day</span>
-              <span class="quick-list-value">${phase.run_kcal} kcal</span>
-            </li>
-            <li class="quick-list-item">
-              <span class="quick-list-emoji">🧘</span>
-              <span class="quick-list-label">Rest day</span>
-              <span class="quick-list-value">${phase.rest_kcal} kcal</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    `;
-  } else {
-    html = `<div class="card"><div class="card-body">
-      <div style="color: var(--muted); font-size: var(--t-sm)">No data for today. View Fuel Plan →</div>
-    </div></div>`;
-  }
-  document.getElementById('eatContent').innerHTML = html;
-}
-
-/* ─── RUN SECTION ───────────────────────────────────────────────── */
-async function renderRunSection() {
-  const training = allData.training || null;
-  
-  if (!training) {
-    document.getElementById('runContent').innerHTML = 
-      `<div class="card"><div class="card-body"><div style="color:var(--muted)">No training data</div></div></div>`;
-    return;
-  }
-
-  const goal = training.profile?.raceGoal;
-  const week = (training.weeks || []).find(w => today >= w.weekStart && today <= w.weekStart.slice(0,7) + '-' + (parseInt(w.weekStart.slice(8))+6));
-  const session = week ? (week.sessions || []).find(s => s.date === today) : null;
-
-  const daysToRace = goal ? daysUntil(goal.date) : null;
-
-  let html = '';
-  if (goal && daysToRace !== null) {
-    html = `
-      <div class="card">
-        <div class="card-body">
-          <div class="kpi-label">Race Countdown</div>
-          <div class="kpi-value" style="font-size: 28px; margin: 6px 0; color: var(--app-accent)">${daysToRace}</div>
-          <div class="kpi-sub">days to ${goal.name}</div>
-          <div style="margin-top: 6px; font-size: 10px; color: var(--muted)">
-            Target: ${goal.targetTime || 'TBC'}
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <div class="kpi-label">Today's Session</div>
-          ${session ? `
-            <div style="margin: 8px 0; padding: 8px; background: var(--surface); border-radius: var(--r-md)">
-              <div style="font-weight: 600; text-transform: capitalize; color: var(--text)">${session.type}</div>
-              <div style="font-size: 13px; font-weight: 600; color: var(--app-accent); margin: 4px 0">${session.plannedKm} km</div>
-              <div style="font-size: 11px; color: var(--muted)">${session.notes}</div>
-            </div>
-          ` : `
-            <div style="color: var(--muted); font-size: 12px">Rest day</div>
-          `}
-        </div>
-      </div>
-    `;
-  } else {
-    html = `<div class="card"><div class="card-body">
-      <div style="color: var(--muted); font-size: var(--t-sm)">No race goal set. View Run Log →</div>
-    </div></div>`;
-  }
-  document.getElementById('runContent').innerHTML = html;
-}
-
-/* ─── LIVE SECTION ──────────────────────────────────────────────── */
-async function renderLiveSection() {
-  const budget = allData.budget || null;
-  const travel = allData.travel || null;
-
-  if (!budget && !travel) {
-    document.getElementById('liveContent').innerHTML = 
-      `<div class="card"><div class="card-body"><div style="color:var(--muted)">No life data</div></div></div>`;
-    return;
-  }
-
-  // Budget: Month-to-date
-  let mtdSpend = 0, mtdBudget = 0;
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().toLocaleString('default', { month: 'short' });
-  
-  if (budget && budget.data) {
-    const thisMonth = budget.data.filter(d => d.year === currentYear && d.month === currentMonth);
-    mtdSpend = sumBy(thisMonth.filter(d => d.source === 'Actual'), r => r.amount);
-    mtdBudget = sumBy(thisMonth.filter(d => d.source === 'Budget'), r => r.amount);
-  }
-
-  // Travel: Upcoming trips
-  let trips = [];
-  if (travel && travel.trips) {
-    trips = travel.trips
-      .filter(t => (t.status === 'Planned' || t.status === 'Confirmed') && t.startDate >= today)
-      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
-      .slice(0, 2);
-  }
-
-  let html = `
-    <div class="card">
-      <div class="card-body">
-        <div class="kpi-label">${currentMonth} Spend</div>
-        <div class="kpi-value" style="font-size: 24px; margin: 4px 0">CHF ${fmt(mtdSpend)}</div>
-        ${mtdBudget > 0 ? `
-          <div style="font-size: 11px; color: var(--muted)">
-            Budget: CHF ${fmt(mtdBudget)} (${Math.round(mtdSpend/mtdBudget*100)}%)
-          </div>
-        ` : ''}
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-body">
-        <div class="kpi-label">Next Trips</div>
-        ${trips.length > 0 ? `
-          <ul class="quick-list">
-            ${trips.map(t => `
-              <li class="quick-list-item">
-                <span class="quick-list-emoji">✈️</span>
-                <span class="quick-list-label">${t.destination}</span>
-                <span class="quick-list-value" style="font-size: 10px">${daysUntil(t.startDate)}d</span>
-              </li>
-            `).join('')}
-          </ul>
-        ` : `
-          <div style="color: var(--muted); font-size: 12px">No trips planned</div>
-        `}
-      </div>
-    </div>
-  `;
-  document.getElementById('liveContent').innerHTML = html;
-}
-
-/* ─── Load & Render ─────────────────────────────────────────────── */
-async function init() {
-  renderGreeting();
-  renderAppGrid();
-
-  // Load all data
-  try {
-    allData.recipes  = await fetchData('./data/recipes.json');
-  } catch(e) { allData.recipes = null; }
-  
-  try {
-    allData.calories = await fetchData('./data/calories.json');
-  } catch(e) { allData.calories = null; }
-  
-  try {
-    allData.training = await fetchData('./data/training.json');
-  } catch(e) { allData.training = null; }
-  
-  try {
-    allData.budget   = await fetchData('./data/budget.json');
-  } catch(e) { allData.budget = null; }
-  
-  try {
-    allData.travel   = await fetchData('./data/travel.json');
-  } catch(e) { allData.travel = null; }
-
-  // Render sections
-  await renderEatSection();
-  await renderRunSection();
-  await renderLiveSection();
-}
-
-init();
+loadSystemData();
 </script>
 </body>
 </html>
