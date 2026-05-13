@@ -143,8 +143,20 @@ a:hover { text-decoration: underline }
 
 
 /* ── §4  LAYOUT ───────────────────────────────────────────────────── */
-.container { max-width: 960px; margin: 0 auto; padding: 0 14px }
-@media (min-width: 600px) { .container { padding: 0 var(--sp-6) } }
+.container { max-width: 480px; margin: 0 auto; padding: 0 14px }
+@media (min-width: 600px)  { .container { padding: 0 20px } }
+@media (min-width: 900px)  { .container { max-width: 860px } }
+@media (min-width: 1200px) { .container { max-width: 1060px } }
+
+/* Wide two-column layout — stacked mobile, side-by-side desktop */
+.layout-wide { display: grid; grid-template-columns: 1fr; gap: var(--sp-4) }
+@media (min-width: 900px) {
+  .layout-wide { grid-template-columns: 1fr 1fr; align-items: start }
+  .layout-wide > .col-full { grid-column: 1 / -1 }
+}
+
+/* Dashboard 2-col for mid-sized cards */
+.dash-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
 
 .grid-2 { display: grid; grid-template-columns: 1fr; gap: var(--sp-2) }
 .grid-3 { display: grid; grid-template-columns: 1fr; gap: var(--sp-2) }
@@ -671,9 +683,47 @@ body.privacy .num-private {
 }
 .back-btn:hover { border-color: var(--app-accent); color: var(--app-accent) }
 
-/* Hub app grid — used on the homepage only */
+/* ── App tab nav — sticky bar below the header ── */
+/*
+  Usage:
+  <nav class="app-nav">
+    <button class="nav-btn active" onclick="showTab('overview',this)">📊 Overview</button>
+    <button class="nav-btn" onclick="showTab('detail',this)">📋 Detail</button>
+  </nav>
+  .tab-panel { display:none } .tab-panel.active { display:block }
+*/
+.app-nav {
+  background: var(--app-primary);
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: sticky; top: 46px; z-index: 90;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.app-nav::-webkit-scrollbar { display: none }
+.nav-btn {
+  background: none; border: none;
+  padding: 11px 18px;
+  color: var(--app-on-primary2);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  cursor: pointer; font-family: inherit;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap; flex-shrink: 0;
+  transition: color .15s, border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn:hover  { color: var(--app-on-primary) }
+.nav-btn.active { color: #fff; border-bottom-color: var(--app-accent) }
+
+.tab-panel          { display: none; padding-top: 16px }
+.tab-panel.active   { display: block }
+
+/* ── Hub app grid — used on the homepage only ── */
 .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px }
 @media (min-width: 600px) { .app-grid { grid-template-columns: repeat(3, 1fr) } }
+@media (min-width: 900px) { .app-grid { grid-template-columns: repeat(5, 1fr) } }
 
 .app-card {
   border-radius: var(--r-lg); overflow: hidden;
@@ -692,6 +742,63 @@ body.privacy .num-private {
 .app-card-sub   { font-size: 10px; color: var(--app-on-primary2) }
 .app-card-body  { background: var(--white); padding: 8px 14px 10px }
 .app-card-stat  { font-size: 11px; color: var(--muted) }
+
+/* ── Trip / upcoming cards — horizontal scroll strip ── */
+/*
+  Used by travel planner upcoming strip.
+  <div class="trip-strip">
+    <div class="trip-chip" style="--chip-color:#ef5350">...</div>
+  </div>
+*/
+.trip-strip {
+  display: flex; gap: 10px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  padding: 2px 0 14px; margin: 0 -14px; padding-left: 14px;
+  scroll-snap-type: x mandatory;
+}
+.trip-strip::-webkit-scrollbar { display: none }
+@media (min-width: 900px) {
+  .trip-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    overflow: visible; margin: 0; padding: 0 0 14px;
+  }
+}
+
+.trip-chip {
+  flex-shrink: 0; scroll-snap-align: start;
+  width: 170px;
+  background: var(--white); border: 1px solid var(--border);
+  border-top: 4px solid var(--chip-color, var(--app-accent));
+  border-radius: var(--r-lg); padding: 12px 14px;
+  cursor: pointer; transition: box-shadow .2s, transform .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.trip-chip:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.08) }
+@media (min-width: 900px) { .trip-chip { width: auto } }
+
+.tc-days       { font-size: 28px; font-weight: 900; letter-spacing: -1px; line-height: 1; color: var(--chip-color, var(--app-accent)) }
+.tc-days-lbl   { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: .05em; margin-top: 1px }
+.tc-dest       { font-size: 12px; font-weight: 800; color: var(--text); margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.tc-dates      { font-size: 10px; color: var(--muted); margin-top: 2px }
+.tc-type-pill  {
+  display: inline-block; margin-top: 8px;
+  font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--chip-color, var(--app-accent)) 12%, transparent);
+  color: var(--chip-color, var(--app-accent));
+}
+
+/* ── Status pills (shared: travel, training) ── */
+.status-pill {
+  display: inline-block; font-size: 9px; font-weight: 800;
+  padding: 2px 8px; border-radius: var(--r-pill);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.status-confirmed { background: var(--bg-success); color: var(--c-success) }
+.status-planned   { background: var(--bg-info);    color: var(--c-info) }
+.status-tbc       { background: var(--bg-neutral);  color: var(--c-neutral) }
+.status-completed { background: var(--bg-neutral);  color: var(--c-neutral) }
 
 
 /* ── §21 UTILITIES ────────────────────────────────────────────────── */
@@ -739,57 +846,3 @@ body.privacy .num-private {
 .quick-list-emoji { font-size: 16px; min-width: 20px }
 .quick-list-label { color: var(--text); flex: 1 }
 .quick-list-value { color: var(--app-accent); font-weight: 600 }
-
-
-/* Base Interactive Card Style */
-.hub-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  padding: 16px;
-  border-radius: var(--r-lg);
-  text-decoration: none !important; /* Ensure no underline */
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth spring animation */
-  position: relative;
-  overflow: hidden;
-}
-
-/* Hover Animation: Lift & Glow */
-.hub-card:hover {
-  transform: translateY(-4px); /* Subtle lift */
-  border-color: transparent;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-}
-
-/* Pillar Specific Glows */
-/* EAT (Teal) */
-.dash-grid a[href*="calorie"]:hover, 
-.dash-grid a[href*="recipe"]:hover {
-  box-shadow: 0 8px 25px -5px rgba(13, 53, 53, 0.15);
-  border-color: var(--color-eat);
-}
-
-/* RUN (Orange) */
-.dash-grid a[href*="training"]:hover {
-  box-shadow: 0 8px 25px -5px rgba(208, 96, 32, 0.2);
-  border-color: var(--color-run);
-}
-
-/* LIVE (Green/Indigo) */
-.dash-grid a[href*="budget"]:hover {
-  box-shadow: 0 8px 25px -5px rgba(26, 58, 26, 0.15);
-  border-color: var(--color-live);
-}
-
-.dash-grid a[href*="travel"]:hover {
-  box-shadow: 0 8px 25px -5px rgba(26, 16, 80, 0.15);
-  border-color: var(--app-primary);
-}
-
-/* Tap effect for Mobile */
-.hub-card:active {
-  transform: scale(0.97);
-  transition: all 0.1s;
-}
