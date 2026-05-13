@@ -12,62 +12,64 @@
 
 <style>
 :root {
-  --app-primary: #0c2340; /* Navy Header */
-  --bg-light: #f8fafc;
+  --app-primary: #0c2340;
+  --bg-light: #f1f5f9;
   --color-eat: #0d3535;   
   --color-run: #d06020;    
   --color-live: #1a3a1a;  
 }
 
-body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: antialiased; }
+/* Reset for Mobile Webkit */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
-/* ── INTERACTIVE TILE ANIMATIONS ── */
+body { background: var(--bg-light); color: var(--text); font-family: -apple-system, system-ui, sans-serif; margin: 0; padding-bottom: 40px; }
+
+/* ── INTERACTIVE TILES ── */
 .hub-card {
   background: var(--white);
   border: 1px solid var(--border);
   padding: 16px;
   border-radius: var(--r-lg);
-  text-decoration: none !important; /* Remove underline */
+  text-decoration: none !important;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.25s ease;
   position: relative;
-  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
-/* Hover "Glow & Lift" Effects */
-.hub-card:hover {
-  transform: translateY(-4px);
-  border-color: transparent;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+/* Glow/Lift on Desktop, Clean Click on Mobile */
+@media (hover: hover) {
+  .hub-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+  .pillar-eat:hover { border-color: var(--color-eat); }
+  .pillar-run:hover { border-color: var(--color-run); }
+  .pillar-live:hover { border-color: var(--color-live); }
 }
 
-/* Pillar-Specific Hover Glows */
-.pillar-eat:hover { border-color: var(--color-eat); box-shadow: 0 8px 25px -5px rgba(13, 53, 53, 0.15); }
-.pillar-run:hover { border-color: var(--color-run); box-shadow: 0 8px 25px -5px rgba(208, 96, 32, 0.2); }
-.pillar-live:hover { border-color: var(--color-live); box-shadow: 0 8px 25px -5px rgba(26, 58, 26, 0.15); }
-
-.hub-card:active { transform: scale(0.97); transition: all 0.1s; }
+.hub-card:active { transform: scale(0.97); background: #fafafa; }
 
 /* ── LAYOUT ── */
 .header { position: sticky; top: 0; z-index: 100; width: 100%; }
-.container { max-width: 480px; padding: 20px; margin: 0 auto; }
+.container { max-width: 480px; padding: 16px; margin: 0 auto; }
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .full-card { grid-column: 1 / -1; }
 
 .pillar-header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin: 24px 0 12px;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
-.pillar-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
-.kpi-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
-.kpi-val { font-size: 24px; font-weight: 800; color: var(--text); line-height: 1.1; }
-.kpi-sub { font-size: 11px; margin-top: 6px; font-weight: 600; }
+.pillar-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+
+.kpi-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+.kpi-val { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.kpi-sub { font-size: 11px; margin-top: 4px; font-weight: 600; }
+
+#error-toast { background: #fee2e2; color: #b91c1c; padding: 10px; border-radius: 8px; font-size: 12px; display: none; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -82,23 +84,25 @@ body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: 
 </header>
 
 <div class="container">
-  <header style="margin: 8px 0 24px;">
-    <h1 id="greeting" style="font-size: 28px; font-weight: 800; letter-spacing: -0.03em;">...</h1>
-    <p id="greetingDate" style="color: var(--muted); font-size: 14px;"></p>
+  <div id="error-toast">⚠️ Some data could not be loaded. Showing latest available.</div>
+
+  <header style="margin-top: 8px; margin-bottom: 24px;">
+    <h1 id="greeting" style="font-size: 28px; font-weight: 800; margin: 0;">--</h1>
+    <p id="greetingDate" style="color: var(--muted); font-size: 14px; margin-top: 4px;"></p>
   </header>
 
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:fire" style="color: var(--color-eat)"></span>
-    <span class="pillar-title" style="color: var(--color-eat)">Eat • Fuel</span>
+    <span class="pillar-title">Eat • Fuel</span>
   </div>
   <div class="dash-grid">
     <a href="./apps/01-calorie-planner/calorie-planner.html" class="hub-card pillar-eat">
       <div class="kpi-lbl">Today's Target</div>
       <div class="kpi-val" id="kcal-val">----</div>
-      <div class="kpi-sub" style="color: var(--color-eat)" id="kcal-label">SYNCING...</div>
+      <div class="kpi-sub" style="color: var(--color-eat)" id="kcal-label">LOCKED</div>
     </a>
     <a href="./apps/02-recipe-book/recipe-book.html" class="hub-card pillar-eat">
-      <div class="kpi-lbl">Library</div>
+      <div class="kpi-lbl">Kitchen</div>
       <div class="kpi-val" id="recipe-count">0</div>
       <div class="kpi-sub" style="color: var(--muted)">RECIPES</div>
     </a>
@@ -106,18 +110,18 @@ body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: 
 
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:run-fast" style="color: var(--color-run)"></span>
-    <span class="pillar-title" style="color: var(--color-run)">Run • Training</span>
+    <span class="pillar-title">Run • Training</span>
   </div>
   <div class="dash-grid">
     <a href="./apps/05-training-planner/training-planner.html" class="hub-card full-card pillar-run" style="border-left: 4px solid var(--color-run)">
       <div class="kpi-lbl" id="run-phase">Current Phase</div>
-      <div class="kpi-val" id="today-session" style="font-size: 18px;">Loading...</div>
-      <div class="kpi-sub" id="run-notes" style="font-weight: 400; color: var(--muted)">--</div>
+      <div class="kpi-val" id="today-session" style="font-size: 18px;">Rest Day</div>
+      <div class="kpi-sub" id="run-notes" style="font-weight: 400; color: var(--muted)">No notes recorded</div>
     </a>
     <div class="hub-card pillar-run">
-      <div class="kpi-lbl">Countdown</div>
+      <div class="kpi-lbl">Race Goal</div>
       <div class="kpi-val" id="race-days">0</div>
-      <div class="kpi-sub" style="color: var(--color-run)">DAYS TO RACE</div>
+      <div class="kpi-sub" style="color: var(--color-run)">DAYS TO JURA</div>
     </div>
     <div class="hub-card pillar-run">
       <div class="kpi-lbl">Volume</div>
@@ -128,7 +132,7 @@ body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: 
 
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:currency-chf" style="color: var(--color-live)"></span>
-    <span class="pillar-title" style="color: var(--color-live)">Live • Logistics</span>
+    <span class="pillar-title">Live • Logistics</span>
   </div>
   <div class="dash-grid">
     <a href="./apps/03-budget-tracker/budget-tracker.html" class="hub-card pillar-live">
@@ -138,7 +142,7 @@ body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: 
     </a>
     <a href="./apps/04-travel-planner/travel-planner.html" class="hub-card pillar-live">
       <div class="kpi-lbl">Next Trip</div>
-      <div class="kpi-val" id="next-trip" style="font-size: 19px;">---</div>
+      <div class="kpi-val" id="next-trip" style="font-size: 18px;">---</div>
       <div class="kpi-sub" id="trip-days" style="color: var(--muted)">---</div>
     </a>
   </div>
@@ -146,84 +150,96 @@ body { background: var(--bg-light); color: var(--text); -webkit-font-smoothing: 
 
 <script src="./shared/utils.js"></script>
 <script>
-const today = new Date().toISOString().slice(0, 10);
+// 1. Core Config
+const now = new Date();
+// Format to YYYY-MM-DD specifically for data matching
+const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 const curYear = 2026; 
 let allData = {};
 
 async function init() {
-  const now = new Date();
+  // UI Setup
   document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
   document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  
   const hour = now.getHours();
   document.getElementById('greeting').textContent = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
-  const datasets = ['recipes', 'calories', 'training', 'budget', 'travel'];
-  await Promise.all(datasets.map(async k => {
+  // Data Loading with individual safety
+  const keys = ['recipes', 'calories', 'training', 'budget', 'travel'];
+  for (const key of keys) {
     try {
-      allData[k] = await fetchData(`./data/${k}.json`);
-    } catch(e) { console.warn(`Data fail: ${k}`); }
-  }));
-
+      // Mobile Safari/Chrome often need relative paths to be very explicit
+      const resp = await fetch(`./data/${key}.json`);
+      if (resp.ok) allData[key] = await resp.json();
+    } catch (e) {
+      console.warn(`Could not fetch ${key}`);
+      document.getElementById('error-toast').style.display = 'block';
+    }
+  }
   render();
 }
 
 function render() {
-  // 1. EAT: Strict Date Lookup (e.g. 12 May 2026 -> 2050 kcal)
+  // EAT Logic (Fixing 12 May 2050 kcal bug)
   if (allData.calories) {
-    const allDays = allData.calories.weeks.flatMap(w => w.days);
-    const dayEntry = allDays.find(d => d.date === today);
-    if (dayEntry) {
-      document.getElementById('kcal-val').textContent = dayEntry.kcal;
-      document.getElementById('kcal-label').textContent = dayEntry.activity.toUpperCase();
+    const allDays = allData.calories.weeks.flatMap(w => w.days || []);
+    const dayMatch = allDays.find(d => d.date === todayStr);
+    
+    if (dayMatch) {
+      document.getElementById('kcal-val').textContent = dayMatch.kcal;
+      document.getElementById('kcal-label').textContent = dayMatch.activity.toUpperCase();
+    } else {
+      // Fallback: If no date match, find current phase
+      const phase = allData.calories.phases.find(p => todayStr >= p.start_date && todayStr <= p.end_date);
+      document.getElementById('kcal-val').textContent = phase ? phase.avg_kcal : '---';
     }
     document.getElementById('recipe-count').textContent = allData.recipes?.meta?.count || 0;
   }
 
-  // 2. RUN: Training Stats
+  // RUN Logic
   if (allData.training) {
     const goal = allData.training.profile.raceGoal;
-    const raceDate = new Date(goal.date);
-    const diff = Math.ceil((raceDate - new Date()) / 86400000);
+    const diff = Math.ceil((new Date(goal.date) - now) / 86400000);
     document.getElementById('race-days').textContent = diff;
 
     const currentWeek = allData.training.weeks.find(w => {
       const s = new Date(w.weekStart);
       const e = new Date(s); e.setDate(s.getDate() + 7);
-      return new Date() >= s && new Date() < e;
+      return now >= s && now < e;
     });
 
     if (currentWeek) {
       document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
-      const session = currentWeek.sessions.find(s => s.date === today);
-      if (session) {
-        document.getElementById('today-session').textContent = session.type === 'rest' ? 'Rest Day' : `${session.plannedKm}km ${session.type.toUpperCase()}`;
-        document.getElementById('run-notes').textContent = session.notes || 'Recovery focus';
+      const sess = currentWeek.sessions.find(s => s.date === todayStr);
+      if (sess) {
+        document.getElementById('today-session').textContent = sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
+        document.getElementById('run-notes').textContent = sess.notes || 'No notes';
       }
       const vol = currentWeek.sessions.reduce((acc, s) => acc + (s.actualKm || 0), 0);
       document.getElementById('week-vol').textContent = vol.toFixed(1);
     }
   }
 
-  // 3. LIVE: YTD Spend (Summing 2026 Actuals)
+  // LIVE Logic (YTD Spend)
   if (allData.budget) {
-    const ytdActuals = allData.budget.data.filter(d => d.year === curYear && d.source === 'Actuals');
-    const totalYTD = ytdActuals.reduce((sum, r) => sum + r.amount, 0);
-    document.getElementById('spend-val').textContent = `CHF ${Math.round(totalYTD).toLocaleString()}`;
+    const ytd = allData.budget.data.filter(d => d.year === curYear && d.source === 'Actuals');
+    const total = ytd.reduce((sum, r) => sum + r.amount, 0);
+    document.getElementById('spend-val').textContent = `CHF ${Math.round(total).toLocaleString()}`;
   }
 
   if (allData.travel) {
-    const next = allData.travel.trips
-      .filter(t => t.startDate >= today)
-      .sort((a,b) => new Date(a.startDate) - new Date(b.startDate))[0];
-    if (next) {
-      document.getElementById('next-trip').textContent = next.destination.split(',')[0];
-      const d = Math.ceil((new Date(next.startDate) - new Date()) / 86400000);
+    const upcoming = allData.travel.trips
+      .filter(t => t.startDate >= todayStr)
+      .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+    if (upcoming[0]) {
+      document.getElementById('next-trip').textContent = upcoming[0].destination.split(',')[0];
+      const d = Math.ceil((new Date(upcoming[0].startDate) - now) / 86400000);
       document.getElementById('trip-days').textContent = `T-MINUS ${d} DAYS`;
     }
   }
 }
 
+// Start sequence
 init();
 </script>
 </body>
