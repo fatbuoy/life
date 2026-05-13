@@ -571,39 +571,3 @@ function daysUntil(targetDate) {
   const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
   return diff;
 }
-
-function render(todayStr) {
-  // Add this safety check at the top of the function
-  if (typeof allData === 'undefined') return;
-  // 1. EAT: Correct Target for 12 May 2026
-  
-  // 1. EAT: Correct Target for 12 May 2026
-  if (allData.calories) {
-    const allDays = allData.calories.weeks.flatMap(w => w.days || []);
-    const dayEntry = allDays.find(d => d.date === todayStr);
-    
-    if (dayEntry) {
-      document.getElementById('kcal-val').textContent = dayEntry.kcal; // Should show 2050
-      document.getElementById('kcal-label').textContent = dayEntry.activity.toUpperCase();
-    } else {
-      // Fallback: If day is missing, look at phase average
-      const phase = allData.calories.phases.find(p => todayStr >= p.start_date && todayStr <= p.end_date);
-      document.getElementById('kcal-val').textContent = phase ? phase.avg_kcal : '---';
-      document.getElementById('kcal-label').textContent = 'PHASE TARGET';
-    }
-    document.getElementById('recipe-count').textContent = allData.recipes?.meta?.count || 0;
-  }
-
- // 2. LIVE: YTD Spend (All 2026 Actuals)
-  if (allData.budget) {
-    // Filter for year 2026 and only "Actuals" (ignoring "Budget" rows)
-    const ytdActuals = allData.budget.data.filter(d => 
-      d.year === 2026 && 
-      d.source === 'Actuals'
-    );
-    const totalYTD = ytdActuals.reduce((sum, r) => sum + r.amount, 0);
-    document.getElementById('spend-val').textContent = `CHF ${Math.round(totalYTD).toLocaleString()}`;
-  }
-
-  // ... (Keep your existing RUN and TRAVEL logic below)
-}
