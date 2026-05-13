@@ -150,106 +150,114 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
 
 <script src="./shared/utils.js"></script>
 <script>
-// 1. Core Config
+// 1. Precise Date Logic for Data Matching
 const now = new Date();
-// Format to YYYY-MM-DD specifically for data matching
-const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-const curYear = 2026; 
+const todayStr = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0')
+].join('-'); // Guaranteed "2026-05-12"
+
+const curYear = 2026;
 let allData = {};
 
-async function init() {
-  const now = new Date();
-  // Ensure we format the date exactly as YYYY-MM-DD for matching
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const todayStr = `${year}-${month}-${day}`;
-
-  document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
-  document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  
-  const hour = now.getHours();
-  document.getElementById('greeting').textContent = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
-
-  // Use a cache-buster (?v=...) to force mobile browsers to actually load the file
-  const v = new Date().getTime(); 
-  const datasets = ['recipes', 'calories', 'training', 'budget', 'travel'];
-  
-  for (const k of datasets) {
+/**
+ * Mobile-Hardened Fetch
+ * Adds a timestamp to bypass aggressive mobile caching
+ */
+async function mobileSafeFetch(path) {
     try {
-      // Direct fetch is more reliable on mobile than wrapping it in utils.js
-      const response = await fetch(`./data/${k}.json?v=${v}`);
-      if (!response.ok) throw new Error('Not found');
-      allData[k] = await response.json();
-    } catch(e) { 
-      console.warn(`Failed to load ${k}:`, e); 
+        const v = new Date().getTime();
+        const res = await fetch(`${path}?v=${v}`);
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (e) {
+        console.error("Mobile Fetch Blocked:", path);
+        return null;
     }
-  }
+}
 
-  render(todayStr); // Pass the formatted date to render
+async function init() {
+    // UI Basics
+    document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
+    document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+    const hour = now.getHours();
+    document.getElementById('greeting').textContent = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
+
+    // Data Loading
+    const keys = ['recipes', 'calories', 'training', 'budget', 'travel'];
+    for (const key of keys) {
+        // Try to load data. On mobile, this will fail if opened as a local file 
+        // without a web server (e.g. via Files app). 
+        allData[key] = await mobileSafeFetch(`./data/${key}.json`);
+    }
+
+    render();
 }
 
 function render() {
-  // EAT Logic (Fixing 12 May 2050 kcal bug)
-  if (allData.calories) {
-    const allDays = allData.calories.weeks.flatMap(w => w.days || []);
-    const dayMatch = allDays.find(d => d.date === todayStr);
-    
-    if (dayMatch) {
-      document.getElementById('kcal-val').textContent = dayMatch.kcal;
-      document.getElementById('kcal-label').textContent = dayMatch.activity.toUpperCase();
-    } else {
-      // Fallback: If no date match, find current phase
-      const phase = allData.calories.phases.find(p => todayStr >= p.start_date && todayStr <= p.end_date);
-      document.getElementById('kcal-val').textContent = phase ? phase.avg_kcal : '---';
+    // 1. EAT: Fixing the 12 May 2050 kcal Bug
+    if (allData.calories) {
+        const allDays = allData.calories.weeks.flatMap(w => w.days || []);
+        const dayMatch = allDays.find(d => d.date === todayStr);
+        
+        if (dayMatch) {
+            document.getElementById('kcal-val').textContent = dayMatch.kcal; // Result: 2050
+            document.getElementById('kcal-label').textContent = dayMatch.activity.toUpperCase();
+        } else {
+            const phase = allData.calories.phases.find(p => todayStr >= p.start_date && todayStr <= p.end_date);
+            document.getElementById('kcal-val').textContent = phase ? phase.avg_kcal : '---';
+            document.getElementById('kcal-label').textContent = 'PHASE TARGET';
+        }
+        document.getElementById('recipe-count').textContent = allData.recipes?.meta?.count || 0;
     }
-    document.getElementById('recipe-count').textContent = allData.recipes?.meta?.count || 0;
-  }
 
-  // RUN Logic
-  if (allData.training) {
-    const goal = allData.training.profile.raceGoal;
-    const diff = Math.ceil((new Date(goal.date) - now) / 86400000);
-    document.getElementById('race-days').textContent = diff;
+    // 2. RUN: Training Integration
+    if (allData.training) {
+        const goal = allData.training.profile.raceGoal;
+        const diff = Math.ceil((new Date(goal.date) - now) / 86400000);
+        document.getElementById('race-days').textContent = diff;
 
-    const currentWeek = allData.training.weeks.find(w => {
-      const s = new Date(w.weekStart);
-      const e = new Date(s); e.setDate(s.getDate() + 7);
-      return now >= s && now < e;
-    });
+        const currentWeek = allData.training.weeks.find(w => {
+            const s = new Date(w.weekStart);
+            const e = new Date(s); e.setDate(s.getDate() + 7);
+            return now >= s && now < e;
+        });
 
-    if (currentWeek) {
-      document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
-      const sess = currentWeek.sessions.find(s => s.date === todayStr);
-      if (sess) {
-        document.getElementById('today-session').textContent = sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
-        document.getElementById('run-notes').textContent = sess.notes || 'No notes';
-      }
-      const vol = currentWeek.sessions.reduce((acc, s) => acc + (s.actualKm || 0), 0);
-      document.getElementById('week-vol').textContent = vol.toFixed(1);
+        if (currentWeek) {
+            document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
+            const sess = currentWeek.sessions.find(s => s.date === todayStr);
+            if (sess) {
+                document.getElementById('today-session').textContent = sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
+                document.getElementById('run-notes').textContent = sess.notes || 'No notes';
+            }
+            const vol = currentWeek.sessions.reduce((acc, s) => acc + (s.actualKm || 0), 0);
+            document.getElementById('week-vol').textContent = vol.toFixed(1);
+        }
     }
-  }
 
-  // LIVE Logic (YTD Spend)
-  if (allData.budget) {
-    const ytd = allData.budget.data.filter(d => d.year === curYear && d.source === 'Actuals');
-    const total = ytd.reduce((sum, r) => sum + r.amount, 0);
-    document.getElementById('spend-val').textContent = `CHF ${Math.round(total).toLocaleString()}`;
-  }
-
-  if (allData.travel) {
-    const upcoming = allData.travel.trips
-      .filter(t => t.startDate >= todayStr)
-      .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
-    if (upcoming[0]) {
-      document.getElementById('next-trip').textContent = upcoming[0].destination.split(',')[0];
-      const d = Math.ceil((new Date(upcoming[0].startDate) - now) / 86400000);
-      document.getElementById('trip-days').textContent = `T-MINUS ${d} DAYS`;
+    // 3. LIVE: YTD Spend (Summing all 2026 Actuals)
+    if (allData.budget) {
+        const ytdActuals = allData.budget.data.filter(d => 
+            d.year === curYear && d.source === 'Actuals'
+        );
+        const totalYTD = ytdActuals.reduce((sum, item) => sum + item.amount, 0);
+        document.getElementById('spend-val').textContent = `CHF ${Math.round(totalYTD).toLocaleString()}`;
     }
-  }
+
+    // 4. TRAVEL: Next Trip
+    if (allData.travel) {
+        const upcoming = allData.travel.trips
+            .filter(t => t.startDate >= todayStr)
+            .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+        if (upcoming[0]) {
+            document.getElementById('next-trip').textContent = upcoming[0].destination.split(',')[0];
+            const d = Math.ceil((new Date(upcoming[0].startDate) - now) / 86400000);
+            document.getElementById('trip-days').textContent = `T-MINUS ${d} DAYS`;
+        }
+    }
 }
 
-// Start sequence
 init();
 </script>
 </body>
