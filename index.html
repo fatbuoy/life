@@ -24,7 +24,7 @@
 
 body { background: var(--bg-light); color: var(--text); font-family: -apple-system, system-ui, sans-serif; margin: 0; padding-bottom: 40px; }
 
-/* ── INTERACTIVE TILES ── */
+/* ── HUB CARD ── */
 .hub-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -34,37 +34,48 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: all 0.25s ease;
-  position: relative;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-
-/* Glow/Lift on Desktop, Clean Click on Mobile */
 @media (hover: hover) {
-  .hub-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
-  .pillar-eat:hover { border-color: var(--color-eat); }
-  .pillar-run:hover { border-color: var(--color-run); }
+  .hub-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.07); }
+  .pillar-eat:hover  { border-color: var(--color-eat); }
+  .pillar-run:hover  { border-color: var(--color-run); }
   .pillar-live:hover { border-color: var(--color-live); }
 }
-
-.hub-card:active { transform: scale(0.97); background: #fafafa; }
+.hub-card:active { transform: scale(0.97); }
 
 /* ── LAYOUT ── */
-.header { position: sticky; top: 0; z-index: 100; width: 100%; }
-.container { max-width: 480px; padding: 16px; margin: 0 auto; }
+/* Mobile: single column, capped at 480px */
+.container { max-width: 480px; padding: 0 14px; margin: 0 auto; }
+
+/* Desktop: open up to two-column dashboard */
+@media (min-width: 860px) {
+  .container { max-width: 900px; padding: 0 28px; }
+  /* Split each pillar's .dash-grid into 3 or 4 cols on wide screens */
+  .dash-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  /* The main content becomes two columns: EAT left, RUN+LIVE right */
+  .hub-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; align-items: start; }
+  .hub-pillar-live { grid-column: 1 / -1 }
+}
+@media (min-width: 1100px) {
+  .container { max-width: 1080px; padding: 0 40px; }
+  .hub-body { grid-template-columns: 1fr 1fr 1fr; }
+  .hub-pillar-live { grid-column: auto }
+}
+
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .full-card { grid-column: 1 / -1; }
 
+/* ── PILLAR HEADERS ── */
 .pillar-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 24px 0 12px;
-  padding-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+  margin: 24px 0 12px; padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
 .pillar-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 
+/* ── KPI TYPOGRAPHY ── */
 .kpi-lbl { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
 .kpi-val { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
 .kpi-sub { font-size: 11px; margin-top: 4px; font-weight: 600; }
@@ -86,11 +97,14 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
 <div class="container">
   <div id="error-toast">⚠️ Some data could not be loaded. Showing latest available.</div>
 
-  <header style="margin-top: 8px; margin-bottom: 24px;">
-    <h1 id="greeting" style="font-size: 28px; font-weight: 800; margin: 0;">--</h1>
-    <p id="greetingDate" style="color: var(--muted); font-size: 14px; margin-top: 4px;"></p>
+  <header style="margin-top: 8px; margin-bottom: 20px;">
+    <h1 id="greeting" style="font-size: clamp(22px,5vw,32px); font-weight: 800; margin: 0;">--</h1>
+    <p id="greetingDate" style="color: var(--muted); font-size: 13px; margin-top: 4px;"></p>
   </header>
 
+  <div class="hub-body">
+
+  <div class="hub-pillar-eat">
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:fire" style="color: var(--color-eat)"></span>
     <span class="pillar-title">Eat • Fuel</span>
@@ -107,7 +121,9 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
       <div class="kpi-sub" style="color: var(--muted)">RECIPES</div>
     </a>
   </div>
+  </div><!-- /pillar-eat -->
 
+  <div class="hub-pillar-run">
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:run-fast" style="color: var(--color-run)"></span>
     <span class="pillar-title">Run • Training</span>
@@ -129,7 +145,9 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
       <div class="kpi-sub" style="color: var(--muted)">WEEKLY KM</div>
     </div>
   </div>
+  </div><!-- /pillar-run -->
 
+  <div class="hub-pillar-live">
   <div class="pillar-header">
     <span class="iconify" data-icon="mdi:currency-chf" style="color: var(--color-live)"></span>
     <span class="pillar-title">Live • Logistics</span>
@@ -146,6 +164,9 @@ body { background: var(--bg-light); color: var(--text); font-family: -apple-syst
       <div class="kpi-sub" id="trip-days" style="color: var(--muted)">---</div>
     </a>
   </div>
+  </div><!-- /pillar-live -->
+
+  </div><!-- /hub-body -->
 </div>
 
 <script src="./shared/utils.js"></script>
