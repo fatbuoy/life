@@ -158,25 +158,35 @@ const curYear = 2026;
 let allData = {};
 
 async function init() {
-  // UI Setup
+  const now = new Date();
+  // Ensure we format the date exactly as YYYY-MM-DD for matching
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const todayStr = `${year}-${month}-${day}`;
+
   document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
   document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  
   const hour = now.getHours();
   document.getElementById('greeting').textContent = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
-  // Data Loading with individual safety
-  const keys = ['recipes', 'calories', 'training', 'budget', 'travel'];
-  for (const key of keys) {
+  // Use a cache-buster (?v=...) to force mobile browsers to actually load the file
+  const v = new Date().getTime(); 
+  const datasets = ['recipes', 'calories', 'training', 'budget', 'travel'];
+  
+  for (const k of datasets) {
     try {
-      // Mobile Safari/Chrome often need relative paths to be very explicit
-      const resp = await fetch(`./data/${key}.json`);
-      if (resp.ok) allData[key] = await resp.json();
-    } catch (e) {
-      console.warn(`Could not fetch ${key}`);
-      document.getElementById('error-toast').style.display = 'block';
+      // Direct fetch is more reliable on mobile than wrapping it in utils.js
+      const response = await fetch(`./data/${k}.json?v=${v}`);
+      if (!response.ok) throw new Error('Not found');
+      allData[k] = await response.json();
+    } catch(e) { 
+      console.warn(`Failed to load ${k}:`, e); 
     }
   }
-  render();
+
+  render(todayStr); // Pass the formatted date to render
 }
 
 function render() {
