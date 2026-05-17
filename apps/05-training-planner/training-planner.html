@@ -24,6 +24,7 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 .app { max-width: 100%; padding-bottom: 32px; }
 .app-inner { max-width: 480px; margin: 0 auto; }
 @media (min-width: 700px) { .app-inner { max-width: 720px; } }
+@media (min-width: 1024px) { .app-inner { max-width: 1000px; } }
 
 /* ── Header ── */
 .topbar {
@@ -33,6 +34,7 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   padding: 12px 16px;
   position: sticky; top: 0; z-index: 50;
 }
+@media (min-width: 1024px) { .topbar { padding: 14px 24px; } }
 .topbar-left { display: flex; align-items: center; gap: 10px; }
 .topbar-home {
   font-size: 1rem; color: var(--on-n2); text-decoration: none;
@@ -42,6 +44,7 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 }
 .topbar-home:hover { background: rgba(255,255,255,0.18); }
 .topbar-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3px }
+@media (min-width: 1024px) { .topbar-title { font-size: 1rem; } }
 .unit-toggle { display: flex; border: 1px solid var(--navy3); border-radius: 20px; overflow: hidden; font-size: 0.7rem }
 .u-btn { padding: 4px 11px; cursor: pointer; background: transparent; color: var(--on-n3); transition: all 0.15s }
 .u-btn.active { background: var(--orange); color: #fff; }
@@ -52,8 +55,17 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   padding: 14px 16px 10px;
   color: var(--on-nav);
 }
+@media (min-width: 1024px) {
+  .hero { padding: 20px 24px 16px; }
+}
 .hero-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px }
+@media (min-width: 1024px) {
+  .hero-row { margin-bottom: 10px; }
+}
 .hero-dist { font-size: 1.8rem; font-weight: 900; color: var(--orange); line-height: 1 }
+@media (min-width: 1024px) {
+  .hero-dist { font-size: 2.2rem; }
+}
 .hero-unit { font-size: 0.75rem; color: var(--on-n3); margin-left: 3px }
 .hero-goal { font-size: 0.75rem; color: var(--on-n3) }
 .rail { height: 10px; background: rgba(255,255,255,0.12); border-radius: 5px; overflow: hidden; margin-bottom: 6px }
@@ -65,14 +77,23 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   background: var(--navy);
   padding: 10px 16px 8px;
 }
+@media (min-width: 1024px) {
+  .chart-wrap { padding: 16px 24px 12px; }
+}
 .chart-label { font-size: 0.6rem; color: var(--on-n3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px }
 .bars-row { display: flex; align-items: flex-end; gap: 3px; height: 52px }
+@media (min-width: 1024px) {
+  .bars-row { gap: 5px; height: 64px; }
+}
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer }
 .bar-outer { width: 100%; border-radius: 3px 3px 0 0; background: rgba(255,255,255,0.08); position: relative; overflow: hidden; flex: 1; min-height: 4px }
 .bar-inner { position: absolute; bottom: 0; left: 0; right: 0; background: var(--navy3); border-radius: 3px 3px 0 0; transition: height 0.4s ease }
 .bar-inner.done { background: var(--green) }
 .bar-inner.partial { background: var(--orange) }
 .bar-label { font-size: 0.55rem; color: var(--on-n3); white-space: nowrap }
+@media (min-width: 1024px) {
+  .bar-label { font-size: 0.65rem; }
+}
 .bar-col.selected .bar-label { color: var(--orange); font-weight: 700 }
 .bar-col.selected .bar-outer { outline: 1px solid var(--orange); border-radius: 3px 3px 0 0 }
 
@@ -85,8 +106,10 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   padding: 0 16px 10px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
+@media (min-width: 1024px) { .week-strip-wrap { padding: 0 24px 12px; } }
 .week-strip-wrap::-webkit-scrollbar { display: none }
 .week-strip { display: flex; gap: 5px; width: max-content }
+@media (min-width: 1024px) { .week-strip { gap: 8px; } }
 .wtab {
   padding: 5px 11px;
   border-radius: 20px;
@@ -100,12 +123,14 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   white-space: nowrap;
   position: relative;
 }
+@media (min-width: 1024px) { .wtab { padding: 6px 14px; font-size: 0.75rem; } }
 .wtab.is-current { border-color: var(--orange); color: var(--orange) }
 .wtab.active { background: var(--orange); border-color: var(--orange); color: #fff }
 .wtab .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle }
 
 /* ── Week panel ── */
 .week-panel { padding: 12px 16px }
+@media (min-width: 1024px) { .week-panel { padding: 20px 24px; } }
 .week-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px }
 .week-heading { font-size: 0.85rem; font-weight: 700; color: var(--navy) }
 .week-phase { font-size: 0.65rem; color: #888; margin-top: 1px }
@@ -120,6 +145,9 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
   border-bottom: 1px solid #f0f0f4;
   transition: background 0.15s;
 }
+@media (min-width: 1024px) {
+  .sess-row { padding: 14px 18px; gap: 14px; }
+}
 .sess-row:last-child { border-bottom: none }
 .sess-row.is-done { background: #fafafa }
 .sess-row.is-rest { opacity: 0.55 }
@@ -128,6 +156,9 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 .sess-day-name { font-size: 0.58rem; text-transform: uppercase; color: #aaa; display: block }
 .sess-day-num { font-size: 0.9rem; font-weight: 700; color: #333 }
 .pill { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 0.62rem; font-weight: 700; white-space: nowrap; flex-shrink: 0 }
+@media (min-width: 1024px) {
+  .pill { padding: 4px 10px; font-size: 0.7rem; }
+}
 .type-easy     { background:#e2f0d6; color:#27500a }
 .type-tempo    { background:#faeeda; color:#633806 }
 .type-long     { background:#deeaf7; color:#0c447c }
@@ -144,24 +175,31 @@ body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; c
 
 /* ── Bottom controls ── */
 .bottom-bar { padding: 16px 16px 0; display: flex; gap: 8px }
+@media (min-width: 1024px) { .bottom-bar { padding: 20px 24px 0; gap: 12px; } }
 .btn-sm { flex: 1; padding: 9px 0; font-size: 0.75rem; font-weight: 600; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #555; cursor: pointer }
+@media (min-width: 1024px) { .btn-sm { padding: 11px 0; font-size: 0.8rem; } }
 .btn-sm:hover { background: #f5f5f5 }
 .btn-sm.danger { color: #c0392b; border-color: #f5c6c6 }
 </style>
 </head>
 <body>
-<div class="app">
-
-  <div class="topbar">
-    <div class="topbar-left">
-      <a class="topbar-home" href="../../index.html">⌂</a>
-      <span class="topbar-title">Marathon du Jura</span>
-    </div>
+<header class="header">
+  <div class="container">
+    <div class="header-row">
+      <div class="header-left">
+        <a class="header-home" href="../../index.html" title="Hub">⌂</a>
+        <span class="header-title">Marathon du Jura</span>
+      </div>
     <div class="unit-toggle" onclick="toggleUnits()">
       <div id="u-km" class="u-btn active">km</div>
       <div id="u-mi" class="u-btn">mi</div>
     </div>
+    </div>
   </div>
+</header>
+
+
+
 
   <div class="app-inner">
 
