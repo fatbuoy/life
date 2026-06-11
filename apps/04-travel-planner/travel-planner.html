@@ -391,16 +391,72 @@ function openModal(tripId) {
   const pct    = t.budgetEstimate ? Math.min((t.budgetActual || 0) / t.budgetEstimate * 100, 100) : 0;
   const barCol = pct > 90 ? '#ef5350' : '#4caf50';
 
-  const flightRows = (t.flights || []).map(f => {
-    const isOut = f.direction === 'Out';
+  // Handle both flights (old) and transport (new) formats
+  const transportRows = [];
+  if (t.flights && t.flights.length > 0) {
+    transportRows.push(...(t.flights || []).map(f => {
+      const isOut = f.direction === 'Out';
+      return {
+        mode: 'flight',
+        direction: f.direction,
+        icon: isOut ? 'mdi:airplane-takeoff' : 'mdi:airplane-landing',
+        route: f.route,
+        date: f.date,
+        time: f.time,
+        ref: f.ref
+      };
+    }));
+  }
+  if (t.transport && t.transport.length > 0) {
+    transportRows.push(...(t.transport || []).map(tr => {
+      const isOut = tr.direction === 'Out';
+      return {
+        mode: tr.mode || 'train',
+        direction: tr.direction,
+        icon: tr.mode === 'flight' ? (isOut ? 'mdi:airplane-takeoff' : 'mdi:airplane-landing') : 'mdi:train',
+        route: tr.route,
+        date: tr.date,
+        time: tr.time,
+        ref: tr.ref || ''
+      };
+    }));
+  }
+
+  const transportRowsHtml = transportRows.map(tr => {
     return `
     <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px;">
       <span style="font-size:20px; color:${colour}">
-        ${icon(isOut ? 'mdi:airplane-takeoff' : 'mdi:airplane-landing', {size:20, color:colour})}
+        ${icon(tr.icon, {size:20, color:colour})}
       </span>
       <div>
-        <div style="font-weight:700;">${f.route}</div>
-        <div style="color:#64748b;">${fmtDate(f.date)} · ${f.time} · ${f.ref}</div>
+        <div style="font-weight:700;">${tr.route}</div>
+        <div style="color:#64748b;">${fmtDate(tr.date)} · ${tr.time}${tr.ref ? ' · ' + tr.ref : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Accommodation status
+  const accommodationStatus = t.accommodation && t.accommodation.toLowerCase().includes('tbc') ? 'To be planned' : (t.accommodation ? 'Booked' : 'Not specified');
+  const accommodationStatusBg = accommodationStatus === 'Booked' ? '#dcfce7' : accommodationStatus === 'To be planned' ? '#fef3c7' : '#f3f4f6';
+  const accommodationStatusColor = accommodationStatus === 'Booked' ? '#15803d' : accommodationStatus === 'To be planned' ? '#b45309' : '#6b7280';
+
+  // Activities section
+  const activitiesHtml = (t.activities || []).map(a => {
+    const statusBg = a.status === 'Booked' || a.status === 'Planned' ? '#dcfce7' : a.status === 'Not booked' ? '#fee2e2' : '#f3f4f6';
+    const statusColor = a.status === 'Booked' || a.status === 'Planned' ? '#15803d' : a.status === 'Not booked' ? '#991b1b' : '#6b7280';
+    const statusLabel = a.status || 'Pending';
+    const icon_name = a.status === 'Booked' || a.status === 'Planned' ? 'mdi:check-circle' : a.status === 'Not booked' ? 'mdi:alert-circle' : 'mdi:help-circle';
+    return `
+    <div style="background:#f8fafc; border-radius:8px; padding:10px 12px; margin-bottom:8px; border-left:3px solid ${statusColor};">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:12px; color:#1e293b;">${a.name}</div>
+          ${a.location ? `<div style="font-size:11px; color:#64748b; margin-top:2px;">${icon(a.location ? 'mdi:map-marker' : '', {size:10, color:'#94a3b8'})} ${a.location}</div>` : ''}
+          ${a.date ? `<div style="font-size:11px; color:#64748b; margin-top:2px;">${fmtDate(a.date)}${a.time ? ' at ' + a.time : ''}</div>` : ''}
+        </div>
+        <span style="background:${statusBg}; color:${statusColor}; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+          ${icon(icon_name, {size:10, color:statusColor})} ${statusLabel}
+        </span>
       </div>
     </div>`;
   }).join('');
@@ -481,11 +537,39 @@ function openModal(tripId) {
           </div>
         </div>` : ''}
 
-        <!-- Flights -->
-        ${flightRows ? `
-        <div>
-          <div style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:4px; display:flex; align-items:center; gap:4px;">${icon('mdi:airplane', {size:11, color:'#94a3b8'})} Flights</div>
-          ${flightRows}
+        <!-- Flights / Transport -->
+        ${transportRowsHtml ? `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:4px;">
+            ${icon(transportRows.some(tr => tr.mode === 'flight') ? 'mdi:airplane' : 'mdi:train', {size:11, color:'#94a3b8'})} 
+            ${transportRows.some(tr => tr.mode === 'flight') ? 'Flights' : 'Transport'}
+          </div>
+          <div style="background:white; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+            ${transportRowsHtml}
+          </div>
+        </div>` : ''}
+
+        <!-- Accommodation Details & Status -->
+        ${t.accommodation || t.who ? `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:4px;">${icon('mdi:bed-outline', {size:11, color:'#94a3b8'})} Accommodation</div>
+          <div style="background:${accommodationStatusBg}; border:1px solid ${accommodationStatusBg === '#dcfce7' ? '#86efac' : accommodationStatusBg === '#fef3c7' ? '#fcd34d' : '#e5e7eb'}; border-radius:8px; padding:12px;">
+            ${t.accommodation ? `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:6px;">
+              <div style="font-weight:700; font-size:12px; color:#1e293b;">${t.accommodation}</div>
+              <span style="background:white; color:${accommodationStatusColor}; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+                ${icon(accommodationStatus === 'Booked' ? 'mdi:check-circle' : 'mdi:alert-circle', {size:10, color:accommodationStatusColor})} ${accommodationStatus}
+              </span>
+            </div>` : ''}
+            ${t.who ? `<div style="font-size:11px; color:${accommodationStatusColor}; margin-top:6px;">${icon('mdi:account-outline', {size:10, color:accommodationStatusColor})} ${t.who}</div>` : ''}
+          </div>
+        </div>` : ''}
+
+        <!-- Activities -->
+        ${activitiesHtml ? `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:4px;">${icon('mdi:calendar-check', {size:11, color:'#94a3b8'})} Activities</div>
+          ${activitiesHtml}
         </div>` : ''}
 
       </div>
