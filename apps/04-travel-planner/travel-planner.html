@@ -520,15 +520,18 @@ function openModal(tripId) {
     const statusColor = a.status === 'Booked' || a.status === 'Planned' ? '#15803d' : a.status === 'Not booked' ? '#991b1b' : '#6b7280';
     const statusLabel = a.status || 'Pending';
     const icon_name = a.status === 'Booked' || a.status === 'Planned' ? 'mdi:check-circle' : a.status === 'Not booked' ? 'mdi:alert-circle' : 'mdi:help-circle';
+    const cardStyle = a.location ? 'cursor:pointer; transition:background 0.2s;' : '';
+    const cardOnClick = a.location ? `onclick="window.open('${googleMapsLink(a.location)}', '_blank'); event.stopPropagation();"` : '';
+    const cardHoverStyle = a.location ? `onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'"` : '';
     return `
-    <div style="background:#f8fafc; border-radius:8px; padding:10px 12px; margin-bottom:8px; border-left:3px solid ${statusColor};">
+    <div style="background:#f8fafc; border-radius:8px; padding:10px 12px; margin-bottom:8px; border-left:3px solid ${statusColor}; ${cardStyle}" ${cardOnClick} ${cardHoverStyle}>
       <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
         <div style="flex:1;">
           <div style="font-weight:700; font-size:12px; color:#1e293b;">${a.name}</div>
-          ${a.location ? `<div style="font-size:11px; color:#64748b; margin-top:2px;">${icon('mdi:map-marker', {size:10, color:'#94a3b8'})} ${mapLink(a.location)}</div>` : ''}
+          ${a.location ? `<div style="font-size:11px; color:#64748b; margin-top:2px; display:flex; align-items:center; gap:4px;">${icon('mdi:map-marker', {size:10, color:'#94a3b8'})} ${a.location}</div>` : ''}
           ${a.date ? `<div style="font-size:11px; color:#64748b; margin-top:2px;">${fmtDate(a.date)}${a.time ? ' at ' + a.time : ''}</div>` : ''}
         </div>
-        <span style="background:${statusBg}; color:${statusColor}; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;">
+        <span style="background:${statusBg}; color:${statusColor}; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:700; text-transform:uppercase; white-space:nowrap; display:inline-flex; align-items:center; gap:4px; flex-shrink:0;">
           ${icon(icon_name, {size:10, color:statusColor})} ${statusLabel}
         </span>
       </div>
