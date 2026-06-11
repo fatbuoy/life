@@ -114,10 +114,14 @@ body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
   display: flex;
   align-items: center;
   padding: 0 16px;
-  position: sticky; top: 46px; z-index: 100;
+  position: sticky; top: 0; z-index: 100;
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 @media(min-width:1024px){ .app-nav { padding: 0 24px; top: 56px; } }
+@media(min-width:1024px){ .app-nav { padding: 0 24px; top: 0; } }
+
+/* remove default gap between header and nav for a seamless look */
+.header { margin-bottom: 0; }
 
 /* Pill segmented control */
 .nav-pills {
@@ -344,12 +348,12 @@ function renderUpcomingStrip() {
     const meta   = TYPE_META[t.type];
     return `
       <div class="upcoming-card" style="border-top-color:${colour}" onclick="openModal('${t.id}')">
-        <div class="uc-days" style="color:${colour}">${days < 0 ? icon('mdi:airplane', {size:22, color:colour}) : days}</div>
-        <div class="uc-days-lbl">${days < 0 ? 'Active Now' : 'Days Away'}</div>
-        <div class="uc-dest">${t.destination}</div>
-        <div class="uc-dates">${fmtDate(t.startDate)}</div>
-        <div class="uc-type" style="color:${colour}">${icon(meta?.icon || 'mdi:map-marker', {size:11, color:colour})} ${(meta?.label || t.type).toUpperCase()}</div>
-      </div>`;
+          <div class="uc-days" style="color:${colour}">${days < 0 ? icon('mdi:airplane', {size:22, color:colour}) : days}</div>
+          <div class="uc-days-lbl">${days < 0 ? 'Active Now' : 'Days Away'}</div>
+          <div class="uc-dest">${formatDestination(t.destination)}</div>
+          <div class="uc-dates">${fmtDate(t.startDate)}</div>
+          <div class="uc-type" style="color:${colour}">${icon(meta?.icon || 'mdi:map-marker', {size:11, color:colour})} ${(meta?.label || t.type).toUpperCase()}</div>
+        </div>`;
   }).join('');
 }
 
@@ -393,7 +397,7 @@ function renderBudgetTab() {
     const colour = pct > 90 ? '#ef5350' : '#4caf50';
     return `
       <div class="budget-card" onclick="openModal('${t.id}')">
-        <div class="bc-head"><div class="bc-title">${t.destination}</div></div>
+        <div class="bc-head"><div class="bc-title">${formatDestination(t.destination)}</div></div>
         <div class="bc-body">
           <div class="bc-amounts">
             <div><div class="bc-amt-val" style="color:${colour}">CHF ${t.budgetActual || 0}</div><div class="bc-amt-lbl">Spent</div></div>
@@ -408,7 +412,8 @@ function renderBudgetTab() {
 /* ── BUG 1 FIX: renderTripsTab now uses realTrips() — skips _comment ── */
 function renderTripsTab() {
   const tbody = document.getElementById('tripsTableBody');
-  tbody.innerHTML = realTrips().map(t => {
+  const trips = realTrips().slice().sort((a,b) => a.startDate.localeCompare(b.startDate));
+  tbody.innerHTML = trips.map(t => {
     const meta = TYPE_META[t.type];
     const colour = meta?.colour || '#888';
     return `
@@ -417,7 +422,7 @@ function renderTripsTab() {
         ${icon(meta?.icon || 'mdi:map-marker', {size:14, color:colour})}
         <span style="margin-left:4px">${(meta?.label || t.type).toUpperCase()}</span>
       </td>
-      <td style="font-weight:700;">${t.destination}</td>
+      <td style="font-weight:700;">${formatDestination(t.destination)}</td>
       <td style="color:#64748b;">${fmtDate(t.startDate)}</td>
       <td><span class="status-pill status-${(t.status||'').toLowerCase()}">${t.status||'—'}</span></td>
     </tr>`;
@@ -438,6 +443,27 @@ function googleMapsLink(text) {
 
 function mapLink(text) {
   return `<a href="${googleMapsLink(text)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb; text-decoration:underline;">${text}</a>`;
+}
+
+// Country name -> ISO code lookup (extend as needed)
+function isoForCountry(name) {
+  if (!name) return null;
+  const m = {
+    'spain':'ES','italy':'IT','switzerland':'CH','france':'FR','germany':'DE','united kingdom':'GB','uk':'GB','england':'GB',
+    'portugal':'PT','netherlands':'NL','belgium':'BE','austria':'AT','greece':'GR','norway':'NO','sweden':'SE','denmark':'DK','finland':'FI','ireland':'IE',
+    'czech republic':'CZ','slovakia':'SK','poland':'PL','united states':'US','usa':'US','canada':'CA','australia':'AU','new zealand':'NZ','japan':'JP'
+  };
+  return m[name.toLowerCase().trim()] || null;
+}
+
+function formatDestination(dest) {
+  if (!dest) return '—';
+  const parts = dest.split(',').map(s => s.trim()).filter(Boolean);
+  if (parts.length <= 1) return dest;
+  const country = parts.pop();
+  const city = parts.join(', ');
+  const iso = isoForCountry(country) || (country.length <= 3 ? country.toUpperCase() : null);
+  return `${city}, ${iso || country}`;
 }
 
 function showTab(id, btn) {
@@ -551,7 +577,7 @@ function openModal(tripId) {
           ${icon(meta?.icon || 'mdi:map-marker', {size:14, color:'white'})}
           ${(meta?.label || t.type).toUpperCase()}
         </div>
-        <div style="font-size:22px; font-weight:900; line-height:1.2; margin-bottom:6px;">${t.destination}</div>
+        <div style="font-size:22px; font-weight:900; line-height:1.2; margin-bottom:6px;">${formatDestination(t.destination)}</div>
         <div style="font-size:12px; opacity:0.85;">${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</div>
         <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <span style="background:rgba(255,255,255,.2); padding:3px 10px; border-radius:99px; font-size:10px; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
@@ -697,14 +723,14 @@ function saveTripsToStorage() {
 
 function renderTripList() {
   const list = document.getElementById('tripList');
-  const trips = realTrips().sort((a,b) => b.startDate.localeCompare(a.startDate));
+  const trips = realTrips().slice().sort((a,b) => a.startDate.localeCompare(b.startDate));
   
   list.innerHTML = trips.map(t => {
     const meta = TYPE_META[t.type];
     const colour = meta?.colour || '#888';
     return `
     <div class="trip-item" style="border-left: 4px solid ${colour}">
-      <div class="trip-item-title">${t.destination}</div>
+      <div class="trip-item-title">${formatDestination(t.destination)}</div>
       <div class="trip-item-dates">${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</div>
       <div style="font-size:11px; color:#64748b; margin-bottom:8px;">
         <span style="background:#f1f5f9; padding:2px 6px; border-radius:3px; display:inline-block; margin-right:4px;">${t.status || '—'}</span>
