@@ -5,355 +5,494 @@
     "defaultYear": 2026,
     "note": "Place this file at life-suite/data/travel.json"
   },
-
   "trips": [
     {
-      "_comment": "── FIELD GUIDE ───────────────────────────────────────────────────────",
-      "_id":            "trp_{year}_{slug}  — e.g. trp_2026_barcelona",
-      "_destination":   "City, Country — free text",
-      "_type":          "leisure | race | active | bikepacking | family | visitors | work | anniversary | holiday",
-      "_startDate":     "YYYY-MM-DD",
-      "_endDate":       "YYYY-MM-DD",
-      "_status":        "Planned | Confirmed | TBC | Completed",
-      "_budgetTag":     "slug that must match tags[] on budget.json months for cost linkage",
-      "_raceEventId":   "ref to training.json events[].id — only set for race trips, else null"
-    },
-    {
-      "id":             "trp_2026_granada_jan",
-      "destination":    "Granada, Spain",
-      "type":           "leisure",
-      "startDate":      "2026-01-10",
-      "endDate":        "2026-03-13",
-      "status":         "Confirmed",
-      "description":    "Long stay — Living in Granada",
-      "accommodation":  "Private apartment, Realejo district",
-      "who":            "Sahani Family",
-      "budgetTag":      "granada-jan-2026",
+      "id": "trp_2026_granada_jan",
+      "destination": "Granada, Spain",
+      "type": "leisure",
+      "startDate": "2026-01-10",
+      "endDate": "2026-03-13",
+      "status": "Confirmed",
+      "description": "Long stay — Living in Granada",
+      "accommodation": "Private apartment, Realejo district",
+      "who": "Sahani Family",
+      "budgetTag": "granada-jan-2026",
       "budgetEstimate": 4200,
-      "budgetActual":   3870,
-      "raceEventId":    null,
-      "notes":          "Visit Alhambra early morning to avoid crowds. Sierra Nevada 45 min away.",
+      "budgetActual": 3870,
+      "raceEventId": null,
+      "notes": "Visit Alhambra early morning to avoid crowds. Sierra Nevada 45 min away.",
       "flights": [
-        { "direction": "Out",  "time": "06:30", "route": "ZRH → GRX", "ref": "IB2341", "date": "2026-01-10" },
-        { "direction": "Back", "time": "18:45", "route": "GRX → ZRH", "ref": "IB2342", "date": "2026-01-31" }
+        {
+          "direction": "Out",
+          "time": "06:30",
+          "route": "ZRH → GRX",
+          "ref": "IB2341",
+          "date": "2026-01-10"
+        },
+        {
+          "direction": "Back",
+          "time": "18:45",
+          "route": "GRX → ZRH",
+          "ref": "IB2342",
+          "date": "2026-01-31"
+        }
       ]
     },
     {
-      "id":             "trp_2026_ireland_jan",
-      "destination":    "Ireland",
-      "type":           "family",
-      "startDate":      "2026-01-01",
-      "endDate":        "2026-01-04",
-      "status":         "Confirmed",
-      "description":    "Rishi in India, Marion in Ireland — New Year",
-      "accommodation":  "Family home",
-      "who":            "Marion + family",
-      "budgetTag":      "ireland-jan-2026",
+      "id": "trp_2026_ireland_jan",
+      "destination": "Ireland",
+      "type": "family",
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-04",
+      "status": "Confirmed",
+      "description": "Rishi in India, Marion in Ireland — New Year",
+      "accommodation": "Family home",
+      "who": "Marion + family",
+      "budgetTag": "ireland-jan-2026",
       "budgetEstimate": 600,
-      "budgetActual":   null,
-      "raceEventId":    null,
-      "notes":          "",
+      "budgetActual": null,
+      "raceEventId": null,
+      "notes": "",
       "flights": []
     },
     {
-      "id":             "trp_2026_bcn_marathon",
-      "destination":    "Barcelona, Spain",
-      "type":           "race",
-      "startDate":      "2026-03-14",
-      "endDate":        "2026-03-15",
-      "status":         "Confirmed",
-      "description":    "Barcelona Marathon 2026",
-      "accommodation":  "Hotel Arts Barcelona",
-      "who":            "Rishi",
-      "budgetTag":      "bcn-marathon-2026",
+      "id": "trp_2026_bcn_marathon",
+      "destination": "Barcelona, Spain",
+      "type": "race",
+      "startDate": "2026-03-14",
+      "endDate": "2026-03-15",
+      "status": "Confirmed",
+      "description": "Barcelona Marathon 2026",
+      "accommodation": "Hotel Arts Barcelona",
+      "who": "Rishi",
+      "budgetTag": "bcn-marathon-2026",
       "budgetEstimate": 800,
-      "budgetActual":   null,
-      "raceEventId":    "evt_barcelona_marathon_2026",
-      "notes":          "Expo Saturday 10-18h. Race Sunday 08:30. Finish at Barceloneta.",
+      "budgetActual": null,
+      "raceEventId": "evt_barcelona_marathon_2026",
+      "notes": "Expo Saturday 10-18h. Race Sunday 08:30. Finish at Barceloneta.",
       "flights": [
-        { "direction": "Out",  "time": "07:00", "route": "ZRH → BCN", "ref": "VY1234", "date": "2026-03-13" },
-        { "direction": "Back", "time": "20:15", "route": "BCN → ZRH", "ref": "VY1235", "date": "2026-03-15" }
+        {
+          "direction": "Out",
+          "time": "07:00",
+          "route": "ZRH → BCN",
+          "ref": "VY1234",
+          "date": "2026-03-13"
+        },
+        {
+          "direction": "Back",
+          "time": "20:15",
+          "route": "BCN → ZRH",
+          "ref": "VY1235",
+          "date": "2026-03-15"
+        }
       ]
     },
     {
-      "id":             "trp_2026_ireland_may",
-      "destination":    "Ireland",
-      "type":           "family",
-      "startDate":      "2026-05-07",
-      "endDate":        "2026-05-21",
-      "status":         "Confirmed",
-      "description":    "Arthur's Communion + Marion family time",
-      "accommodation":  "Family home",
-      "who":            "Sahani Family",
-      "budgetTag":      "ireland-may-2026",
+      "id": "trp_2026_ireland_may",
+      "destination": "Ireland",
+      "type": "family",
+      "startDate": "2026-05-07",
+      "endDate": "2026-05-21",
+      "status": "Confirmed",
+      "description": "Arthur's Communion + Marion family time",
+      "accommodation": "Family home",
+      "who": "Sahani Family",
+      "budgetTag": "ireland-may-2026",
       "budgetEstimate": 3000,
-      "budgetActual":   null,
-      "raceEventId":    null,
-      "notes":          "Arthur's Communion 10 May. Book restaurant for family dinner.",
+      "budgetActual": null,
+      "raceEventId": null,
+      "notes": "Arthur's Communion 10 May. Book restaurant for family dinner.",
       "flights": []
     },
     {
-      "id":             "trp_2026_us_may",
-      "destination":    "United States",
-      "type":           "active",
-      "startDate":      "2026-05-11",
-      "endDate":        "2026-05-21",
-      "status":         "Planned",
-      "description":    "Rishi in US — training camp / races",
-      "accommodation":  "TBC",
-      "who":            "Rishi",
-      "budgetTag":      "us-may-2026",
+      "id": "trp_2026_us_may",
+      "destination": "United States",
+      "type": "active",
+      "startDate": "2026-05-11",
+      "endDate": "2026-05-21",
+      "status": "Planned",
+      "description": "Rishi in US — training camp / races",
+      "accommodation": "TBC",
+      "who": "Rishi",
+      "budgetTag": "us-may-2026",
       "budgetEstimate": 2500,
-      "budgetActual":   null,
-      "raceEventId":    null,
-      "notes":          "",
+      "budgetActual": null,
+      "raceEventId": null,
+      "notes": "",
       "flights": []
     },
     {
-      "id":             "trp_2026_via_alpina",
-      "destination":    "Via Alpina, Switzerland",
-      "type":           "bikepacking",
-      "startDate":      "2026-07-10",
-      "endDate":        "2026-08-02",
-      "status":         "Planned",
-      "description":    "Via Alpina bikepacking route",
-      "accommodation":  "Mountain huts + wild camping",
-      "who":            "Rishi",
-      "budgetTag":      "via-alpina-2026",
+      "id": "trp_2026_via_alpina",
+      "destination": "Via Alpina, Switzerland",
+      "type": "bikepacking",
+      "startDate": "2026-07-13",
+      "endDate": "2026-08-02",
+      "status": "Planned",
+      "description": "Via Alpina bikepacking route",
+      "accommodation": "Mountain huts + wild camping",
+      "who": "Rishi",
       "budgetEstimate": 3500,
-      "budgetActual":   null,
-      "raceEventId":    null,
-      "notes":          "Book popular huts by May. Check Swiss Pass for transport sections.",
-      "flights": []
-    },
-  
-  {
-      "id":             "trp_2026_jura_race",
-      "destination":    "Jura, Switzerland",
-      "type":           "race",
-      "startDate":      "2026-06-13",
-      "endDate":        "2026-06-14",
-      "status":         "Confirmed",
-      "description":    "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
-      "accommodation":  "Hôtel Le National, Delémont",
-      "who":            "Sahani Family",
-      "budgetTag":      "jura-race-2026",
-      "budgetEstimate": 365,
-      "budgetActual":   154,
-      "raceEventId":    null,
-      "notes":          "Race entry fee paid. Hotel TBC — confirm booking. Dinner and lunch reservations still needed.",
-      "transport": [
-        { "mode": "train", "direction": "Out",    "route": "Arth-Goldau → Delémont",    "date": "2026-06-13", "time": "12:49", "cost": 23.60 },
-        { "mode": "train", "direction": "Return", "route": "Delémont → Arth-Goldau",    "date": "2026-06-14", "time": "14:21", "cost": 23.60 },
-        { "mode": "train", "direction": "Onward", "route": "Arth-Goldau → Chiasso",     "date": "2026-06-14", "time": "17:49", "cost": 22.80 },
-        { "mode": "train", "direction": "Onward", "route": "Chiasso → Milano Centrale", "date": "2026-06-14", "time": "19:31", "cost": 5.00 }
-      ],
-      "activities": [
-        { "name": "Pick up race number", "location": "Mercure Hotel Delémont", "status": "Planned" },
-        { "name": "Race",   "time": "09:30–13:00", "date": "2026-06-14", "cost": 79, "status": "Planned" },
-        { "name": "Dinner", "location": "Gros Pre", "cost": 60, "status": "Not booked" },
-        { "name": "Lunch",  "location": "Osteria La Bottega", "cost": 50, "status": "Not booked" }
-      ],
-      "flights": []
-    },
-    {
-      "id":             "trp_2026_napoli",
-      "destination":    "Napoli, Italy",
-      "type":           "leisure",
-      "startDate":      "2026-06-14",
-      "endDate":        "2026-06-17",
-      "status":         "Planned",
-      "description":    "",
-      "accommodation":  null,
-      "who":            null,
-      "budgetTag":      "napoli-jun-2026",
-      "budgetEstimate": null,
-      "budgetActual":   0,
-      "raceEventId":    null,
-      "notes":          "Details to be added. Flights, hotel and activities not yet planned.",
+      "budgetActual": 0,
+      "notes": "Book popular huts by May. Check Swiss Pass for transport sections.",
+      "flights": [],
       "transport": [],
       "activities": [],
-      "flights": []
+      "raceEventId": null
+    },
+    {
+      "id": "trp_2026_jura_race",
+      "destination": "Jura, Switzerland",
+      "type": "race",
+      "startDate": "2026-06-13",
+      "endDate": "2026-06-14",
+      "status": "Confirmed",
+      "description": "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
+      "accommodation": "Hôtel Le National, Delémont",
+      "who": "Cunty & Bunty",
+      "budgetEstimate": 365,
+      "budgetActual": 154,
+      "notes": "Race entry fee paid. Hotel TBC — confirm booking. Dinner and lunch reservations still needed.",
+      "flights": [],
+      "transport": [
+        {
+          "mode": "train",
+          "direction": "Out",
+          "route": "Arth-Goldau → Delémont",
+          "date": "2026-06-13",
+          "time": "12:49",
+          "ref": "",
+          "cost": 23.6
+        },
+        {
+          "mode": "train",
+          "direction": "Return",
+          "route": "Delémont → Arth-Goldau",
+          "date": "2026-06-14",
+          "time": "14:21",
+          "ref": "",
+          "cost": 23.6
+        },
+        {
+          "mode": "train",
+          "direction": "Onward",
+          "route": "Arth-Goldau → Chiasso",
+          "date": "2026-06-14",
+          "time": "17:49",
+          "ref": "",
+          "cost": 22.8
+        },
+        {
+          "mode": "train",
+          "direction": "Onward",
+          "route": "Chiasso → Milano Centrale",
+          "date": "2026-06-14",
+          "time": "19:31",
+          "ref": "",
+          "cost": 5
+        }
+      ],
+      "activities": [
+        {
+          "name": "Pick up race number",
+          "location": "Mercure Hotel Delémont",
+          "date": "",
+          "time": "",
+          "status": "Planned"
+        },
+        {
+          "name": "Race",
+          "location": "",
+          "date": "2026-06-14",
+          "time": "",
+          "cost": 79,
+          "status": "Planned"
+        },
+        {
+          "name": "Dinner",
+          "location": "Gros Pre",
+          "date": "",
+          "time": "",
+          "cost": 60,
+          "status": "Not booked"
+        },
+        {
+          "name": "Lunch",
+          "location": "Osteria La Bottega",
+          "date": "",
+          "time": "",
+          "cost": 50,
+          "status": "Not booked"
+        }
+      ],
+      "raceEventId": null
+    },
+    {
+      "id": "trp_2026_napoli",
+      "destination": "Napoli, Italy",
+      "type": "leisure",
+      "startDate": "2026-06-14",
+      "endDate": "2026-06-17",
+      "status": "Planned",
+      "description": "",
+      "accommodation": "Napoli Movie Apartments",
+      "who": "M&R and S&A",
+      "budgetEstimate": null,
+      "budgetActual": 0,
+      "notes": "Eat in season Pasta allo Scarpariello, Fiori di Zucca Ripieni, Parmigiana di Melanzane and  Spaghetti alla Nerano ",
+      "flights": [],
+      "transport": [
+        {
+          "mode": "Train",
+          "direction": "Delémont - Arth-Goldau",
+          "route": "CH → Napoli ",
+          "date": "2026-06-14",
+          "time": "14:21",
+          "ref": "IR56, IR27, IR",
+          "cost": 43
+        },
+        {
+          "mode": "Train",
+          "direction": "Arth-Goldau - Chiasso",
+          "route": "CH → Napoli ",
+          "date": "2026-06-14",
+          "time": "17:49",
+          "ref": "IC2, RE80",
+          "cost": 46
+        },
+        {
+          "mode": "Train",
+          "direction": "Chiasso - Milano Centrale",
+          "route": "CH → Napoli ",
+          "date": "2026-06-14",
+          "time": "19:31",
+          "ref": "RE80",
+          "cost": 12.2
+        },
+        {
+          "mode": "Train",
+          "direction": "Milano Centrale - Napoli Centrale",
+          "route": "CH → Napoli ",
+          "date": "2026-06-15",
+          "time": "06:35",
+          "ref": "9605",
+          "cost": 171.8
+        },
+        {
+          "mode": "Train",
+          "direction": "Napoli Centrale - Milano Centrale",
+          "route": "Napoli → Goldau",
+          "date": "2026-06-17",
+          "time": "15:00",
+          "ref": "9648",
+          "cost": 159.8
+        },
+        {
+          "mode": "Train",
+          "direction": "Milano Centrale - Chiasso",
+          "route": "Napoli → Goldau",
+          "date": "2026-06-17",
+          "time": "",
+          "ref": "EC28",
+          "cost": 17
+        },
+        {
+          "mode": "Train",
+          "direction": "Chiasso - Arth-Goldau ",
+          "route": "Napoli → Goldau",
+          "date": "2026-06-17",
+          "time": "21:05",
+          "ref": "EC28",
+          "cost": 21.4
+        }
+      ],
+      "activities": [
+        {
+          "name": "L'Antica Pizzeria da Michele",
+          "location": "Via Cesare Sersale, 1, 80139 Napoli NA, Italy",
+          "date": "2026-06-15",
+          "time": "21:00",
+          "cost": 31,
+          "status": "Not booked"
+        },
+        {
+          "name": "Gino e Toto Sorbillo",
+          "location": "Via dei Tribunali, 32, 80138 Napoli NA, Italy",
+          "date": "2026-06-16",
+          "time": "12:30",
+          "cost": 30,
+          "status": "Not booked"
+        },
+        {
+          "name": "Milan Hotel Booking - Delle Nazioni Milan Hotel ",
+          "location": "Via Alfredo Cappellini, 18, 20124 Milano",
+          "date": "2026-06-14",
+          "time": "",
+          "cost": 57,
+          "status": "Booked"
+        },
+        {
+          "name": "Naopli Hotel Booking - Napoli Movie Apartments ",
+          "location": "Largo Donnaregina, 25, 80138 Napoli",
+          "date": "2026-06-15",
+          "time": "15:00",
+          "cost": 251,
+          "status": "Booked"
+        },
+        {
+          "name": "Cafe Spaccanapoli for sfogliatella (beside apt.)",
+          "location": "Via Duomo, 80138 Napoli NA, Italy",
+          "date": "2026-06-16",
+          "time": "",
+          "status": "Planned"
+        },
+        {
+          "name": "Book bar Liberia Berisio for cocktails ",
+          "location": "Via Port'Alba, 28, 80134 Napoli NA, Italy",
+          "date": "2026-06-16",
+          "time": "",
+          "status": "Planned"
+        },
+        {
+          "name": "Salotto Bellini (Negroni Place) ",
+          "location": "80 Via Santa Maria di Costantinopoli",
+          "date": "2026-06-16",
+          "time": "",
+          "status": "Planned"
+        },
+        {
+          "name": "La Locanda Gesù Vecchio (for Pasta allo Scarpariello)",
+          "location": "",
+          "date": "",
+          "time": "",
+          "status": "Planned"
+        }
+      ],
+      "raceEventId": null
+    },
+    {
+      "id": "trp_2026_5o7xwbxz3",
+      "destination": "Goldau, Switzerland ",
+      "type": "leisure",
+      "startDate": "2026-07-09",
+      "endDate": "2026-07-12",
+      "status": "Planned",
+      "description": "Darren and Mosidi visit ",
+      "accommodation": "",
+      "who": "Darren & Mosidi",
+      "budgetEstimate": null,
+      "budgetActual": 0,
+      "notes": "",
+      "flights": [],
+      "transport": [
+        {
+          "mode": "Flight",
+          "direction": "Dublin",
+          "route": "DUB → ZRH",
+          "date": "2026-07-09",
+          "time": "10:35",
+          "ref": "EI 342"
+        },
+        {
+          "mode": "Flight",
+          "direction": "Zurich",
+          "route": "ZRH → DUB",
+          "date": "2026-07-12",
+          "time": "20:50",
+          "ref": "EI 349"
+        }
+      ],
+      "activities": [],
+      "raceEventId": null
+    },
+    {
+      "id": "trp_2026_22krt8ev4",
+      "destination": "Goldau, Switzerland",
+      "type": "family",
+      "startDate": "2026-06-04",
+      "endDate": "2026-06-09",
+      "status": "Completed",
+      "description": "",
+      "accommodation": "",
+      "who": "Mammy, Ais, Conor",
+      "budgetEstimate": 500,
+      "budgetActual": 0,
+      "notes": "",
+      "flights": [],
+      "transport": [
+        {
+          "mode": "Flight",
+          "direction": "Zurich",
+          "route": "DUB → ZRH",
+          "date": "2026-06-04",
+          "time": "16:20",
+          "ref": "LX 401",
+          "cost": 170
+        },
+        {
+          "mode": "Flight",
+          "direction": "Dublin",
+          "route": "ZRH → zrh",
+          "date": "2026-06-09",
+          "time": "16:30",
+          "ref": "LX 404"
+        },
+        {
+          "mode": "train",
+          "direction": "Goldau",
+          "route": "Zurich Airport → Arth-Goldau",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "ref": "Mammy",
+          "cost": 25.6
+        },
+        {
+          "mode": "train",
+          "direction": "",
+          "route": "Zurich Airport → Arth-Goldau",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "ref": "Aisling",
+          "cost": 25.6
+        },
+        {
+          "mode": "train",
+          "direction": "",
+          "route": "Zurich Airport → Arth-Goldau",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "ref": "Marion",
+          "cost": 12.8
+        }
+      ],
+      "activities": [],
+      "raceEventId": null
+    },
+    {
+      "id": "trp_2026_l8wls2qy7",
+      "destination": "Boston, USA",
+      "type": "work",
+      "startDate": "2026-09-07",
+      "endDate": "2026-09-14",
+      "status": "TBC",
+      "description": "+Friends + Race",
+      "accommodation": "",
+      "who": "",
+      "budgetEstimate": null,
+      "budgetActual": 0,
+      "notes": "",
+      "flights": [],
+      "transport": [],
+      "activities": [
+        {
+          "name": "Tree House Half Marathon",
+          "location": " Western Mass",
+          "date": "2026-09-13",
+          "time": "08:00",
+          "cost": 107.85,
+          "status": "Not booked"
+        }
+      ],
+      "raceEventId": null
     }
-  ],
-
-  "visitors": [
-    {
-      "id":            "vis_2026_herricks_mar",
-      "who":           "Herricks",
-      "arrivalDate":   "2026-03-16",
-      "departureDate": "2026-03-22",
-      "sleeping":      "Guest room",
-      "activities":    ["Barcelona day trip", "Hiking", "Fondue dinner"],
-      "notes":         "Spain with Herricks (TBC)"
-    }
-    ],
-
-  "packingTemplates": [
-    {
-      "type":  "race",
-      "label": "Race Trip",
-      "categories": [
-        {
-          "name": "Race Gear",
-          "items": [
-            "Race kit (vest + shorts)",
-            "Race shoes",
-            "Bib + chip (collect at expo)",
-            "GPS watch + charger",
-            "Race gels / nutrition",
-            "Electrolyte tabs",
-            "Safety pins x6",
-            "Body Glide / Vaseline",
-            "Compression socks (travel)"
-          ]
-        },
-        {
-          "name": "Clothing",
-          "items": [
-            "Casual trousers x2",
-            "T-shirts x3",
-            "Warm layer / fleece",
-            "Underwear x4",
-            "Socks (race + casual)",
-            "Smart casual for dinner"
-          ]
-        },
-        {
-          "name": "Essentials",
-          "items": [
-            "Passport / ID",
-            "Travel insurance card",
-            "Phone + charger",
-            "Earplugs",
-            "Sunscreen",
-            "Paracetamol / ibuprofen",
-            "Blister plasters"
-          ]
-        },
-        {
-          "name": "Pre-Race Checklist",
-          "items": [
-            "Carb-load dinner booked",
-            "Breakfast plan ready (oats + banana)",
-            "Race briefing downloaded",
-            "Course map saved offline",
-            "Hotel → start line route checked",
-            "Bag drop logistics confirmed",
-            "Post-race food / drink planned"
-          ]
-        }
-      ]
-    },
-    {
-      "type":  "leisure",
-      "label": "Leisure / City Break",
-      "categories": [
-        {
-          "name": "Documents",
-          "items": ["Passport", "Travel insurance", "Boarding passes", "Hotel confirmation", "Local currency / card"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["T-shirts x4", "Trousers / jeans x2", "Smart casual outfit x1", "Light jacket", "Comfortable walking shoes", "Swimwear", "Sunglasses"]
-        },
-        {
-          "name": "Toiletries & Tech",
-          "items": ["Toiletry bag", "Sunscreen SPF50", "Medication", "Phone + charger", "Camera + memory cards", "Universal adaptor"]
-        },
-        {
-          "name": "Activities",
-          "items": ["Guidebook / maps saved offline", "Restaurant shortlist", "Museum tickets pre-booked", "Run shoes + kit (if running)"]
-        }
-      ]
-    },
-    {
-      "type":  "family",
-      "label": "Family / Visitors",
-      "categories": [
-        {
-          "name": "Gifts & Extras",
-          "items": ["Swiss chocolate / souvenirs", "Gifts for family", "Kids gifts if applicable", "Cards"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["Smart casual for family meals x2", "Comfortable casual x3", "Rain jacket", "Shoes x2"]
-        },
-        {
-          "name": "Essentials",
-          "items": ["Passport", "Flight details", "Phone + charger", "Adaptor if needed", "Medications"]
-        }
-      ]
-    },
-    {
-      "type":  "bikepacking",
-      "label": "Bikepacking",
-      "categories": [
-        {
-          "name": "Bike & Kit",
-          "items": [
-            "Bike serviced pre-trip",
-            "Helmet",
-            "Cycling shoes + cleats",
-            "Bike computer charged",
-            "Lights (front + rear)",
-            "Lock"
-          ]
-        },
-        {
-          "name": "Repairs",
-          "items": ["Spare tubes x3", "Tyre levers", "Mini pump / CO2", "Chain lube", "Multi-tool", "Patch kit", "Spoke wrench"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["Bib shorts x3", "Cycling jerseys x3", "Gilet / wind jacket", "Arm warmers", "Gloves (summer + cold)", "Cycling socks x4", "Casual clothes (off bike) x2", "Waterproof jacket"]
-        },
-        {
-          "name": "Camping",
-          "items": ["Sleeping bag (appropriate rating)", "Bivvy / lightweight tent", "Sleeping mat", "Cooking kit + fuel", "Water filter / purification tabs", "Head torch + spare batteries", "First aid kit"]
-        },
-        {
-          "name": "Nutrition",
-          "items": ["Gels / bars x30+", "Electrolyte powder", "Emergency food (nuts, dates)", "Water bottles x2", "Frame bag snacks"]
-        }
-      ]
-    },
-    {
-      "type":  "active",
-      "label": "Active / Training Trip",
-      "categories": [
-        {
-          "name": "Sports",
-          "items": ["Run shoes", "Training kit x3", "GPS watch + charger", "Foam roller / bands", "Protein powder", "Gels / race nutrition"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["Casual clothes x3", "Smart casual x1", "Comfortable shoes", "Rain jacket"]
-        },
-        {
-          "name": "Essentials",
-          "items": ["Passport", "Flights + hotel confirmation", "Phone + charger", "Sunscreen", "Medication", "Travel insurance"]
-        }
-      ]
-    },
-    {
-      "type":  "work",
-      "label": "Work Trip",
-      "categories": [
-        {
-          "name": "Work",
-          "items": ["Laptop + charger", "Notebook + pens", "Business cards", "Presentation saved offline", "Expense tracker / receipts wallet"]
-        },
-        {
-          "name": "Clothing",
-          "items": ["Smart business outfits x2", "Business casual x2", "Dress shoes", "Ties / accessories if needed"]
-        },
-        {
-          "name": "Essentials",
-          "items": ["Passport + visa if required", "Company credit card", "Hotel booking ref", "Travel insurance", "Universal adaptor", "Phone + charger"]
-        }
-      ]
-    }
-   
   ]
 }
