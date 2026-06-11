@@ -154,6 +154,48 @@ body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
 .tab-panel { display: none; padding-top: 20px; }
 @media(min-width:1024px){ .tab-panel { padding-top: 24px; } }
 .tab-panel.active { display: block; }
+
+/* ── TRIP EDITOR FORM ── */
+.editor-container { max-width: 1000px; margin: 0 auto; }
+.editor-actions { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.editor-btn { background: var(--app-primary); color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; text-transform: uppercase; transition: background 0.2s; }
+.editor-btn:hover { background: var(--app-primary2); }
+.editor-btn.secondary { background: #64748b; }
+.editor-btn.secondary:hover { background: #475569; }
+.editor-btn.danger { background: #ef5350; }
+.editor-btn.danger:hover { background: #e53935; }
+.trip-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.trip-item { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; cursor: pointer; transition: all 0.2s; }
+.trip-item:hover { border-color: var(--app-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.trip-item-title { font-weight: 700; color: var(--app-primary); margin-bottom: 4px; }
+.trip-item-dates { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+.trip-item-actions { display: flex; gap: 6px; margin-top: 10px; }
+.trip-item-actions button { flex: 1; padding: 6px 10px; font-size: 10px; }
+.form-section { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+.form-section h3 { margin-top: 0; margin-bottom: 15px; color: var(--app-primary); font-size: 14px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; }
+.form-group input, .form-group select, .form-group textarea { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; font-size: 12px; font-family: inherit; }
+.form-group textarea { resize: vertical; min-height: 60px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--app-primary); background: white; }
+.nested-items { background: #f8fafc; border-radius: 8px; padding: 12px; margin-top: 10px; }
+.nested-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+.nested-item-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.nested-item-fields input { padding: 6px; font-size: 11px; }
+.add-btn { background: #4caf50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.add-btn:hover { background: #43a047; }
+.remove-btn { background: #ef5350; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700; }
+.remove-btn:hover { background: #e53935; }
+.form-actions { display: flex; gap: 10px; margin-top: 20px; }
+.form-actions button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 13px; text-transform: uppercase; }
+.form-actions .save { background: var(--app-primary); color: white; }
+.form-actions .save:hover { background: var(--app-primary2); }
+.form-actions .cancel { background: #e2e8f0; color: #334155; }
+.form-actions .cancel:hover { background: #cbd5e1; }
+.status-msg { padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; font-weight: 600; }
+.status-msg.success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.status-msg.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 </style>
 </head>
 <body>
@@ -193,6 +235,9 @@ body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
       <button class="nav-pill" onclick="showTab('budget',this)">
         <iconify-icon icon="mdi:wallet-outline"></iconify-icon> Budget
       </button>
+      <button class="nav-pill" onclick="showTab('edit',this)">
+        <iconify-icon icon="mdi:pencil"></iconify-icon> Edit
+      </button>
     </div>
   </div>
 </nav>
@@ -218,8 +263,28 @@ body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
     <div class="tab-panel" id="tab-budget">
       <div class="budget-trip-cards" id="budgetCards"></div>
     </div>
-  </div>
-</main>
+
+    <div class="tab-panel" id="tab-edit">
+      <div class="editor-container">
+        <div class="editor-actions">
+          <button class="editor-btn" onclick="newTrip()">
+            <iconify-icon icon="mdi:plus"></iconify-icon> New Trip
+          </button>
+          <button class="editor-btn secondary" onclick="exportJSON()">
+            <iconify-icon icon="mdi:download"></iconify-icon> Export JSON
+          </button>
+          <button class="editor-btn secondary" onclick="document.getElementById('importFile').click()">
+            <iconify-icon icon="mdi:upload"></iconify-icon> Import JSON
+          </button>
+          <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+          <span id="editorStatus"></span>
+        </div>
+        <div id="tripList" class="trip-list"></div>
+        <div id="editorForm" style="display:none;">
+          <!-- Form will be injected here -->
+        </div>
+      </div>
+    </div>
 
 <script src="../../shared/utils.js"></script>
 <script>
@@ -243,6 +308,7 @@ async function loadData() {
   badge.textContent = count + ' trips';
   badge.style.display = '';
   render();
+  initEditor();
 }
 
 function render() {
@@ -585,7 +651,384 @@ function closeModal() {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-document.addEventListener('DOMContentLoaded', loadData);
+
+/* ════════════════════════════════════════════════════════════════════
+   TRIP EDITOR — localStorage-based trip management
+   ════════════════════════════════════════════════════════════════════ */
+let editingTrip = null;
+const STORAGE_KEY = 'wanderer_trips';
+
+function initEditor() {
+  loadTripsFromStorage();
+  renderTripList();
+}
+
+function loadTripsFromStorage() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      DATA.trips = JSON.parse(stored);
+    } catch(e) {
+      console.error('Failed to parse stored trips:', e);
+    }
+  }
+}
+
+function saveTripsToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(realTrips()));
+  showStatus('Saved to browser', 'success');
+}
+
+function renderTripList() {
+  const list = document.getElementById('tripList');
+  const trips = realTrips().sort((a,b) => b.startDate.localeCompare(a.startDate));
+  
+  list.innerHTML = trips.map(t => {
+    const meta = TYPE_META[t.type];
+    const colour = meta?.colour || '#888';
+    return `
+    <div class="trip-item" style="border-left: 4px solid ${colour}">
+      <div class="trip-item-title">${t.destination}</div>
+      <div class="trip-item-dates">${fmtDate(t.startDate)} → ${fmtDate(t.endDate)}</div>
+      <div style="font-size:11px; color:#64748b; margin-bottom:8px;">
+        <span style="background:#f1f5f9; padding:2px 6px; border-radius:3px; display:inline-block; margin-right:4px;">${t.status || '—'}</span>
+        <span style="background:${colour}20; color:${colour}; padding:2px 6px; border-radius:3px; display:inline-block;">${(meta?.label || t.type).toUpperCase()}</span>
+      </div>
+      <div class="trip-item-actions">
+        <button class="editor-btn" onclick="editTrip('${t.id}')">Edit</button>
+        <button class="editor-btn danger" onclick="deleteTrip('${t.id}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function newTrip() {
+  editingTrip = null;
+  showEditForm({
+    id: 'trp_' + new Date().getFullYear() + '_' + Math.random().toString(36).substr(2,9),
+    destination: '',
+    type: 'leisure',
+    startDate: '',
+    endDate: '',
+    status: 'Planned',
+    description: '',
+    accommodation: '',
+    who: '',
+    budgetEstimate: null,
+    budgetActual: 0,
+    notes: '',
+    flights: [],
+    transport: [],
+    activities: []
+  });
+}
+
+function editTrip(id) {
+  editingTrip = realTrips().find(t => t.id === id);
+  if (editingTrip) showEditForm(JSON.parse(JSON.stringify(editingTrip)));
+}
+
+function deleteTrip(id) {
+  if (confirm('Delete this trip? This cannot be undone.')) {
+    DATA.trips = realTrips().filter(t => t.id !== id);
+    saveTripsToStorage();
+    render();
+    renderTripList();
+    showStatus('Trip deleted', 'success');
+  }
+}
+
+function showEditForm(trip) {
+  const form = document.getElementById('editorForm');
+  const listDiv = document.getElementById('tripList');
+  listDiv.style.display = 'none';
+  form.style.display = 'block';
+  
+  form.innerHTML = `
+    <div class="form-section">
+      <h3>${editingTrip ? 'Edit Trip' : 'New Trip'}</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Trip ID</label>
+          <input type="text" id="tripId" value="${trip.id}" readonly>
+        </div>
+        <div class="form-group">
+          <label>Destination</label>
+          <input type="text" id="destination" value="${trip.destination}" placeholder="e.g., Barcelona, Spain">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="type">
+            <option value="leisure" ${trip.type === 'leisure' ? 'selected' : ''}>Leisure</option>
+            <option value="race" ${trip.type === 'race' ? 'selected' : ''}>Race</option>
+            <option value="active" ${trip.type === 'active' ? 'selected' : ''}>Active</option>
+            <option value="work" ${trip.type === 'work' ? 'selected' : ''}>Work</option>
+            <option value="family" ${trip.type === 'family' ? 'selected' : ''}>Family</option>
+            <option value="bikepacking" ${trip.type === 'bikepacking' ? 'selected' : ''}>Bikepacking</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="status">
+            <option value="Planned" ${trip.status === 'Planned' ? 'selected' : ''}>Planned</option>
+            <option value="Confirmed" ${trip.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+            <option value="TBC" ${trip.status === 'TBC' ? 'selected' : ''}>TBC</option>
+            <option value="Completed" ${trip.status === 'Completed' ? 'selected' : ''}>Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="startDate" value="${trip.startDate}">
+        </div>
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" id="endDate" value="${trip.endDate}">
+        </div>
+        <div class="form-group">
+          <label>Who</label>
+          <input type="text" id="who" value="${trip.who || ''}" placeholder="e.g., Sahani Family">
+        </div>
+        <div class="form-group">
+          <label>Accommodation</label>
+          <input type="text" id="accommodation" value="${trip.accommodation || ''}" placeholder="e.g., Hotel Arts Barcelona">
+        </div>
+        <div class="form-group">
+          <label>Budget Estimate (CHF)</label>
+          <input type="number" id="budgetEstimate" value="${trip.budgetEstimate || ''}" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Budget Spent (CHF)</label>
+          <input type="number" id="budgetActual" value="${trip.budgetActual || 0}">
+        </div>
+      </div>
+      <div class="form-group" style="grid-column: 1/-1;">
+        <label>Description</label>
+        <textarea id="description" placeholder="Trip details...">${trip.description || ''}</textarea>
+      </div>
+      <div class="form-group" style="grid-column: 1/-1;">
+        <label>Notes</label>
+        <textarea id="notes" placeholder="Additional notes...">${trip.notes || ''}</textarea>
+      </div>
+    </div>
+
+    <!-- Transport Section -->
+    <div class="form-section">
+      <h3>Transport (Flights/Trains)</h3>
+      <div id="transportList" class="nested-items"></div>
+      <button class="add-btn" onclick="addTransport()">+ Add Transport Leg</button>
+    </div>
+
+    <!-- Activities Section -->
+    <div class="form-section">
+      <h3>Activities</h3>
+      <div id="activitiesList" class="nested-items"></div>
+      <button class="add-btn" onclick="addActivity()">+ Add Activity</button>
+    </div>
+
+    <div class="form-actions">
+      <button class="save" onclick="saveTrip()">Save Trip</button>
+      <button class="cancel" onclick="cancelEdit()">Cancel</button>
+    </div>
+  `;
+
+  renderTransportList(trip.transport || []);
+  renderActivitiesList(trip.activities || []);
+  if (window.Iconify) Iconify.scan();
+}
+
+function renderTransportList(transport) {
+  const list = document.getElementById('transportList');
+  list.innerHTML = (transport || []).map((tr, idx) => `
+    <div class="nested-item">
+      <div class="nested-item-fields">
+        <input type="text" placeholder="Mode (flight/train)" value="${tr.mode || 'train'}" onchange="updateTransport(${idx}, 'mode', this.value)">
+        <input type="text" placeholder="Direction (Out/Return/Onward)" value="${tr.direction || ''}" onchange="updateTransport(${idx}, 'direction', this.value)">
+        <input type="text" placeholder="Route (e.g., ZRH → BCN)" value="${tr.route || ''}" onchange="updateTransport(${idx}, 'route', this.value)">
+        <input type="date" value="${tr.date || ''}" onchange="updateTransport(${idx}, 'date', this.value)">
+        <input type="time" placeholder="HH:MM" value="${tr.time || ''}" onchange="updateTransport(${idx}, 'time', this.value)">
+        <input type="text" placeholder="Ref (e.g., IB2341)" value="${tr.ref || ''}" onchange="updateTransport(${idx}, 'ref', this.value)">
+        <input type="number" placeholder="Cost (CHF)" value="${tr.cost || ''}" onchange="updateTransport(${idx}, 'cost', this.value)">
+      </div>
+      <button class="remove-btn" onclick="removeTransport(${idx})">Remove</button>
+    </div>
+  `).join('');
+}
+
+function renderActivitiesList(activities) {
+  const list = document.getElementById('activitiesList');
+  list.innerHTML = (activities || []).map((a, idx) => `
+    <div class="nested-item">
+      <div class="nested-item-fields">
+        <input type="text" placeholder="Activity name" value="${a.name || ''}" onchange="updateActivity(${idx}, 'name', this.value)" style="grid-column: 1/-1;">
+        <input type="text" placeholder="Location" value="${a.location || ''}" onchange="updateActivity(${idx}, 'location', this.value)">
+        <input type="date" value="${a.date || ''}" onchange="updateActivity(${idx}, 'date', this.value)">
+        <input type="time" placeholder="HH:MM" value="${a.time || ''}" onchange="updateActivity(${idx}, 'time', this.value)">
+        <input type="number" placeholder="Cost (CHF)" value="${a.cost || ''}" onchange="updateActivity(${idx}, 'cost', this.value)">
+        <select onchange="updateActivity(${idx}, 'status', this.value)">
+          <option value="Planned" ${a.status === 'Planned' ? 'selected' : ''}>Planned</option>
+          <option value="Booked" ${a.status === 'Booked' ? 'selected' : ''}>Booked</option>
+          <option value="Not booked" ${a.status === 'Not booked' ? 'selected' : ''}>Not booked</option>
+        </select>
+      </div>
+      <button class="remove-btn" onclick="removeActivity(${idx})">Remove</button>
+    </div>
+  `).join('');
+}
+
+function addTransport() {
+  const transport = getCurrentFormData().transport || [];
+  transport.push({ mode: 'train', direction: '', route: '', date: '', time: '', ref: '', cost: '' });
+  renderTransportList(transport);
+}
+
+function removeTransport(idx) {
+  const transport = getCurrentFormData().transport || [];
+  transport.splice(idx, 1);
+  renderTransportList(transport);
+}
+
+function updateTransport(idx, field, value) {
+  const transport = getCurrentFormData().transport || [];
+  if (!transport[idx]) transport[idx] = {};
+  transport[idx][field] = value;
+}
+
+function addActivity() {
+  const activities = getCurrentFormData().activities || [];
+  activities.push({ name: '', location: '', date: '', time: '', cost: '', status: 'Planned' });
+  renderActivitiesList(activities);
+}
+
+function removeActivity(idx) {
+  const activities = getCurrentFormData().activities || [];
+  activities.splice(idx, 1);
+  renderActivitiesList(activities);
+}
+
+function updateActivity(idx, field, value) {
+  const activities = getCurrentFormData().activities || [];
+  if (!activities[idx]) activities[idx] = {};
+  activities[idx][field] = value;
+}
+
+function getCurrentFormData() {
+  return {
+    id: document.getElementById('tripId')?.value,
+    destination: document.getElementById('destination')?.value,
+    type: document.getElementById('type')?.value,
+    startDate: document.getElementById('startDate')?.value,
+    endDate: document.getElementById('endDate')?.value,
+    status: document.getElementById('status')?.value,
+    description: document.getElementById('description')?.value,
+    accommodation: document.getElementById('accommodation')?.value,
+    who: document.getElementById('who')?.value,
+    budgetEstimate: document.getElementById('budgetEstimate')?.value ? parseInt(document.getElementById('budgetEstimate').value) : null,
+    budgetActual: parseInt(document.getElementById('budgetActual')?.value || 0),
+    notes: document.getElementById('notes')?.value,
+    flights: [],
+    transport: document.querySelectorAll('#transportList .nested-item').length > 0 ? Array.from(document.querySelectorAll('#transportList .nested-item')).map(el => {
+      const inputs = el.querySelectorAll('input, select');
+      return {
+        mode: inputs[0]?.value || 'train',
+        direction: inputs[1]?.value || '',
+        route: inputs[2]?.value || '',
+        date: inputs[3]?.value || '',
+        time: inputs[4]?.value || '',
+        ref: inputs[5]?.value || '',
+        cost: inputs[6]?.value ? parseFloat(inputs[6].value) : undefined
+      };
+    }) : [],
+    activities: document.querySelectorAll('#activitiesList .nested-item').length > 0 ? Array.from(document.querySelectorAll('#activitiesList .nested-item')).map(el => {
+      const inputs = el.querySelectorAll('input, select');
+      return {
+        name: inputs[0]?.value || '',
+        location: inputs[1]?.value || '',
+        date: inputs[2]?.value || '',
+        time: inputs[3]?.value || '',
+        cost: inputs[4]?.value ? parseFloat(inputs[4].value) : undefined,
+        status: inputs[5]?.value || 'Planned'
+      };
+    }) : [],
+    raceEventId: null
+  };
+}
+
+function saveTrip() {
+  const formData = getCurrentFormData();
+  
+  if (!formData.destination || !formData.startDate || !formData.endDate) {
+    showStatus('Destination, start date, and end date are required', 'error');
+    return;
+  }
+
+  if (editingTrip) {
+    const idx = DATA.trips.findIndex(t => t.id === editingTrip.id);
+    DATA.trips[idx] = formData;
+  } else {
+    DATA.trips.push(formData);
+  }
+
+  saveTripsToStorage();
+  render();
+  renderTripList();
+  cancelEdit();
+}
+
+function cancelEdit() {
+  document.getElementById('editorForm').style.display = 'none';
+  document.getElementById('tripList').style.display = 'grid';
+  editingTrip = null;
+}
+
+function exportJSON() {
+  const data = { meta: DATA.meta, trips: realTrips() };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'travel.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showStatus('JSON exported', 'success');
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (imported.trips && Array.isArray(imported.trips)) {
+        DATA.trips = imported.trips;
+        saveTripsToStorage();
+        render();
+        renderTripList();
+        showStatus('JSON imported successfully', 'success');
+      } else {
+        showStatus('Invalid JSON format', 'error');
+      }
+    } catch(err) {
+      showStatus('Failed to parse JSON: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById('editorStatus');
+  if (el) {
+    el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 3000);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+});
 </script>
 <!-- Trip detail modal -->
 <div id="modalOverlay" onclick="closeModal()" style="
