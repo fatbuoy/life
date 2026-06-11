@@ -23,7 +23,7 @@
       "destination":    "Granada, Spain",
       "type":           "leisure",
       "startDate":      "2026-01-10",
-      "endDate":        "2026-01-31",
+      "endDate":        "2026-03-13",
       "status":         "Confirmed",
       "description":    "Long stay — Living in Granada",
       "accommodation":  "Private apartment, Realejo district",
@@ -125,6 +125,55 @@
       "raceEventId":    null,
       "notes":          "Book popular huts by May. Check Swiss Pass for transport sections.",
       "flights": []
+    },
+  
+  {
+      "id":             "trp_2026_jura_race",
+      "destination":    "Jura, Switzerland",
+      "type":           "race",
+      "startDate":      "2026-06-13",
+      "endDate":        "2026-06-14",
+      "status":         "Confirmed",
+      "description":    "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
+      "accommodation":  "Hôtel du Midi, Delémont",
+      "who":            "Sahani Family",
+      "budgetTag":      "jura-race-2026",
+      "budgetEstimate": 365,
+      "budgetActual":   154,
+      "raceEventId":    null,
+      "notes":          "Race entry fee paid. Hotel TBC — confirm booking. Dinner and lunch reservations still needed.",
+      "transport": [
+        { "mode": "train", "direction": "Out",    "route": "Arth-Goldau → Delémont",    "date": "2026-06-13", "time": "12:49", "cost": 23.60 },
+        { "mode": "train", "direction": "Return", "route": "Delémont → Arth-Goldau",    "date": "2026-06-14", "time": "14:21", "cost": 23.60 },
+        { "mode": "train", "direction": "Onward", "route": "Arth-Goldau → Chiasso",     "date": "2026-06-14", "time": "17:49", "cost": 22.80 },
+        { "mode": "train", "direction": "Onward", "route": "Chiasso → Milano Centrale", "date": "2026-06-14", "time": "19:31", "cost": 5.00 }
+      ],
+      "activities": [
+        { "name": "Pick up race number", "location": "Mercure Hotel Delémont", "status": "Planned" },
+        { "name": "Race",   "time": "09:30–13:00", "date": "2026-06-14", "cost": 79, "status": "Planned" },
+        { "name": "Dinner", "location": "Gros Pre", "cost": 60, "status": "Not booked" },
+        { "name": "Lunch",  "location": "Osteria La Bottega", "cost": 50, "status": "Not booked" }
+      ],
+      "flights": []
+    },
+    {
+      "id":             "trp_2026_napoli",
+      "destination":    "Napoli, Italy",
+      "type":           "leisure",
+      "startDate":      "2026-06-14",
+      "endDate":        "2026-06-17",
+      "status":         "Planned",
+      "description":    "",
+      "accommodation":  null,
+      "who":            null,
+      "budgetTag":      "napoli-jun-2026",
+      "budgetEstimate": null,
+      "budgetActual":   0,
+      "raceEventId":    null,
+      "notes":          "Details to be added. Flights, hotel and activities not yet planned.",
+      "transport": [],
+      "activities": [],
+      "flights": []
     }
   ],
 
@@ -138,7 +187,7 @@
       "activities":    ["Barcelona day trip", "Hiking", "Fondue dinner"],
       "notes":         "Spain with Herricks (TBC)"
     }
-  ],
+    ],
 
   "packingTemplates": [
     {
