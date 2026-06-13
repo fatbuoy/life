@@ -12,7 +12,7 @@
       "type": "hibernation",
       "startDate": "2026-01-10",
       "endDate": "2026-03-13",
-      "status": "Confirmed",
+      "status": "Completed",
       "description": "Long stay — Living in Granada",
       "accommodation": "Private apartment, Realejo district",
       "who": "Sahani Family",
@@ -42,7 +42,8 @@
           "location": "GRX → ZRH",
           "notes": "Ref: IB2342"
         }
-      ]
+      ],
+      "title": ""
     },
     {
       "id": "trp_2026_ireland_jan",
@@ -67,7 +68,7 @@
       "type": "race",
       "startDate": "2026-03-14",
       "endDate": "2026-03-15",
-      "status": "Completed",
+      "status": "Confirmed",
       "description": "Barcelona Marathon 2026",
       "accommodation": "Hotel Arts Barcelona",
       "who": "Rishi",
@@ -96,20 +97,6 @@
           "time": "20:15",
           "location": "BCN → ZRH",
           "notes": "Ref: VY1235"
-        },
-        {
-          "id": "it-1781379398387",
-          "type": "accommodation",
-          "status": "booked",
-          "title": "Motel One",
-          "date": "2026-03-14",
-          "time": "",
-          "arrivalTime": "",
-          "location": "",
-          "notes": "",
-          "details": {
-            "pnr": ""
-          }
         }
       ]
     },
@@ -169,14 +156,14 @@
       "type": "race",
       "startDate": "2026-06-13",
       "endDate": "2026-06-14",
-      "status": "Planning",
+      "status": "Confirmed",
       "description": "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
       "accommodation": "Hôtel Le National, Delémont",
       "who": "Cunty & Bunty",
       "budgetEstimate": 365,
       "budgetActual": 154,
       "raceEventId": null,
-      "notes": "",
+      "notes": "Race entry fee paid. Hotel TBC — confirm booking.",
       "itinerary": [
         {
           "id": "it-1",
@@ -250,23 +237,8 @@
           "status": "not-booked",
           "date": "2026-06-14",
           "notes": "Cost: 50 CHF"
-        },
-        {
-          "id": "it-1781379268672",
-          "type": "accommodation",
-          "status": "booked",
-          "title": "Hotel Le National",
-          "date": "2026-06-13",
-          "time": "",
-          "arrivalTime": "",
-          "location": "",
-          "notes": "",
-          "details": {
-            "pnr": ""
-          }
         }
-      ],
-      "title": ""
+      ]
     },
     {
       "id": "trp_2026_napoli",
