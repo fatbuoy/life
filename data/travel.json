@@ -170,7 +170,7 @@
       "type": "race",
       "startDate": "2026-06-13",
       "endDate": "2026-06-14",
-      "status": "Confirmed",
+      "status": "Planning",
       "description": "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
       "accommodation": "Hôtel Le National, Delémont",
       "who": "Cunty & Bunty",
@@ -251,6 +251,20 @@
           "status": "not-booked",
           "date": "2026-06-14",
           "notes": "Cost: 50 CHF"
+        },
+        {
+          "id": "it-1781381157758",
+          "type": "accommodation",
+          "status": "booked",
+          "title": "Hôtel Restaurant Le National",
+          "date": "2026-06-13",
+          "time": "",
+          "arrivalTime": "",
+          "location": "Rte de Bâle 25, 2800 Delémont",
+          "notes": "",
+          "details": {
+            "pnr": ""
+          }
         }
       ]
     },
