@@ -11,10 +11,15 @@
   --app-primary2:   #2a1a80;
   --app-accent:     #5040c0;
   --app-on-primary2:   #b8b0f0;
-  /* Trip Colors */
-  --c-visitors:   #22c55e; --c-holiday: #00bcd4; --c-leisure: #29b6f6;
-  --c-active:     #4caf50; --c-race: #ef5350; --c-work: #9e9e9e;
-  --c-bikepacking: #8d6e63; --c-family: #ab47bc;
+  
+  /* High-Contrast, Easy-to-Identify Category Colors */
+  --c-visitors:    #10b981; /* Emerald Green */
+  --c-family:      #8b5cf6; /* Royal Purple */
+  --c-active:      #ff781f; /* Safety Orange */
+  --c-leisure:     #06b6d4; /* Vivid Cyan */
+  --c-work:        #64748b; /* Cool Slate Grey */
+  --c-race:        #e11d48; /* High-Octane Crimson */
+  --c-hibernation: #9d174d; /* Pomegranate Velvet Maroon */
 }
 
 body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
@@ -206,17 +211,18 @@ body { background: #f4f7fa; color: #1a2332; font-size: 13px; }
 let DATA = null;
 let currentYear = 2026;
 
+// Semantically unique icons & high-contrast crisp colors
 const TYPE_META = {
-  'leisure':     { label:'Leisure',     colour:'#29b6f6', icon:'mdi:beach' },
-  'race':        { label:'Race',        colour:'#ef5350', icon:'mdi:trophy-outline' },
-  'active':      { label:'Active',      colour:'#4caf50', icon:'mdi:run-fast' },
-  'work':        { label:'Work',        colour:'#9e9e9e', icon:'mdi:briefcase-outline' },
-  'family':      { label:'Family',      colour:'#ab47bc', icon:'mdi:account-group-outline'},
-  'visitors':    { label:'Visitors',    colour:'#22c55e', icon:'mdi:account-group-outline'},
-  'hibernation': { label:'Hibernation', colour:'#8d6e63', icon:'mdi:bike' }
+  'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
+  'family':      { label:'Family',      colour:'#8b5cf6', icon:'mdi:home-heart' },
+  'active':      { label:'Active',      colour:'#ff781f', icon:'mdi:hiking' },
+  'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'mdi:beach' },
+  'work':        { label:'Work',        colour:'#64748b', icon:'mdi:briefcase-outline' },
+  'race':        { label:'Race',        colour:'#e11d48', icon:'mdi:trophy-outline' },
+  'hibernation': { label:'Hibernation', colour:'#9d174d', icon:'openmoji:pomegranate' }
 };
 
-// MUI Icon Mapper
+// MUI Icon Mapper for Inner Itinerary Items
 const getMuiIconForType = (type) => {
   switch(type) {
     case 'transit': return 'material-symbols:train-outline';
@@ -303,7 +309,7 @@ function renderCalendar() {
   }
 }
 
-function googleMapsLink(text) { return `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(text)}`; }
+function googleMapsLink(text) { return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(text)}`; }
 function isoForCountry(name) {
   if (!name) return null;
   const m = {'spain':'ES','italy':'IT','switzerland':'CH','france':'FR','germany':'DE','united kingdom':'GB','uk':'GB','usa':'US','canada':'CA'};
@@ -324,12 +330,10 @@ function showTab(id, btn) {
   document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
-  if (id === 'trips') cancelEdit(); // Ensure list is shown when tab is clicked
+  if (id === 'trips') cancelEdit();
 }
 
-/* ════════════════════════════════════════════════════════════════════
-   PROGRESSIVE DISCLOSURE MODAL (New Itinerary Architecture)
-   ════════════════════════════════════════════════════════════════════ */
+/* ── MODAL ARCHITECTURE ── */
 function openModal(tripId) {
   const t = realTrips().find(t => t.id === tripId);
   if (!t) return;
@@ -339,7 +343,6 @@ function openModal(tripId) {
   const itinerary = t.itinerary || [];
   const displayTitle = t.title || formatDestination(t.destination);
 
-  // Group by Date for Itinerary View
   const scheduledItems = itinerary.filter(i => i.date).sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
     return (a.time || "24:00").localeCompare(b.time || "24:00");
@@ -361,7 +364,6 @@ function openModal(tripId) {
     }
   }
 
-  // Ideas Bank View
   const unscheduledItems = itinerary.filter(i => !i.date);
   let ideasHtml = '';
   if (unscheduledItems.length === 0) {
@@ -472,9 +474,7 @@ function editTripFromModal(id) {
   editTrip(id);
 }
 
-/* ════════════════════════════════════════════════════════════════════
-   TRIP EDITOR & LIST VIEW
-   ════════════════════════════════════════════════════════════════════ */
+/* ── TRIP EDITOR & LIST VIEW ── */
 let editingTrip = null;
 const STORAGE_KEY = 'wanderer_trips';
 
@@ -486,7 +486,6 @@ function initEditor() {
 function deriveTripStatus(endDate, items) {
   const today = new Date().toISOString().split('T')[0];
   if (endDate && endDate < today) return 'Completed';
-  
   if (!items || items.length === 0) return 'Unplanned';
   
   const booked = items.filter(i => i.status === 'booked' || i.status === 'no-booking-required').length;
@@ -505,14 +504,13 @@ function renderTripList() {
     const meta = TYPE_META[t.type] || {};
     const colour = meta.colour || '#888';
     const displayTitle = t.title || formatDestination(t.destination);
-    
-    // Auto-update status on render just to be visually accurate
     const currentStatus = deriveTripStatus(t.endDate, t.itinerary);
     
     return `
     <div class="mobile-trip-row" onclick="openModal('${t.id}')">
       <div class="mtr-icon" style="background:${colour}20; color:${colour}">
-        ${icon(meta.icon || 'mdi:map-marker', {size:20, color:colour})}
+        <!-- Using the raw meta icon to allow multicolor emojis like pomegranate to render faithfully -->
+        ${icon(meta.icon || 'mdi:map-marker', {size:20, color: colour})}
       </div>
       <div class="mtr-info">
         <div class="mtr-title" style="color:${colour}">${displayTitle}</div>
@@ -548,17 +546,17 @@ function showEditForm(trip) {
       <h3>Trip Details</h3>
       <div class="form-grid">
         <div class="form-group"><label>Trip ID</label><input type="text" id="tripId" value="${trip.id}" readonly style="background:#e2e8f0;cursor:not-allowed;"></div>
-        <div class="form-group"><label>Trip Title</label><input type="text" id="tripTitle" value="${trip.title || ''}" placeholder="e.g. Summer in Spain"></div>
+        <div class="form-group"><label>Trip Title</label><input type="text" id="tripTitle" value="${trip.title || ''}" placeholder="e.g. Winter Hibernation"></div>
         <div class="form-group"><label>Destination</label><input type="text" id="destination" value="${trip.destination}"></div>
         <div class="form-group">
           <label>Type</label>
           <select id="type">
-            <option value="leisure" ${trip.type === 'leisure' ? 'selected' : ''}>Leisure</option>
-            <option value="race" ${trip.type === 'race' ? 'selected' : ''}>Race</option>
-            <option value="active" ${trip.type === 'active' ? 'selected' : ''}>Active</option>
-            <option value="work" ${trip.type === 'work' ? 'selected' : ''}>Work</option>
-            <option value="family" ${trip.type === 'family' ? 'selected' : ''}>Family</option>
             <option value="visitors" ${trip.type === 'visitors' ? 'selected' : ''}>Visitors</option>
+            <option value="family" ${trip.type === 'family' ? 'selected' : ''}>Family</option>
+            <option value="active" ${trip.type === 'active' ? 'selected' : ''}>Active</option>
+            <option value="leisure" ${trip.type === 'leisure' ? 'selected' : ''}>Leisure</option>
+            <option value="work" ${trip.type === 'work' ? 'selected' : ''}>Work</option>
+            <option value="race" ${trip.type === 'race' ? 'selected' : ''}>Race</option>
             <option value="hibernation" ${trip.type === 'hibernation' ? 'selected' : ''}>Hibernation</option>
           </select>
         </div>
