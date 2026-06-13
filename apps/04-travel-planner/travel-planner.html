@@ -301,7 +301,8 @@ const TYPE_META = {
   'active':      { label:'Active',      colour:'#4caf50', icon:'mdi:run-fast'            },
   'work':        { label:'Work',        colour:'#9e9e9e', icon:'mdi:briefcase-outline'   },
   'family':      { label:'Family',      colour:'#ab47bc', icon:'mdi:account-group-outline'},
-  'bikepacking': { label:'Bikepacking', colour:'#8d6e63', icon:'mdi:bike'                }
+  'friends':     { label:'Friends',     colour:'#ab47bc', icon:'mdi:account-group-outline'},
+  'bikepacking': { label:'Hike/Bikepacking', colour:'#8d6e63', icon:'mdi:bike'                }
 };
 
 async function loadData() {
@@ -807,7 +808,9 @@ function showEditForm(trip) {
             <option value="active" ${trip.type === 'active' ? 'selected' : ''}>Active</option>
             <option value="work" ${trip.type === 'work' ? 'selected' : ''}>Work</option>
             <option value="family" ${trip.type === 'family' ? 'selected' : ''}>Family</option>
+            <option value="friends" ${trip.type === 'friends' ? 'selected' : ''}>Friends</option>
             <option value="bikepacking" ${trip.type === 'bikepacking' ? 'selected' : ''}>Bikepacking</option>
+            
           </select>
         </div>
         <div class="form-group">
