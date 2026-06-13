@@ -9,7 +9,7 @@
     {
       "id": "trp_2026_granada_jan",
       "destination": "Granada, Spain",
-      "type": "leisure",
+      "type": "hibernation",
       "startDate": "2026-01-10",
       "endDate": "2026-03-13",
       "status": "Confirmed",
@@ -100,7 +100,7 @@
     {
       "id": "trp_2026_via_alpina",
       "destination": "Via Alpina, Switzerland",
-      "type": "bikepacking",
+      "type": "active",
       "startDate": "2026-07-13",
       "endDate": "2026-08-02",
       "status": "Planned",
@@ -173,7 +173,7 @@
     {
       "id": "trp_2026_5o7xwbxz3",
       "destination": "Goldau, Switzerland",
-      "type": "friends",
+      "type": "visitors",
       "startDate": "2026-07-09",
       "endDate": "2026-07-12",
       "status": "Planned",
