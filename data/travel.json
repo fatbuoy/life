@@ -45,7 +45,7 @@
         {
           "id": "it-1781380546262",
           "type": "accommodation",
-          "status": "not-booked",
+          "status": "booked",
           "title": "Nico's House",
           "date": "2026-01-10",
           "time": "",
