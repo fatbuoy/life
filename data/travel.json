@@ -22,8 +22,26 @@
       "raceEventId": null,
       "notes": "Visit Alhambra early morning to avoid crowds. Sierra Nevada 45 min away.",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Flight: ZRH → GRX", "status": "booked", "date": "2026-01-10", "time": "06:30", "location": "ZRH → GRX", "notes": "Ref: IB2341" },
-        { "id": "it-2", "type": "transit", "title": "Flight: GRX → ZRH", "status": "booked", "date": "2026-01-31", "time": "18:45", "location": "GRX → ZRH", "notes": "Ref: IB2342" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Flight: ZRH → GRX",
+          "status": "booked",
+          "date": "2026-01-10",
+          "time": "06:30",
+          "location": "ZRH → GRX",
+          "notes": "Ref: IB2341"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Flight: GRX → ZRH",
+          "status": "booked",
+          "date": "2026-01-31",
+          "time": "18:45",
+          "location": "GRX → ZRH",
+          "notes": "Ref: IB2342"
+        }
       ]
     },
     {
@@ -59,8 +77,26 @@
       "raceEventId": "evt_barcelona_marathon_2026",
       "notes": "Expo Saturday 10-18h. Race Sunday 08:30. Finish at Barceloneta.",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Flight: ZRH → BCN", "status": "booked", "date": "2026-03-13", "time": "07:00", "location": "ZRH → BCN", "notes": "Ref: VY1234" },
-        { "id": "it-2", "type": "transit", "title": "Flight: BCN → ZRH", "status": "booked", "date": "2026-03-15", "time": "20:15", "location": "BCN → ZRH", "notes": "Ref: VY1235" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Flight: ZRH → BCN",
+          "status": "booked",
+          "date": "2026-03-13",
+          "time": "07:00",
+          "location": "ZRH → BCN",
+          "notes": "Ref: VY1234"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Flight: BCN → ZRH",
+          "status": "booked",
+          "date": "2026-03-15",
+          "time": "20:15",
+          "location": "BCN → ZRH",
+          "notes": "Ref: VY1235"
+        }
       ]
     },
     {
@@ -119,7 +155,7 @@
       "type": "race",
       "startDate": "2026-06-13",
       "endDate": "2026-06-14",
-      "status": "Confirmed",
+      "status": "Planning",
       "description": "Marathon du Jura 2026 — race weekend, travelling onward to Milano after.",
       "accommodation": "Hôtel Le National, Delémont",
       "who": "Cunty & Bunty",
@@ -128,14 +164,93 @@
       "raceEventId": null,
       "notes": "Race entry fee paid. Hotel TBC — confirm booking.",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Train: Arth-Goldau → Delémont", "status": "booked", "date": "2026-06-13", "time": "12:49", "location": "Arth-Goldau → Delémont", "notes": "Cost: 23.6 CHF" },
-        { "id": "it-2", "type": "transit", "title": "Train: Delémont → Arth-Goldau", "status": "booked", "date": "2026-06-14", "time": "14:21", "location": "Delémont → Arth-Goldau", "notes": "Cost: 23.6 CHF" },
-        { "id": "it-3", "type": "transit", "title": "Train: Arth-Goldau → Chiasso", "status": "booked", "date": "2026-06-14", "time": "17:49", "location": "Arth-Goldau → Chiasso", "notes": "Cost: 22.8 CHF" },
-        { "id": "it-4", "type": "transit", "title": "Train: Chiasso → Milano", "status": "booked", "date": "2026-06-14", "time": "19:31", "location": "Chiasso → Milano Centrale", "notes": "Cost: 5 CHF" },
-        { "id": "it-5", "type": "activity", "title": "Pick up race number", "status": "planned", "date": "2026-06-13", "location": "Mercure Hotel Delémont" },
-        { "id": "it-6", "type": "activity", "title": "Race", "status": "planned", "date": "2026-06-14", "notes": "Cost: 79 CHF" },
-        { "id": "it-7", "type": "food", "title": "Dinner: Gros Pre", "status": "not-booked", "date": "2026-06-13", "time": "19:00", "notes": "Cost: 60 CHF" },
-        { "id": "it-8", "type": "food", "title": "Lunch: Osteria La Bottega", "status": "not-booked", "date": "2026-06-14", "notes": "Cost: 50 CHF" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Train: Arth-Goldau → Delémont",
+          "status": "booked",
+          "date": "2026-06-13",
+          "time": "12:49",
+          "location": "Arth-Goldau → Delémont",
+          "notes": "Cost: 23.6 CHF"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Train: Delémont → Arth-Goldau",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "14:21",
+          "location": "Delémont → Arth-Goldau",
+          "notes": "Cost: 23.6 CHF"
+        },
+        {
+          "id": "it-3",
+          "type": "transit",
+          "title": "Train: Arth-Goldau → Chiasso",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "17:49",
+          "location": "Arth-Goldau → Chiasso",
+          "notes": "Cost: 22.8 CHF"
+        },
+        {
+          "id": "it-4",
+          "type": "transit",
+          "title": "Train: Chiasso → Milano",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "19:31",
+          "location": "Chiasso → Milano Centrale",
+          "notes": "Cost: 5 CHF"
+        },
+        {
+          "id": "it-5",
+          "type": "activity",
+          "title": "Pick up race number",
+          "status": "planned",
+          "date": "2026-06-13",
+          "location": "Mercure Hotel Delémont"
+        },
+        {
+          "id": "it-6",
+          "type": "activity",
+          "title": "Race",
+          "status": "planned",
+          "date": "2026-06-14",
+          "notes": "Cost: 79 CHF"
+        },
+        {
+          "id": "it-7",
+          "type": "food",
+          "title": "Dinner: Gros Pre",
+          "status": "not-booked",
+          "date": "2026-06-13",
+          "time": "19:00",
+          "notes": "Cost: 60 CHF"
+        },
+        {
+          "id": "it-8",
+          "type": "food",
+          "title": "Lunch: Osteria La Bottega",
+          "status": "not-booked",
+          "date": "2026-06-14",
+          "notes": "Cost: 50 CHF"
+        },
+        {
+          "id": "it-1781379268672",
+          "type": "accommodation",
+          "status": "not-booked",
+          "title": "Hotel Le National",
+          "date": "2026-06-13",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "",
+          "details": {
+            "pnr": ""
+          }
+        }
       ]
     },
     {
@@ -153,21 +268,138 @@
       "raceEventId": null,
       "notes": "Eat in season: Pasta allo Scarpariello, Fiori di Zucca Ripieni, Parmigiana di Melanzane and Spaghetti alla Nerano",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Train: Delémont - Arth-Goldau", "status": "booked", "date": "2026-06-14", "time": "14:21", "notes": "Ref: IR56, Cost: 43 CHF" },
-        { "id": "it-2", "type": "transit", "title": "Train: Arth-Goldau - Chiasso", "status": "booked", "date": "2026-06-14", "time": "17:49", "notes": "Ref: IC2, Cost: 46 CHF" },
-        { "id": "it-3", "type": "transit", "title": "Train: Chiasso - Milano Centrale", "status": "booked", "date": "2026-06-14", "time": "19:31", "notes": "Ref: RE80, Cost: 12.2 CHF" },
-        { "id": "it-4", "type": "transit", "title": "Train: Milano - Napoli Centrale", "status": "booked", "date": "2026-06-15", "time": "06:35", "notes": "Ref: 9605, Cost: 171.8 CHF" },
-        { "id": "it-5", "type": "transit", "title": "Train: Napoli - Milano Centrale", "status": "booked", "date": "2026-06-17", "time": "15:00", "notes": "Ref: 9648, Cost: 159.8 CHF" },
-        { "id": "it-6", "type": "transit", "title": "Train: Milano - Chiasso", "status": "booked", "date": "2026-06-17", "notes": "Ref: EC28, Cost: 17 CHF" },
-        { "id": "it-7", "type": "transit", "title": "Train: Chiasso - Arth-Goldau", "status": "booked", "date": "2026-06-17", "time": "21:05", "notes": "Ref: EC28, Cost: 21.4 CHF" },
-        { "id": "it-8", "type": "food", "title": "Dinner: L'Antica Pizzeria da Michele", "status": "not-booked", "date": "2026-06-15", "time": "21:00", "location": "Via Cesare Sersale, 1", "notes": "Cost: 31 CHF" },
-        { "id": "it-9", "type": "food", "title": "Lunch: Gino e Toto Sorbillo", "status": "not-booked", "date": "2026-06-16", "time": "12:30", "location": "Via dei Tribunali, 32", "notes": "Cost: 30 CHF" },
-        { "id": "it-10", "type": "accommodation", "title": "Milan Hotel: Delle Nazioni", "status": "booked", "date": "2026-06-14", "location": "Via Alfredo Cappellini, 18", "notes": "Cost: 57 CHF" },
-        { "id": "it-11", "type": "accommodation", "title": "Napoli Apt: Napoli Movie Apartments", "status": "booked", "date": "2026-06-15", "time": "15:00", "location": "Largo Donnaregina, 25", "notes": "Cost: 251 CHF" },
-        { "id": "it-12", "type": "activity", "title": "Cafe Spaccanapoli (Sfogliatella)", "status": "planned", "date": "2026-06-16", "location": "Via Duomo", "notes": "Beside apt." },
-        { "id": "it-13", "type": "activity", "title": "Cocktails: Liberia Berisio", "status": "planned", "date": "2026-06-16", "location": "Via Port'Alba, 28" },
-        { "id": "it-14", "type": "activity", "title": "Cocktails: Salotto Bellini", "status": "planned", "date": "2026-06-16", "location": "80 Via Santa Maria di Costantinopoli" },
-        { "id": "it-15", "type": "activity", "title": "Lunch: La Locanda Gesù Vecchio", "status": "planned" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Train: Delémont - Arth-Goldau",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "14:21",
+          "notes": "Ref: IR56, Cost: 43 CHF"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Train: Arth-Goldau - Chiasso",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "17:49",
+          "notes": "Ref: IC2, Cost: 46 CHF"
+        },
+        {
+          "id": "it-3",
+          "type": "transit",
+          "title": "Train: Chiasso - Milano Centrale",
+          "status": "booked",
+          "date": "2026-06-14",
+          "time": "19:31",
+          "notes": "Ref: RE80, Cost: 12.2 CHF"
+        },
+        {
+          "id": "it-4",
+          "type": "transit",
+          "title": "Train: Milano - Napoli Centrale",
+          "status": "booked",
+          "date": "2026-06-15",
+          "time": "06:35",
+          "notes": "Ref: 9605, Cost: 171.8 CHF"
+        },
+        {
+          "id": "it-5",
+          "type": "transit",
+          "title": "Train: Napoli - Milano Centrale",
+          "status": "booked",
+          "date": "2026-06-17",
+          "time": "15:00",
+          "notes": "Ref: 9648, Cost: 159.8 CHF"
+        },
+        {
+          "id": "it-6",
+          "type": "transit",
+          "title": "Train: Milano - Chiasso",
+          "status": "booked",
+          "date": "2026-06-17",
+          "notes": "Ref: EC28, Cost: 17 CHF"
+        },
+        {
+          "id": "it-7",
+          "type": "transit",
+          "title": "Train: Chiasso - Arth-Goldau",
+          "status": "booked",
+          "date": "2026-06-17",
+          "time": "21:05",
+          "notes": "Ref: EC28, Cost: 21.4 CHF"
+        },
+        {
+          "id": "it-8",
+          "type": "food",
+          "title": "Dinner: L'Antica Pizzeria da Michele",
+          "status": "not-booked",
+          "date": "2026-06-15",
+          "time": "21:00",
+          "location": "Via Cesare Sersale, 1",
+          "notes": "Cost: 31 CHF"
+        },
+        {
+          "id": "it-9",
+          "type": "food",
+          "title": "Lunch: Gino e Toto Sorbillo",
+          "status": "not-booked",
+          "date": "2026-06-16",
+          "time": "12:30",
+          "location": "Via dei Tribunali, 32",
+          "notes": "Cost: 30 CHF"
+        },
+        {
+          "id": "it-10",
+          "type": "accommodation",
+          "title": "Milan Hotel: Delle Nazioni",
+          "status": "booked",
+          "date": "2026-06-14",
+          "location": "Via Alfredo Cappellini, 18",
+          "notes": "Cost: 57 CHF"
+        },
+        {
+          "id": "it-11",
+          "type": "accommodation",
+          "title": "Napoli Apt: Napoli Movie Apartments",
+          "status": "booked",
+          "date": "2026-06-15",
+          "time": "15:00",
+          "location": "Largo Donnaregina, 25",
+          "notes": "Cost: 251 CHF"
+        },
+        {
+          "id": "it-12",
+          "type": "activity",
+          "title": "Cafe Spaccanapoli (Sfogliatella)",
+          "status": "planned",
+          "date": "2026-06-16",
+          "location": "Via Duomo",
+          "notes": "Beside apt."
+        },
+        {
+          "id": "it-13",
+          "type": "activity",
+          "title": "Cocktails: Liberia Berisio",
+          "status": "planned",
+          "date": "2026-06-16",
+          "location": "Via Port'Alba, 28"
+        },
+        {
+          "id": "it-14",
+          "type": "activity",
+          "title": "Cocktails: Salotto Bellini",
+          "status": "planned",
+          "date": "2026-06-16",
+          "location": "80 Via Santa Maria di Costantinopoli"
+        },
+        {
+          "id": "it-15",
+          "type": "activity",
+          "title": "Lunch: La Locanda Gesù Vecchio",
+          "status": "planned"
+        }
       ]
     },
     {
@@ -185,8 +417,24 @@
       "raceEventId": null,
       "notes": "",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Flight: DUB → ZRH", "status": "booked", "date": "2026-07-09", "time": "10:35", "notes": "Ref: EI 342" },
-        { "id": "it-2", "type": "transit", "title": "Flight: ZRH → DUB", "status": "booked", "date": "2026-07-12", "time": "20:50", "notes": "Ref: EI 349" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Flight: DUB → ZRH",
+          "status": "booked",
+          "date": "2026-07-09",
+          "time": "10:35",
+          "notes": "Ref: EI 342"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Flight: ZRH → DUB",
+          "status": "booked",
+          "date": "2026-07-12",
+          "time": "20:50",
+          "notes": "Ref: EI 349"
+        }
       ]
     },
     {
@@ -204,11 +452,51 @@
       "raceEventId": null,
       "notes": "",
       "itinerary": [
-        { "id": "it-1", "type": "transit", "title": "Flight: DUB → ZRH", "status": "booked", "date": "2026-06-04", "time": "16:20", "notes": "Ref: LX 401, Cost: 170 CHF" },
-        { "id": "it-2", "type": "transit", "title": "Flight: ZRH → DUB", "status": "booked", "date": "2026-06-09", "time": "16:30", "notes": "Ref: LX 404" },
-        { "id": "it-3", "type": "transit", "title": "Train: ZRH Airport → Goldau (Mammy)", "status": "booked", "date": "2026-06-04", "time": "17:09", "notes": "Cost: 25.6 CHF" },
-        { "id": "it-4", "type": "transit", "title": "Train: ZRH Airport → Goldau (Aisling)", "status": "booked", "date": "2026-06-04", "time": "17:09", "notes": "Cost: 25.6 CHF" },
-        { "id": "it-5", "type": "transit", "title": "Train: ZRH Airport → Goldau (Marion)", "status": "booked", "date": "2026-06-04", "time": "17:09", "notes": "Cost: 12.8 CHF" }
+        {
+          "id": "it-1",
+          "type": "transit",
+          "title": "Flight: DUB → ZRH",
+          "status": "booked",
+          "date": "2026-06-04",
+          "time": "16:20",
+          "notes": "Ref: LX 401, Cost: 170 CHF"
+        },
+        {
+          "id": "it-2",
+          "type": "transit",
+          "title": "Flight: ZRH → DUB",
+          "status": "booked",
+          "date": "2026-06-09",
+          "time": "16:30",
+          "notes": "Ref: LX 404"
+        },
+        {
+          "id": "it-3",
+          "type": "transit",
+          "title": "Train: ZRH Airport → Goldau (Mammy)",
+          "status": "booked",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "notes": "Cost: 25.6 CHF"
+        },
+        {
+          "id": "it-4",
+          "type": "transit",
+          "title": "Train: ZRH Airport → Goldau (Aisling)",
+          "status": "booked",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "notes": "Cost: 25.6 CHF"
+        },
+        {
+          "id": "it-5",
+          "type": "transit",
+          "title": "Train: ZRH Airport → Goldau (Marion)",
+          "status": "booked",
+          "date": "2026-06-04",
+          "time": "17:09",
+          "notes": "Cost: 12.8 CHF"
+        }
       ]
     },
     {
@@ -226,7 +514,16 @@
       "raceEventId": null,
       "notes": "",
       "itinerary": [
-        { "id": "it-1", "type": "activity", "title": "Tree House Half Marathon", "status": "not-booked", "date": "2026-09-13", "time": "08:00", "location": "Western Mass", "notes": "Cost: 107.85 CHF" }
+        {
+          "id": "it-1",
+          "type": "activity",
+          "title": "Tree House Half Marathon",
+          "status": "not-booked",
+          "date": "2026-09-13",
+          "time": "08:00",
+          "location": "Western Mass",
+          "notes": "Cost: 107.85 CHF"
+        }
       ]
     }
   ]
