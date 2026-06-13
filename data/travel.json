@@ -162,7 +162,7 @@
       "budgetEstimate": 365,
       "budgetActual": 154,
       "raceEventId": null,
-      "notes": "Race entry fee paid. Hotel TBC — confirm booking.",
+      "notes": "",
       "itinerary": [
         {
           "id": "it-1",
@@ -251,7 +251,8 @@
             "pnr": ""
           }
         }
-      ]
+      ],
+      "title": ""
     },
     {
       "id": "trp_2026_napoli",
