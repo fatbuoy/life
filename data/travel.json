@@ -240,7 +240,7 @@
         {
           "id": "it-1781379268672",
           "type": "accommodation",
-          "status": "not-booked",
+          "status": "booked",
           "title": "Hotel Le National",
           "date": "2026-06-13",
           "time": "",
