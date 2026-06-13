@@ -41,6 +41,20 @@
           "time": "18:45",
           "location": "GRX → ZRH",
           "notes": "Ref: IB2342"
+        },
+        {
+          "id": "it-1781380546262",
+          "type": "accommodation",
+          "status": "not-booked",
+          "title": "Nico's House",
+          "date": "2026-01-10",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "title": ""
