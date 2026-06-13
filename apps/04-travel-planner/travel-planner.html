@@ -280,8 +280,8 @@ function fmtDate(str) {
 }
 function icon(name, opts = {}) {
   const size = opts.size || 16;
-  const color = opts.color ? `style="color:${opts.color}; font-size:${size}px;"` : `style="font-size:${size}px;"`;
-  return `<iconify-icon icon="${name}" ${color}></iconify-icon>`;
+  const color = opts.color ? `color:${opts.color};` : '';
+  return `<span class="iconify" data-icon="${name}" style="font-size:${size}px;${color}vertical-align:middle;display:inline-block;"></span>`;
 }
 
 function deriveTripStatus(endDate, items) {
