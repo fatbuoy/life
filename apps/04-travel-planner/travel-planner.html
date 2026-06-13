@@ -29,40 +29,58 @@ body {
   color: #1c1c1e; 
   font-size: 14px; 
   margin: 0;
+  box-sizing: border-box;
 }
+
+* { box-sizing: border-box; }
 
 /* ── YEAR SELECTOR ── */
 .year-ctrl { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 40px; overflow: hidden; }
 .year-ctrl span { font-size: 12px; font-weight: 700; color: #fff; padding: 0 8px; min-width: 38px; text-align: center; line-height: 1; }
 .year-btn { background: none; border: none; color: var(--app-on-primary2); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: background .15s, color .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
 .year-btn:hover { background: rgba(255,255,255,.12); color: #fff }
-.year-btn iconify-icon { font-size: 18px }
 
-/* ── SHARPER iOS CALENDAR & SECTIONS ── */
+/* ── SECTIONS & HEADERS ── */
 .section-headline { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #6c6c70; letter-spacing: 0.3px; margin: 10px 0 8px 4px; }
 
 /* ── COMPACT UPCOMING STRIP ── */
 .upcoming-strip { display: flex; gap: 10px; overflow-x: auto; padding: 4px 4px 12px; margin-bottom: 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
 .upcoming-strip::-webkit-scrollbar { display: none; }
-.upcoming-card { flex-shrink: 0; scroll-snap-align: start; width: 170px; background: white; border-radius: 12px; padding: 12px; cursor: pointer; border-top: 4px solid var(--app-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 1px solid rgba(0,0,0,0.02); border-right: 1px solid rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.02); transition: transform 0.15s ease; }
+.upcoming-card { flex-shrink: 0; scroll-snap-align: start; width: 145px; background: white; border-radius: 12px; padding: 10px; cursor: pointer; border-top: 4px solid var(--app-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 1px solid rgba(0,0,0,0.02); border-right: 1px solid rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.02); transition: transform 0.15s ease; }
 .upcoming-card:active { transform: scale(0.97); }
-.uc-days { font-size: 24px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
-.uc-days-lbl { font-size: 9px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px; margin-top: 2px; }
-.uc-dest { font-size: 13px; font-weight: 700; color: #1c1c1e; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.uc-dates { font-size: 11px; color: #8e8e93; font-weight: 500; margin-top: 1px; }
-.uc-type { font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: 8px; display: inline-block; padding: 2px 5px; border-radius: 4px; background: #f2f2f7; }
+.uc-days { font-size: 20px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+.uc-days-lbl { font-size: 8px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px; margin-top: 2px; }
+.uc-dest { font-size: 12px; font-weight: 700; color: #1c1c1e; margin-top: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uc-dates { font-size: 10px; color: #8e8e93; font-weight: 500; margin-top: 1px; }
+.uc-type { font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: 6px; display: inline-block; padding: 1px 4px; border-radius: 4px; background: #f2f2f7; }
 
-/* ── APPLE STYLE CALENDAR GRID ── */
-.cal-year-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 4px; }
+/* ── NEW APPLE CONTINUOUS HIGHLIGHT CALENDAR ── */
+.cal-year-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 4px; }
 @media(min-width:768px){ .cal-year-grid { grid-template-columns: repeat(4, 1fr); } }
 @media(min-width:1024px){ .cal-year-grid { grid-template-columns: repeat(6, 1fr); gap: 14px; } }
 
-.cal-month { background: white; border-radius: 14px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.01); }
-.cal-month-hdr { color: #1c1c1e; background: none; padding: 0 0 10px 2px; font-size: 14px; font-weight: 700; text-align: left; letter-spacing: -0.2px; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px 2px; }
-.cal-day { height: 26px; width: 26px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; border-radius: 50%; color: #1c1c1e; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s ease; }
-@media(min-width:1024px){ .cal-day { height: 28px; width: 28px; font-size: 11px; } }
-.cal-day.trip { color: white !important; cursor: pointer; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.12); }
+.cal-month { background: white; border-radius: 14px; padding: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.01); min-width: 0; }
+.cal-month-hdr { color: #1c1c1e; background: none; padding: 0 0 8px 2px; font-size: 13px; font-weight: 700; text-align: left; letter-spacing: -0.2px; }
+
+/* The layout framework grid layout */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px 0; text-align: center; }
+
+/* Master layout for single dates */
+.cal-day { position: relative; padding: 2px 0; font-size: 11px; font-weight: 500; color: #1c1c1e; -webkit-tap-highlight-color: transparent; }
+.cal-day-blank { height: 24px; }
+
+/* Continuous Strip Graphics */
+.cal-day.is-middle { background-color: var(--trip-bg); }
+.cal-day.is-start { background: linear-gradient(to right, transparent 50%, var(--trip-bg) 50%); }
+.cal-day.is-end { background: linear-gradient(to right, var(--trip-bg) 50%, transparent 50%); }
+.cal-day.is-single { background: transparent; }
+
+/* Inner Anchored Highlight Ring */
+.day-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; position: relative; z-index: 2; }
+.cal-day.is-start .day-num, 
+.cal-day.is-end .day-num, 
+.cal-day.is-single .day-num { background-color: var(--trip-color) !important; color: white !important; font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+.cal-day.is-middle .day-num { color: #1c1c1e; font-weight: 600; }
 
 /* ── NAVIGATION ── */
 .app-nav { background: var(--app-primary); display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,.08); }
@@ -73,63 +91,58 @@ body {
 .tab-panel { display: none; padding-top: 12px; }
 .tab-panel.active { display: block; }
 
-/* ── iOS IMMERSIVE ACTION BAR ── */
+/* ── ACTION BAR WITH HIGH CONTRAST FIXED SVG ACCESSIBILITY ── */
 .ios-action-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; background: transparent; padding: 0 4px; }
 .ios-btn-primary { flex-grow: 1; background: var(--app-accent); color: white; border: none; padding: 11px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 6px rgba(0,122,255,0.2); }
 .ios-btn-primary:active { opacity: 0.85; }
-.ios-btn-icon { background: #ffffff; color: var(--app-accent); border: 1px solid #e5e5ea; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.ios-btn-icon { background: #ffffff; color: var(--app-accent); border: 1px solid #e5e5ea; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.02); padding: 0; }
 .ios-btn-icon:active { background: #e5e5ea; }
-.ios-btn-icon svg { width: 20px; height: 20px; fill: var(--app-accent); display: block; }
+.ios-btn-icon svg { width: 22px; height: 22px; fill: var(--app-accent); display: block; }
 
 /* ── MOBILE TRIP LIST ── */
 .trip-list-wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 4px; }
 .mobile-trip-row { display: flex; align-items: center; gap: 14px; padding: 14px; background: white; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .mtr-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.mtr-icon svg { display: block; }
 .mtr-info { flex-grow: 1; }
 .mtr-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
 .mtr-date { font-size: 11px; color: #8e8e93; font-weight: 500; }
 
 /* ── STATUS PILLS ── */
 .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; display: inline-block; }
-.status-booked, .status-planned { background: #e2fbe8; color: #15803d; }
-.status-not-booked, .status-unplanned { background: #ffebeb; color: #b91c1c; }
+.status-booked, .status-planned, .status-confirmed { background: #e2fbe8; color: #15803d; }
+.status-not-booked, .status-unplanned, .status-tbc { background: #ffebeb; color: #b91c1c; }
 .status-planning { background: #fff7ed; color: #c2410c; }
 .status-completed, .status-no-booking-required { background: #f2f2f7; color: #636366; }
 
-/* ── APPLE MODAL & ARCHITECTURE ── */
+/* ── APPLE MODAL ARCHITECTURE ── */
 .ios-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); justify-content: center; align-items: flex-start; }
 .ios-sheet { background: #f2f2f7; width: 100%; max-width: 540px; height: 94vh; margin-top: 6vh; border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -8px 30px rgba(0,0,0,0.15); animation: slideUp 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94); }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-/* iOS Sticky Header Nav */
 .ios-nav-bar { background: #ffffff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #c6c6c8; flex-shrink: 0; }
 .ios-nav-title { font-size: 16px; font-weight: 600; color: #1c1c1e; text-align: center; flex-grow: 1; margin: 0 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ios-link-btn { background: none; border: none; font-size: 16px; color: var(--app-accent); cursor: pointer; padding: 0; font-weight: 400; -webkit-tap-highlight-color: transparent; }
 .ios-link-btn.bold { font-weight: 600; }
 .ios-link-btn.danger { color: var(--app-destructive); }
-
-/* Custom Banner Card Inside Sheet Header */
 .ios-hero-banner { padding: 16px; color: white; display: flex; flex-direction: column; justify-content: flex-end; flex-shrink: 0; }
 
-/* Native iOS-style Widget for Trip Level Notes */
 .ios-trip-notes-widget { background: #ffffff; margin: 12px 16px 2px 16px; padding: 12px; border-radius: 10px; border-left: 4px solid #ffcc00; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: flex; gap: 10px; align-items: flex-start; }
 .ios-trip-notes-text { font-size: 13px; color: #3a3a3c; font-style: italic; line-height: 1.4; white-space: pre-wrap; }
 
-/* Segmented Control Header */
 .ios-segmented-control { display: flex; background: #e3e3e6; padding: 2px; border-radius: 8px; margin: 12px 16px; flex-shrink: 0; }
 .ios-segment-btn { flex: 1; border: none; background: none; padding: 6px; font-size: 13px; font-weight: 500; color: #1c1c1e; border-radius: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
 .ios-segment-btn.active { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
 
 .ios-sheet-body { flex-grow: 1; overflow-y: auto; padding: 0 16px 30px 16px; -webkit-overflow-scrolling: touch; }
 
-/* ── APPLE GROUPED CELL COMPONENTS ── */
+/* ── CELL COMPONENTS ── */
 .ios-group-title { font-size: 12px; font-weight: 400; color: #6c6c70; text-transform: uppercase; margin: 18px 0 6px 8px; letter-spacing: 0.3px; }
 .ios-group { background: #ffffff; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
 .ios-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #e5e5ea; position: relative; gap: 10px; background: #ffffff; }
 .ios-row:last-child { border-bottom: none; }
 .ios-label { font-size: 15px; color: #1c1c1e; min-width: 95px; flex-shrink: 0; }
 .ios-input, .ios-select, .ios-textarea { flex-grow: 1; border: none; background: none; font-size: 15px; color: #1c1c1e; padding: 0; font-family: inherit; width: 100%; text-align: right; outline: none; }
-.ios-input:focus, .ios-select:focus, .ios-textarea:focus { background: none; }
 .ios-select { appearance: none; color: #8e8e93; direction: rtl; cursor: pointer; }
 .ios-textarea { text-align: left; resize: none; min-height: 70px; padding-top: 4px; }
 .ios-row.vertical { flex-direction: column; align-items: flex-start; }
@@ -138,50 +151,17 @@ body {
 /* ── ITINERARY CARDS ── */
 .ios-item-card { background: #ffffff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #e5e5ea; }
 .ios-item-summary { padding: 14px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; }
-.ios-item-icon { width: 36px; height: 36px; border-radius: 50%; background: #f2f2f7; color: var(--app-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ios-item-icon { width: 36px; height: 36px; border-radius: 50%; background: #f2f2f7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ios-item-details { padding: 14px; background: #fafafa; border-top: 1px solid #e5e5ea; font-size: 13px; color: #3a3a3c; }
 
 /* ── QUICK ACTION ADD GRID ── */
 .add-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
 .add-tile { background: white; border: 1px solid #e5e5ea; border-radius: 12px; padding: 20px 14px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; -webkit-tap-highlight-color: transparent; }
 .add-tile:active { background: #e5e5ea; }
-.add-tile-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-.add-tile-lbl { font-size: 14px; font-weight: 600; color: #1c1c1e; }
+.add-tile-icon { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
 .yellow-notes { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; font-style: italic; color: #92400e; margin-top: 8px; white-space: pre-wrap; line-height: 1.4; }
 .editor-container { max-width: 600px; margin: 0 auto; }
-
-/* 1. Global fix for all elements to prevent overflow */
-* { box-sizing: border-box; }
-
-/* 2. Tighten the calendar grid to ensure 2 columns fit perfectly */
-.cal-year-grid { 
-  display: grid; 
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 8px; /* Slightly tighter gap for mobile */
-  padding: 8px;
-  width: 100%; /* Ensure grid matches parent width */
-  overflow: hidden; /* Prevent spillover */
-}
-
-/* 3. Ensure the month cards obey the grid width */
-.cal-month { 
-  background: white; 
-  border-radius: 14px; 
-  padding: 10px; /* Slight reduction for tighter mobile fit */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
-  border: 1px solid rgba(0,0,0,0.01);
-  min-width: 0; /* CRITICAL: Allows grid item to shrink/fit in column */
-  width: 100%;  /* Ensure it fills the grid cell */
-}
-
-/* 4. Ensure the grid inside the month also wraps correctly */
-.cal-grid { 
-  display: grid; 
-  grid-template-columns: repeat(7, 1fr); 
-  gap: 2px; /* Tighten gap inside to ensure no overflow */
-}
-
 </style>
 </head>
 <body>
@@ -195,9 +175,13 @@ body {
       </div>
       <div class="header-right">
         <div class="year-ctrl">
-          <button class="year-btn" onclick="changeYear(-1)"><iconify-icon icon="mdi:chevron-left"></iconify-icon></button>
+          <button class="year-btn" onclick="changeYear(-1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          </button>
           <span id="yearLabel">2026</span>
-          <button class="year-btn" onclick="changeYear(1)"><iconify-icon icon="mdi:chevron-right"></iconify-icon></button>
+          <button class="year-btn" onclick="changeYear(1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </button>
         </div>
         <span class="header-badge" id="tripBadge" style="display:none"></span>
       </div>
@@ -208,8 +192,12 @@ body {
 <nav class="app-nav">
   <div class="container" style="padding-top:0;padding-bottom:0; display:flex; justify-content:center;">
     <div class="nav-pills">
-      <button class="nav-pill active" onclick="showTab('calendar',this)"><iconify-icon icon="mdi:calendar-month"></iconify-icon> Calendar</button>
-      <button class="nav-pill" onclick="showTab('trips',this)"><iconify-icon icon="mdi:format-list-bulleted"></iconify-icon> List</button>
+      <button class="nav-pill active" id="tabBtn-calendar" onclick="showTab('calendar')">
+        <svg width="14" height="14" fill="currentColor" style="margin-right:2px;" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg> Calendar
+      </button>
+      <button class="nav-pill" id="tabBtn-trips" onclick="showTab('trips')">
+        <svg width="14" height="14" fill="currentColor" style="margin-right:2px;" viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg> List
+      </button>
     </div>
   </div>
 </nav>
@@ -217,7 +205,6 @@ body {
 <main class="app-main">
   <div class="container">
     
-    <!-- CALENDAR VIEW -->
     <div class="tab-panel active" id="tab-calendar">
       <div class="section-headline">Upcoming Trips</div>
       <div id="upcomingStrip" class="upcoming-strip"></div>
@@ -226,14 +213,12 @@ body {
       <div class="cal-year-grid" id="calGrid"></div>
     </div>
 
-    <!-- LIST & ROOT ACTION VIEW -->
     <div class="tab-panel" id="tab-trips">
        <div class="editor-container">
          
-         <!-- CRISP SVG ICONS FOR FIXED ACCESSIBILITY -->
          <div class="ios-action-bar" id="listActions">
            <button class="ios-btn-primary" onclick="openTripForm(null)">
-             <iconify-icon icon="mdi:plus" style="font-size:18px;"></iconify-icon> New Trip
+             <svg width="16" height="16" fill="white" viewBox="0 0 24 24" style="margin-right:2px;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New Trip
            </button>
            <button class="ios-btn-icon" onclick="exportJSON()" title="Export JSON">
              <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg>
@@ -251,7 +236,6 @@ body {
   </div>
 </main>
 
-<!-- ── OVERLAY SHEET ── -->
 <div id="iosOverlay" class="ios-overlay" onclick="closeSheet()">
   <div class="ios-sheet" id="iosSheet" onclick="event.stopPropagation()"></div>
 </div>
@@ -263,23 +247,50 @@ let currentYear = 2026;
 let currentTrip = null;
 let activeSubTab = 'itinerary';
 
+// EMBEDDED SHARP VECTOR DICTIONARY 
+const SVG_ICONS = {
+  'visitors': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`,
+  'family': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  'active': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 6.5c0 1.38-1.12 2.5-2.5 2.5S9 7.88 9 6.5 10.12 4 11.5 4s2.5 1.12 2.5 2.5zm1.5 2.5h-3c-1.66 0-3 1.34-3 3v2.5h1.5V18l2-6 1.5 6V15h2l-1-6z"/></svg>`,
+  'leisure': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 12c0-5.25 4.25-9.5 9.5-9.5S21.5 6.75 21.5 12H19c0-3.87-3.13-7-7-7s-7 3.13-7 7H2.5z"/></svg>`,
+  'work': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>`,
+  'race': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.66 7H15V6c0-1.66-1.34-3-3-3s-3 1.34-3 3v1H5.34C4.6 7 4 7.6 4 8.34v.33c0 .73.6 1.33 1.34 1.33H7v5c0 1.66 1.34 3 3 3h4c1.66 0 3-1.34 3-3v-5h1.66c.74 0 1.34-.6 1.34-1.33v-.33c0-.74-.6-1.34-1.34-1.34z"/></svg>`,
+  'map-marker': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`,
+  'chevron-down': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>`,
+  
+  /* CRITICAL: Custom line art pomegranate for hibernation category */
+  'hibernation': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6a3 3 0 0 1 3 3c0 1.657-1.343 3-3 3s-3-1.343-3-3 1.343-3 3-3z"/><path d="M10 2l1 3h2l1-3"/><path d="M14 15.5a2.5 2.5 0 1 1-4 0"/></svg>`,
+  
+  /* Sub-Itinerary types */
+  'transit': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-4.42 0-8 .5-8 4v10c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4zM7.5 15c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm2.5-6H5V6h14v3z"/></svg>`,
+  'accommodation': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>`,
+  'food': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm10-4H18V2h-2v12h3v8h2.5v-10h1.5V5z"/></svg>`,
+  'activity': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`,
+  'note': `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`
+};
+
 const TYPE_META = {
-  'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
-  'family':      { label:'Family',      colour:'#8b5cf6', icon:'mdi:home-heart' },
-  'active':      { label:'Active',      colour:'#ff781f', icon:'mdi:hiking' },
-  'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'mdi:beach' },
-  'work':        { label:'Work',        colour:'#64748b', icon:'mdi:briefcase-outline' },
-  'race':        { label:'Race',        colour:'#e11d48', icon:'mdi:trophy-outline' },
-  'hibernation': { label:'Hibernation', colour:'#9d174d', icon:'openmoji:pomegranate' }
+  'visitors':    { label:'Visitors',    colour:'#10b981', icon:'visitors' },
+  'family':      { label:'Family',      colour:'#8b5cf6', icon:'family' },
+  'active':      { label:'Active',      colour:'#ff781f', icon:'active' },
+  'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'leisure' },
+  'work':        { label:'Work',        colour:'#64748b', icon:'work' },
+  'race':        { label:'Race',        colour:'#e11d48', icon:'race' },
+  'hibernation': { label:'Hibernation', colour:'#9d174d', icon:'hibernation' }
 };
 
 const ITEM_ICONS = {
-  'transit': { icon: 'material-symbols:train-outline', color: '#007aff', bg: '#e5f1ff', lbl: 'Transit' },
-  'accommodation': { icon: 'material-symbols:hotel-outline', color: '#5856d6', bg: '#f0eeff', lbl: 'Accommodation' },
-  'food': { icon: 'mdi:silverware-fork-knife', color: '#ff9500', bg: '#fff5e6', lbl: 'Food & Drink' },
-  'activity': { icon: 'material-symbols:local-activity-outline', color: '#4cd964', bg: '#edfbe7', lbl: 'Activity' },
-  'note': { icon: 'material-symbols:sticky-note-2-outline', color: '#8e8e93', bg: '#f2f2f7', lbl: 'Quick Note' }
+  'transit': { icon: 'transit', color: '#007aff', bg: '#e5f1ff', lbl: 'Transit' },
+  'accommodation': { icon: 'accommodation', color: '#5856d6', bg: '#f0eeff', lbl: 'Accommodation' },
+  'food': { icon: 'food', color: '#ff9500', bg: '#fff5e6', lbl: 'Food & Drink' },
+  'activity': { icon: 'activity', color: '#4cd964', bg: '#edfbe7', lbl: 'Activity' },
+  'note': { icon: 'note', color: '#8e8e93', bg: '#f2f2f7', lbl: 'Quick Note' }
 };
+
+function getVector(name, size = 18, color = 'currentColor') {
+  let markup = SVG_ICONS[name] || `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>`;
+  return markup.replace('<svg', `<svg width="${size}" height="${size}" style="color:${color};"`);
+}
 
 async function loadData() {
   DATA = await fetchData('../../data/travel.json');
@@ -302,7 +313,6 @@ function render() {
   renderCalendar();
   renderUpcomingStrip();
   renderTripList();
-  if (window.Iconify) Iconify.scan();
 }
 
 function realTrips() { return DATA.trips.filter(t => !t._comment); }
@@ -310,18 +320,28 @@ function fmtDate(str) {
   if (!str) return '—';
   return new Date(str + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
 }
-function icon(name, opts = {}) {
-  const size = opts.size || 16;
-  const color = opts.color ? `color:${opts.color};` : '';
-  return `<span class="iconify" data-icon="${name}" style="font-size:${size}px;${color}vertical-align:middle;display:inline-block;"></span>`;
+
+function changeYear(dir) {
+  currentYear += dir;
+  updateCountBadge();
+  render();
+}
+
+function daysUntil(dateStr) {
+  if (!dateStr) return 0;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const target = new Date(dateStr + 'T00:00:00');
+  target.setHours(0,0,0,0);
+  return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
 }
 
 function deriveTripStatus(endDate, items) {
   const today = new Date().toISOString().split('T')[0];
   if (endDate && endDate < today) return 'Completed';
   if (!items || items.length === 0) return 'Unplanned';
-  const booked = items.filter(i => i.status === 'booked' || i.status === 'no-booking-required').length;
-  const notBooked = items.filter(i => i.status === 'not-booked').length;
+  const booked = items.filter(i => i.status === 'booked' || i.status === 'no-booking-required' || i.status === 'confirmed').length;
+  const notBooked = items.filter(i => i.status === 'not-booked' || i.status === 'tbc').length;
   if (booked === 0) return 'Unplanned';
   if (notBooked > 0) return 'Planning';
   return 'Planned';
@@ -339,8 +359,8 @@ function renderUpcomingStrip() {
     const colour = TYPE_META[t.type]?.colour || '#666';
     return `
       <div class="upcoming-card" style="border-top-color:${colour}" onclick="openTripSheet('${t.id}')">
-          <div class="uc-days" style="color:${colour}">${days < 0 ? icon('mdi:airplane', {size:20, color:colour}) : days}</div>
-          <div class="uc-days-lbl">${days < 0 ? 'Active Now' : 'Days Away'}</div>
+          <div class="uc-days" style="color:${colour}">${days < 0 ? 'Now' : days}</div>
+          <div class="uc-days-lbl">${days < 0 ? 'Active' : 'Days Away'}</div>
           <div class="uc-dest">${t.title || t.destination || 'Untitled'}</div>
           <div class="uc-dates">${fmtDate(t.startDate)}</div>
           <div class="uc-type" style="color:${colour}">${(t.type || 'Leisure').toUpperCase()}</div>
@@ -348,28 +368,63 @@ function renderUpcomingStrip() {
   }).join('');
 }
 
+/* ── MERGED CONTINUOUS HIGH-VISIBILITY CALENDAR LOOP WITH WEEK ALIGNMENT ── */
 function renderCalendar() {
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
   const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const trips = realTrips();
+  
   for(let m=0; m<12; m++) {
     const month = document.createElement('div');
     month.className = 'cal-month';
     month.innerHTML = `<div class="cal-month-hdr">${months[m]}</div>`;
+    
     const innerGrid = document.createElement('div');
     innerGrid.className = 'cal-grid';
+    
+    // Calculate standard day offset index padding (Monday-indexed)
+    const firstDayIndex = new Date(currentYear, m, 1).getDay(); 
+    const startOffset = firstDayIndex === 0 ? 6 : firstDayIndex - 1; 
     const daysInMonth = new Date(currentYear, m + 1, 0).getDate();
+    
+    // Render padding grid blocks
+    for (let i = 0; i < startOffset; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'cal-day-blank';
+      innerGrid.appendChild(blank);
+    }
+
+    // Render operational days
     for(let d=1; d<=daysInMonth; d++) {
       const dateStr = `${currentYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const trip = trips.find(t => dateStr >= t.startDate && dateStr <= t.endDate);
+      
       const dayEl = document.createElement('div');
-      dayEl.className = `cal-day ${trip ? 'trip' : ''}`;
-      dayEl.textContent = d;
-      if (trip) { 
-        dayEl.style.backgroundColor = TYPE_META[trip.type]?.colour; 
-        dayEl.onclick = () => openTripSheet(trip.id); 
+      dayEl.className = 'cal-day';
+      dayEl.innerHTML = `<span class="day-num">${d}</span>`;
+      
+      if (trip) {
+        const isStart = dateStr === trip.startDate;
+        const isEnd = dateStr === trip.endDate;
+        
+        if (isStart && isEnd) {
+          dayEl.classList.add('is-single');
+        } else if (isStart) {
+          dayEl.classList.add('is-start');
+        } else if (isEnd) {
+          dayEl.classList.add('is-end');
+        } else {
+          dayEl.classList.add('is-middle');
+        }
+        
+        const colour = TYPE_META[trip.type]?.colour || '#888';
+        dayEl.style.setProperty('--trip-color', colour);
+        dayEl.style.setProperty('--trip-bg', colour + '25'); // 15% opacity tint for continuous track
+        dayEl.style.cursor = 'pointer';
+        dayEl.onclick = () => openTripSheet(trip.id);
       }
+      
       innerGrid.appendChild(dayEl);
     }
     month.appendChild(innerGrid);
@@ -381,11 +436,12 @@ function renderTripList() {
   const list = document.getElementById('tripList');
   list.innerHTML = realTrips().sort((a,b) => a.startDate.localeCompare(b.startDate)).map(t => {
     const colour = TYPE_META[t.type]?.colour || '#888';
+    const iconName = TYPE_META[t.type]?.icon || 'map-marker';
     const currentStatus = deriveTripStatus(t.endDate, t.itinerary);
     return `
     <div class="mobile-trip-row" onclick="openTripSheet('${t.id}')">
-      <div class="mtr-icon" style="background:${colour}15; color:${colour}">
-        ${icon(TYPE_META[t.type]?.icon || 'mdi:map-marker', {size:20, color: colour})}
+      <div class="mtr-icon" style="background:${colour}15;">
+        ${getVector(iconName, 20, colour)}
       </div>
       <div class="mtr-info">
         <div class="mtr-title" style="color:${colour}">${t.title || t.destination || 'Untitled'}</div>
@@ -396,16 +452,14 @@ function renderTripList() {
       </div>
     </div>`;
   }).join('');
-
-  // This line is the key fix
-  if (window.Iconify) Iconify.scan();
 }
 
-function showTab(id, btn) {
+function showTab(id) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-pill').forEach(b => b.classList.remove('active'));
+  
   document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('tabBtn-'+id).classList.add('active');
 }
 
 function openTripSheet(id) {
@@ -418,7 +472,7 @@ function openTripSheet(id) {
   
   const tripNotesWidgetHtml = currentTrip.notes ? `
     <div class="ios-trip-notes-widget">
-      <div style="color: #ffcc00; margin-top:1px;">${icon('mdi:note-text', {size: 16, color: '#ffcc00'})}</div>
+      <div style="margin-top:1px;">${getVector('note', 16, '#ffcc00')}</div>
       <div class="ios-trip-notes-text">${currentTrip.notes}</div>
     </div>
   ` : '';
@@ -468,13 +522,12 @@ function renderSubTab() {
       <div class="add-grid">
         ${Object.entries(ITEM_ICONS).map(([type, d]) => `
           <div class="add-tile" onclick="openActivityForm(-1, '${type}')">
-            <div class="add-tile-icon" style="background:${d.bg}; color:${d.color}">${icon(d.icon, {size:22, color:d.color})}</div>
+            <div class="add-tile-icon" style="background:${d.bg};">${getVector(d.icon, 22, d.color)}</div>
             <div class="add-tile-lbl">${d.lbl}</div>
           </div>
         `).join('')}
       </div>
     `;
-    if (window.Iconify) Iconify.scan();
     return;
   }
 
@@ -500,16 +553,15 @@ function renderSubTab() {
   } else {
     container.innerHTML = `<div class="ios-group-title">Saved Ideas</div>` + matches.map(item => buildItemRowMarkup(item)).join('');
   }
-  if (window.Iconify) Iconify.scan();
 }
 
 function buildItemRowMarkup(item) {
-  const cfg = ITEM_ICONS[item.type] || { icon: 'material-symbols:location-on-outline', color: '#1c1c1e', bg: '#f2f2f7' };
+  const cfg = ITEM_ICONS[item.type] || { icon: 'map-marker', color: '#1c1c1e', bg: '#f2f2f7' };
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
   return `
     <div class="ios-item-card">
       <div class="ios-item-summary" onclick="toggleCardDetails(this)">
-        <div class="ios-item-icon" style="background:${cfg.bg}; color:${cfg.color}">${icon(cfg.icon, {size:18, color:cfg.color})}</div>
+        <div class="ios-item-icon" style="background:${cfg.bg};">${getVector(cfg.icon, 18, cfg.color)}</div>
         <div style="flex-grow:1;">
           <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Untitled Activity'}</div>
           <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px;">
@@ -517,7 +569,7 @@ function buildItemRowMarkup(item) {
             <span class="status-badge status-${item.status}" style="font-size:9px; padding:2px 6px;">${item.status.replace(/-/g,' ')}</span>
           </div>
         </div>
-        <div style="align-self:center; color:#c7c7cc;">${icon('material-symbols:expand-more', {size:20})}</div>
+        <div class="expand-chevron" style="align-self:center; transition: transform 0.2s;">${getVector('chevron-down', 18, '#c7c7cc')}</div>
       </div>
       <div class="ios-item-details" style="display:none;">
         ${item.location ? `<div style="margin-bottom:6px;"><strong>Location:</strong> ${item.location}</div>` : ''}
@@ -533,9 +585,10 @@ function buildItemRowMarkup(item) {
 
 function toggleCardDetails(summaryEl) {
   const detailsEl = summaryEl.nextElementSibling;
+  const chevron = summaryEl.querySelector('.expand-chevron');
   const isHidden = detailsEl.style.display === 'none';
   detailsEl.style.display = isHidden ? 'block' : 'none';
-  summaryEl.querySelector('iconify-icon').style.transform = isHidden ? 'rotate(180deg)' : 'none';
+  chevron.style.transform = isHidden ? 'rotate(180deg)' : 'none';
 }
 
 function closeSheet() {
@@ -773,8 +826,40 @@ function deleteActivityRaw(index) {
   }
 }
 
+function exportJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ meta: DATA.meta, trips: realTrips() }, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `wanderer_export_${currentYear}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (parsed && Array.isArray(parsed.trips)) {
+        DATA.trips = parsed.trips;
+        localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+        updateCountBadge();
+        render();
+        alert("Import successful!");
+      } else {
+        alert("Invalid file structure.");
+      }
+    } catch(err) {
+      alert("Error parsing JSON file.");
+    }
+  };
+  reader.readAsText(file);
+}
+
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
-<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 </body>
 </html>
