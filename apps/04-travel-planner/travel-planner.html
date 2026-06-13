@@ -569,6 +569,10 @@ function renderSubTab() {
 function buildItemRowMarkup(item) {
   const cfg = ITEM_ICONS[item.type] || { icon: 'mdi:map-marker', color: '#1c1c1e', bg: '#f2f2f7' };
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
+  
+  // Create an URL-safe encoded version of the text address for Google Maps API
+  const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
+
   return `
     <div class="ios-item-card">
       <div class="ios-item-summary" onclick="toggleCardDetails(this)">
@@ -583,7 +587,13 @@ function buildItemRowMarkup(item) {
         <div class="expand-chevron" style="align-self:center; transition: transform 0.2s;">${getIconifyTag('mdi:chevron-down', 18, '#c7c7cc')}</div>
       </div>
       <div class="ios-item-details" style="display:none;">
-        ${item.location ? `<div style="margin-bottom:6px;"><strong>Location:</strong> ${item.location}</div>` : ''}
+        ${item.location ? `
+          <div style="margin-bottom:6px;">
+            <strong>Location:</strong> 
+            <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--app-accent); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; word-break: break-all;">
+              ${item.location} ${getIconifyTag('mdi:map-marker-radius-outline', 14, 'var(--app-accent)')}
+            </a>
+          </div>` : ''}
         ${item.details?.pnr ? `<div style="margin-bottom:6px;"><strong>PNR/Ref:</strong> ${item.details.pnr}</div>` : ''}
         ${item.notes ? `<div class="yellow-notes">${item.notes}</div>` : ''}
         <div style="margin-top:12px; text-align:right;">
