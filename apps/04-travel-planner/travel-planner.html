@@ -25,53 +25,68 @@
 
 body { 
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f4f7fa; 
+  background: #f2f2f7; /* iOS Standard System Background */
   color: #1c1c1e; 
   font-size: 14px; 
+  margin: 0;
 }
 
 /* ── YEAR SELECTOR ── */
-.year-ctrl { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: var(--r-pill); overflow: hidden; }
-.year-ctrl span { font-size: 12px; font-weight: 700; color: var(--app-on-primary); padding: 0 8px; min-width: 38px; text-align: center; line-height: 1; }
+.year-ctrl { display: flex; align-items: center; gap: 0; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); border-radius: 40px; overflow: hidden; }
+.year-ctrl span { font-size: 12px; font-weight: 700; color: #fff; padding: 0 8px; min-width: 38px; text-align: center; line-height: 1; }
 .year-btn { background: none; border: none; color: var(--app-on-primary2); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: background .15s, color .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
 .year-btn:hover { background: rgba(255,255,255,.12); color: #fff }
-.year-btn iconify-icon, .year-btn .iconify { font-size: 18px }
+.year-btn iconify-icon { font-size: 18px }
 
-/* ── UPCOMING STRIP ── */
-.upcoming-strip { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 16px; margin-bottom: 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-.upcoming-card { flex-shrink: 0; scroll-snap-align: start; width: 200px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; cursor: pointer; border-top: 4px solid var(--app-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-.uc-days { font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
-.uc-days-lbl { font-size: 9px; color: #8e8e93; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; margin-top: 2px; }
-.uc-dest { font-size: 13px; font-weight: 800; color: var(--app-primary); margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.uc-dates { font-size: 10px; color: #8e8e93; font-weight: 500; }
-.uc-type { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 10px; display: inline-block; padding: 2px 6px; border-radius: 4px; background: #f2f2f7; }
+/* ── SHARPER iOS CALENDAR & SECTIONS ── */
+.section-headline { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #6c6c70; letter-spacing: 0.3px; margin: 10px 0 8px 4px; }
 
-/* ── CALENDAR ── */
-.cal-year-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+/* ── COMPACT UPCOMING STRIP ── */
+.upcoming-strip { display: flex; gap: 10px; overflow-x: auto; padding: 4px 4px 12px; margin-bottom: 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.upcoming-strip::-webkit-scrollbar { display: none; }
+.upcoming-card { flex-shrink: 0; scroll-snap-align: start; width: 170px; background: white; border-radius: 12px; padding: 12px; cursor: pointer; border-top: 4px solid var(--app-primary); box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-left: 1px solid rgba(0,0,0,0.02); border-right: 1px solid rgba(0,0,0,0.02); border-bottom: 1px solid rgba(0,0,0,0.02); transition: transform 0.15s ease; }
+.upcoming-card:active { transform: scale(0.97); }
+.uc-days { font-size: 24px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+.uc-days-lbl { font-size: 9px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px; margin-top: 2px; }
+.uc-dest { font-size: 13px; font-weight: 700; color: #1c1c1e; margin-top: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uc-dates { font-size: 11px; color: #8e8e93; font-weight: 500; margin-top: 1px; }
+.uc-type { font-size: 8px; font-weight: 700; text-transform: uppercase; margin-top: 8px; display: inline-block; padding: 2px 5px; border-radius: 4px; background: #f2f2f7; }
+
+/* ── APPLE STYLE CALENDAR GRID ── */
+.cal-year-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 4px; }
 @media(min-width:768px){ .cal-year-grid { grid-template-columns: repeat(4, 1fr); } }
-@media(min-width:1024px){ .cal-year-grid { grid-template-columns: repeat(6, 1fr); gap: 16px; } }
-.cal-month { background: white; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
-.cal-month-hdr { background: var(--app-primary); color: white; padding: 8px; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase; }
-.cal-grid { padding: 8px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-.cal-day { height: 24px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; border-radius: 4px; color: #1c1c1e; }
-@media(min-width:1024px){ .cal-day { height: 28px; font-size: 11px; } }
-.cal-day.trip { color: white; cursor: pointer; font-weight: 800; }
+@media(min-width:1024px){ .cal-year-grid { grid-template-columns: repeat(6, 1fr); gap: 14px; } }
+
+.cal-month { background: white; border-radius: 14px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.01); }
+.cal-month-hdr { color: #1c1c1e; background: none; padding: 0 0 10px 2px; font-size: 14px; font-weight: 700; text-align: left; letter-spacing: -0.2px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px 2px; }
+.cal-day { height: 26px; width: 26px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; border-radius: 50%; color: #1c1c1e; -webkit-tap-highlight-color: transparent; transition: background-color 0.1s ease; }
+@media(min-width:1024px){ .cal-day { height: 28px; width: 28px; font-size: 11px; } }
+.cal-day.trip { color: white !important; cursor: pointer; font-weight: 700; box-shadow: 0 2px 5px rgba(0,0,0,0.12); }
 
 /* ── NAVIGATION ── */
 .app-nav { background: var(--app-primary); display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,.08); }
 .header { margin-bottom: 0; }
-.nav-pills { display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px; margin: 8px 0; }
-.nav-pill { background: none; border: none; display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.nav-pills { display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px; margin: 8px 0; width: 100%; max-width: 320px; }
+.nav-pill { flex: 1; background: none; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 14px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .nav-pill.active { background: rgba(255,255,255,.15); color: #fff; }
-.tab-panel { display: none; padding-top: 20px; }
+.tab-panel { display: none; padding-top: 12px; }
 .tab-panel.active { display: block; }
 
+/* ── iOS IMMERSIVE ACTION BAR ── */
+.ios-action-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; background: transparent; padding: 0 4px; }
+.ios-btn-primary { flex-grow: 1; background: var(--app-accent); color: white; border: none; padding: 11px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 6px rgba(0,122,255,0.2); }
+.ios-btn-primary:active { opacity: 0.85; }
+.ios-btn-icon { background: #ffffff; color: var(--app-accent); border: 1px solid #e5e5ea; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.ios-btn-icon:active { background: #e5e5ea; }
+.ios-btn-icon svg { width: 20px; height: 20px; fill: var(--app-accent); display: block; }
+
 /* ── MOBILE TRIP LIST ── */
-.trip-list-wrap { display: flex; flex-direction: column; gap: 8px; }
-.mobile-trip-row { display: flex; align-items: center; gap: 14px; padding: 14px; background: white; border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.trip-list-wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 4px; }
+.mobile-trip-row { display: flex; align-items: center; gap: 14px; padding: 14px; background: white; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .mtr-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .mtr-info { flex-grow: 1; }
-.mtr-title { font-weight: 800; font-size: 14px; margin-bottom: 3px; }
+.mtr-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
 .mtr-date { font-size: 11px; color: #8e8e93; font-weight: 500; }
 
 /* ── STATUS PILLS ── */
@@ -159,7 +174,7 @@ body {
 </header>
 
 <nav class="app-nav">
-  <div class="container" style="padding-top:0;padding-bottom:0">
+  <div class="container" style="padding-top:0;padding-bottom:0; display:flex; justify-content:center;">
     <div class="nav-pills">
       <button class="nav-pill active" onclick="showTab('calendar',this)"><iconify-icon icon="mdi:calendar-month"></iconify-icon> Calendar</button>
       <button class="nav-pill" onclick="showTab('trips',this)"><iconify-icon icon="mdi:format-list-bulleted"></iconify-icon> List</button>
@@ -172,19 +187,31 @@ body {
     
     <!-- CALENDAR VIEW -->
     <div class="tab-panel active" id="tab-calendar">
+      <div class="section-headline">Upcoming Trips</div>
       <div id="upcomingStrip" class="upcoming-strip"></div>
+      
+      <div class="section-headline" style="margin-top:20px;">Yearly Overview</div>
       <div class="cal-year-grid" id="calGrid"></div>
     </div>
 
     <!-- LIST & ROOT ACTION VIEW -->
     <div class="tab-panel" id="tab-trips">
        <div class="editor-container">
-         <div class="editor-actions" id="listActions" style="margin-bottom:16px;">
-           <button class="editor-btn" onclick="openTripForm(null)"><iconify-icon icon="mdi:plus"></iconify-icon> New Trip</button>
-           <button class="editor-btn secondary" onclick="exportJSON()"><iconify-icon icon="mdi:download"></iconify-icon></button>
-           <button class="editor-btn secondary" onclick="document.getElementById('importFile').click()"><iconify-icon icon="mdi:upload"></iconify-icon></button>
+         
+         <!-- CRISP SVG ICONS FOR FIXED ACCESSIBILITY -->
+         <div class="ios-action-bar" id="listActions">
+           <button class="ios-btn-primary" onclick="openTripForm(null)">
+             <iconify-icon icon="mdi:plus" style="font-size:18px;"></iconify-icon> New Trip
+           </button>
+           <button class="ios-btn-icon" onclick="exportJSON()" title="Export JSON">
+             <svg viewBox="0 0 24 24"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg>
+           </button>
+           <button class="ios-btn-icon" onclick="document.getElementById('importFile').click()" title="Import JSON">
+             <svg viewBox="0 0 24 24"><path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z"/></svg>
+           </button>
            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
          </div>
+         
          <div id="tripList" class="trip-list-wrap"></div>
        </div>
     </div>
@@ -192,13 +219,9 @@ body {
   </div>
 </main>
 
-<!-- ════════════════════════════════════════════════════════════════════
-     NATIVE iOS ARCHITECTURE OVERLAY SHEET
-     ════════════════════════════════════════════════════════════════════ -->
+<!-- ── OVERLAY SHEET ── -->
 <div id="iosOverlay" class="ios-overlay" onclick="closeSheet()">
-  <div class="ios-sheet" id="iosSheet" onclick="event.stopPropagation()">
-    <!-- Dynamic layouts managed seamlessly through JavaScript -->
-  </div>
+  <div class="ios-sheet" id="iosSheet" onclick="event.stopPropagation()"></div>
 </div>
 
 <script src="../../shared/utils.js"></script>
@@ -206,7 +229,7 @@ body {
 let DATA = null;
 let currentYear = 2026;
 let currentTrip = null;
-let activeSubTab = 'itinerary'; // 'itinerary' | 'ideas' | 'add'
+let activeSubTab = 'itinerary';
 
 const TYPE_META = {
   'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
@@ -257,8 +280,8 @@ function fmtDate(str) {
 }
 function icon(name, opts = {}) {
   const size = opts.size || 16;
-  const color = opts.color ? `color:${opts.color};` : '';
-  return `<span class="iconify" data-icon="${name}" style="font-size:${size}px;${color}vertical-align:middle;display:inline-block"></span>`;
+  const color = opts.color ? `style="color:${opts.color}; font-size:${size}px;"` : `style="font-size:${size}px;"`;
+  return `<iconify-icon icon="${name}" ${color}></iconify-icon>`;
 }
 
 function deriveTripStatus(endDate, items) {
@@ -275,12 +298,16 @@ function deriveTripStatus(endDate, items) {
 function renderUpcomingStrip() {
   const el = document.getElementById('upcomingStrip');
   const upcoming = realTrips().filter(t => daysUntil(t.startDate) >= -2 && daysUntil(t.startDate) <= 120).sort((a,b) => a.startDate.localeCompare(b.startDate));
+  if(upcoming.length === 0) {
+    el.innerHTML = `<p style="color:#8e8e93; font-style:italic; padding:10px 4px; margin:0;">No upcoming trips planned for the next 120 days.</p>`;
+    return;
+  }
   el.innerHTML = upcoming.map(t => {
     const days = daysUntil(t.startDate);
     const colour = TYPE_META[t.type]?.colour || '#666';
     return `
       <div class="upcoming-card" style="border-top-color:${colour}" onclick="openTripSheet('${t.id}')">
-          <div class="uc-days" style="color:${colour}">${days < 0 ? icon('mdi:airplane', {size:22, color:colour}) : days}</div>
+          <div class="uc-days" style="color:${colour}">${days < 0 ? icon('mdi:airplane', {size:20, color:colour}) : days}</div>
           <div class="uc-days-lbl">${days < 0 ? 'Active Now' : 'Days Away'}</div>
           <div class="uc-dest">${t.title || t.destination || 'Untitled'}</div>
           <div class="uc-dates">${fmtDate(t.startDate)}</div>
@@ -292,7 +319,7 @@ function renderUpcomingStrip() {
 function renderCalendar() {
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const trips = realTrips();
   for(let m=0; m<12; m++) {
     const month = document.createElement('div');
@@ -307,7 +334,10 @@ function renderCalendar() {
       const dayEl = document.createElement('div');
       dayEl.className = `cal-day ${trip ? 'trip' : ''}`;
       dayEl.textContent = d;
-      if (trip) { dayEl.style.backgroundColor = TYPE_META[trip.type]?.colour; dayEl.onclick = () => openTripSheet(trip.id); }
+      if (trip) { 
+        dayEl.style.backgroundColor = TYPE_META[trip.type]?.colour; 
+        dayEl.onclick = () => openTripSheet(trip.id); 
+      }
       innerGrid.appendChild(dayEl);
     }
     month.appendChild(innerGrid);
@@ -334,6 +364,9 @@ function renderTripList() {
       </div>
     </div>`;
   }).join('');
+
+  // This line is the key fix
+  if (window.Iconify) Iconify.scan();
 }
 
 function showTab(id, btn) {
@@ -343,9 +376,6 @@ function showTab(id, btn) {
   btn.classList.add('active');
 }
 
-/* ════════════════════════════════════════════════════════════════════
-   iOS MASTER TRIP SHEET (View & Global Switchboard Container)
-   ════════════════════════════════════════════════════════════════════ */
 function openTripSheet(id) {
   currentTrip = realTrips().find(t => t.id === id);
   if (!currentTrip) return;
@@ -354,7 +384,6 @@ function openTripSheet(id) {
   const meta = TYPE_META[currentTrip.type] || {};
   const colour = meta.colour || '#888';
   
-  // Conditionally generate the widget markup if trip-level notes exist
   const tripNotesWidgetHtml = currentTrip.notes ? `
     <div class="ios-trip-notes-widget">
       <div style="color: #ffcc00; margin-top:1px;">${icon('mdi:note-text', {size: 16, color: '#ffcc00'})}</div>
@@ -474,7 +503,7 @@ function toggleCardDetails(summaryEl) {
   const detailsEl = summaryEl.nextElementSibling;
   const isHidden = detailsEl.style.display === 'none';
   detailsEl.style.display = isHidden ? 'block' : 'none';
-  summaryEl.querySelector('.iconify[data-icon*="expand"]').style.transform = isHidden ? 'rotate(180deg)' : 'none';
+  summaryEl.querySelector('iconify-icon').style.transform = isHidden ? 'rotate(180deg)' : 'none';
 }
 
 function closeSheet() {
@@ -482,9 +511,6 @@ function closeSheet() {
   currentTrip = null;
 }
 
-/* ════════════════════════════════════════════════════════════════════
-   iOS TRIP-LEVEL EDITOR (Isolated Scope UI Sheet)
-   ════════════════════════════════════════════════════════════════════ */
 function openTripForm(id) {
   const sheet = document.getElementById('iosSheet');
   const isNew = !id;
@@ -585,9 +611,6 @@ function deleteTripRaw(id) {
   }
 }
 
-/* ════════════════════════════════════════════════════════════════════
-   iOS ACTIVITY-LEVEL FULL-SCREEN MODAL EDITOR
-   ════════════════════════════════════════════════════════════════════ */
 function openActivityForm(index, fallbackType = 'activity') {
   const sheet = document.getElementById('iosSheet');
   const isNew = index === -1;
@@ -630,7 +653,7 @@ function openActivityForm(index, fallbackType = 'activity') {
         </div>
         <div class="ios-row">
           <label class="ios-label">Date</label>
-          <input type="date" id="actDate" class="ios-input" value="${item.date || ''}" placeholder="Leave blank for Ideas Bank">
+          <input type="date" id="actDate" class="ios-input" value="${item.date || ''}">
         </div>
         <div class="ios-row">
           <label class="ios-label">Time</label>
@@ -720,10 +743,6 @@ function deleteActivityRaw(index) {
 
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
-
-<div id="iosOverlay" class="ios-overlay" onclick="closeSheet()">
-  <div class="ios-sheet" id="iosSheet" onclick="event.stopPropagation()"></div>
-</div>
 <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 </body>
 </html>
