@@ -67,7 +67,7 @@
       "type": "race",
       "startDate": "2026-03-14",
       "endDate": "2026-03-15",
-      "status": "Confirmed",
+      "status": "Completed",
       "description": "Barcelona Marathon 2026",
       "accommodation": "Hotel Arts Barcelona",
       "who": "Rishi",
@@ -96,6 +96,20 @@
           "time": "20:15",
           "location": "BCN → ZRH",
           "notes": "Ref: VY1235"
+        },
+        {
+          "id": "it-1781379398387",
+          "type": "accommodation",
+          "status": "booked",
+          "title": "Motel One",
+          "date": "2026-03-14",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "",
+          "details": {
+            "pnr": ""
+          }
         }
       ]
     },
