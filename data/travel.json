@@ -713,6 +713,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781445885541",
+          "type": "transit",
+          "status": "booked",
+          "title": "Flight home to Delhi",
+          "date": "2026-05-31",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "Need to add details",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "status": "Planned"
