@@ -238,11 +238,16 @@
         {
           "id": "it-7",
           "type": "food",
-          "title": "Dinner: Gros Pre",
-          "status": "not-booked",
+          "status": "booked",
+          "title": "SottoCasa",
           "date": "2026-06-13",
           "time": "19:00",
-          "notes": "Cost: 60 CHF"
+          "arrivalTime": "",
+          "location": "Rue de l'Hôpital 16, 2800 Delémont, Switzerland",
+          "notes": "Cost: 80 CHF",
+          "details": {
+            "pnr": ""
+          }
         },
         {
           "id": "it-8",
