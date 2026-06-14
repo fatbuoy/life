@@ -264,10 +264,16 @@
         {
           "id": "it-8",
           "type": "food",
-          "title": "Lunch: Osteria La Bottega",
           "status": "not-booked",
+          "title": "Lunch: Osteria La Bottega",
           "date": "2026-06-14",
-          "notes": "Cost: 50 CHF"
+          "time": "13:30",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "Cost: 50 CHF",
+          "details": {
+            "pnr": ""
+          }
         },
         {
           "id": "it-1781381157758",
