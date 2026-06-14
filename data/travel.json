@@ -283,7 +283,7 @@
         {
           "id": "it-1781414477230",
           "type": "food",
-          "status": "not-booked",
+          "status": "no-booking-required",
           "title": "Jubin Confiseur",
           "date": "2026-06-14",
           "time": "",
