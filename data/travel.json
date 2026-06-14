@@ -131,10 +131,10 @@
     {
       "id": "trp_2026_us_may",
       "destination": "United States",
-      "type": "active",
+      "type": "work",
       "startDate": "2026-05-11",
       "endDate": "2026-05-21",
-      "status": "Planned",
+      "status": "Completed",
       "description": "Rishi in US — training camp / races",
       "accommodation": "TBC",
       "who": "Rishi",
@@ -143,7 +143,8 @@
       "budgetActual": null,
       "raceEventId": null,
       "notes": "",
-      "itinerary": []
+      "itinerary": [],
+      "title": ""
     },
     {
       "id": "trp_2026_via_alpina",
