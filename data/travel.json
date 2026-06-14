@@ -500,6 +500,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781423851878",
+          "type": "note",
+          "status": "not-booked",
+          "title": "Important Phrases",
+          "date": "2026-06-14",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "Hello - Ciao.\nGood morning / Good day- Buongiorno\nGood afternoon - Buon pomeriggio\nGoodnight evening Buonasera \nGoodnight - Buonanotte\nGoodbye - Arrivederci\nPlease - Per favore",
+          "details": {
+            "pnr": ""
+          }
         }
       ]
     },
