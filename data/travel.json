@@ -689,7 +689,7 @@
         {
           "id": "it-1781445581512",
           "type": "transit",
-          "status": "not-booked",
+          "status": "booked",
           "title": "Helsinki to Zurich",
           "date": "2026-05-31",
           "time": "07:55",
@@ -701,7 +701,7 @@
           }
         }
       ],
-      "status": "Unplanned"
+      "status": "Planned"
     }
   ]
 }
