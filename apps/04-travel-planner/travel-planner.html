@@ -36,7 +36,6 @@ body {
 
 * { box-sizing: border-box; }
 
-/* Desktop Grid Layout & Scaling Constraints */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -74,17 +73,14 @@ body {
 .cal-month-hdr { color: #1c1c1e; background: none; padding: 0 0 8px 2px; font-size: 13px; font-weight: 700; text-align: left; letter-spacing: -0.2px; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px 0; text-align: center; }
 
-/* Master layout for single dates */
 .cal-day { position: relative; padding: 2px 0; font-size: 11px; font-weight: 500; color: #1c1c1e; -webkit-tap-highlight-color: transparent; }
 .cal-day-blank { height: 24px; }
 
-/* Continuous Strip Graphics */
 .cal-day.is-middle { background-color: var(--trip-bg); }
 .cal-day.is-start { background: linear-gradient(to right, transparent 50%, var(--trip-bg) 50%); }
 .cal-day.is-end { background: linear-gradient(to right, var(--trip-bg) 50%, transparent 50%); }
 .cal-day.is-single { background: transparent; }
 
-/* Inner Anchored Highlight Ring */
 .day-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; position: relative; z-index: 2; }
 .cal-day.is-start .day-num, 
 .cal-day.is-end .day-num, 
@@ -95,13 +91,14 @@ body {
 .app-nav { background: var(--app-primary); display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,.08); }
 .header { margin-bottom: 0; }
 .nav-pills { display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px; margin: 8px 0; width: 100%; max-width: 320px; }
+.nav-pills button { cursor: pointer; }
 .nav-pill { flex: 1; background: none; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 14px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .nav-pill.active { background: rgba(255,255,255,.15); color: #fff; }
 .nav-pill iconify-icon { font-size: 14px; }
 .tab-panel { display: none; padding-top: 12px; }
 .tab-panel.active { display: block; }
 
-/* ── ACTION BAR WITH ICONIFY ACCESSIBILITY ── */
+/* ── ACTION BAR ── */
 .ios-action-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; background: transparent; padding: 0 4px; }
 .ios-btn-primary { flex-grow: 1; background: var(--app-accent); color: white; border: none; padding: 11px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 6px rgba(0,122,255,0.2); }
 .ios-btn-primary:active { opacity: 0.85; }
@@ -113,6 +110,7 @@ body {
 /* ── MOBILE TRIP LIST ── */
 .trip-list-wrap { display: flex; flex-direction: column; gap: 8px; padding: 0 4px; }
 .mobile-trip-row { display: flex; align-items: center; gap: 14px; padding: 14px; background: white; border-radius: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.mobile-trip-row:hover { background: #fafafa; }
 .mtr-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .mtr-icon iconify-icon { display: block; font-size: 20px; }
 .mtr-info { flex-grow: 1; }
@@ -141,9 +139,11 @@ body {
 .ios-trip-notes-widget { background: #ffffff; margin: 12px 16px 2px 16px; padding: 12px; border-radius: 10px; border-left: 4px solid #ffcc00; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: flex; gap: 10px; align-items: flex-start; }
 .ios-trip-notes-text { font-size: 13px; color: #3a3a3c; font-style: italic; line-height: 1.4; white-space: pre-wrap; }
 
-.ios-segmented-control { display: flex; background: #e3e3e6; padding: 2px; border-radius: 8px; margin: 12px 16px; flex-shrink: 0; }
-.ios-segment-btn { flex: 1; border: none; background: none; padding: 6px; font-size: 13px; font-weight: 500; color: #1c1c1e; border-radius: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all 0.1s ease; }
-.ios-segment-btn.active { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
+/* ── FOUR-TAB STICKY BOTTOM NAVIGATION BAR ── */
+.ios-bottom-nav { display: flex; background: #ffffff; border-top: 1px solid #c6c6c8; padding: 8px 0 max(8px, env(safe-area-inset-bottom)); flex-shrink: 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.02); }
+.ios-tab-btn { flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #8e8e93; font-size: 10px; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: color 0.15s ease; }
+.ios-tab-btn iconify-icon { font-size: 22px; display: block; }
+.ios-tab-btn.active { color: var(--app-accent); font-weight: 600; }
 
 .ios-sheet-body { flex-grow: 1; overflow-y: auto; padding: 0 16px 30px 16px; -webkit-overflow-scrolling: touch; }
 
@@ -158,6 +158,14 @@ body {
 .ios-textarea { text-align: left; resize: none; min-height: 70px; padding-top: 4px; }
 .ios-row.vertical { flex-direction: column; align-items: flex-start; }
 .ios-row.vertical .ios-label { margin-bottom: 6px; }
+
+/* ── iOS TOGGLE SWITCH ── */
+.ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; cursor: pointer; inset: 0; background-color: #e5e5ea; transition: background-color .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 26px; }
+.ios-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: transform .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+input:checked + .ios-slider { background-color: #34c759; }
+input:checked + .ios-slider:before { transform: translateX(20px); }
 
 /* ── ITINERARY CARDS ── */
 .ios-item-card { background: #ffffff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #e5e5ea; }
@@ -176,7 +184,6 @@ body {
 .yellow-notes { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px; font-style: italic; color: #92400e; margin-top: 8px; white-space: pre-wrap; line-height: 1.4; }
 .editor-container { max-width: 600px; margin: 0 auto; width:100%; }
 
-/* Simple Sync Loader styling */
 .sync-indicator { font-size: 11px; color: rgba(255,255,255,0.6); margin-right: auto; padding-left: 8px; font-weight: 500; display: none; }
 </style>
 </head>
@@ -258,11 +265,9 @@ body {
 
 <script src="../../shared/utils.js"></script>
 <script>
-// ── GITHUB CONFIGURATION ──
-// Change these settings to perfectly match your GitHub parameters!
 const GITHUB_CONFIG = {
   owner: "fatbuoy", 
-  repo: "life",       
+  repo: "app-data",       
   path: "data/travel.json",     
   branch: "main"                
 };
@@ -287,6 +292,7 @@ const ITEM_ICONS = {
   'accommodation': { icon: 'mdi:bed-outline', color: '#5856d6', bg: '#f0eeff', lbl: 'Accommodation' },
   'food': { icon: 'mdi:silverware-fork-knife', color: '#ff9500', bg: '#fff5e6', lbl: 'Food & Drink' },
   'activity': { icon: 'mdi:compass-outline', color: '#4cd964', bg: '#edfbe7', lbl: 'Activity' },
+  'lingo': { icon: 'mdi:translate', color: '#ff2d55', bg: '#ffe5ec', lbl: 'Local Lingo' },
   'note': { icon: 'mdi:note-text-outline', color: '#8e8e93', bg: '#f2f2f7', lbl: 'Quick Note' }
 };
 
@@ -302,16 +308,30 @@ function getIconifyTag(name, size = 18, color = 'currentColor') {
 }
 
 async function loadData() {
-  // Use a unique timestamp string to avoid local browser caching of the remote live asset
-  DATA = await fetchData(`../../data/travel.json?t=${Date.now()}`);
+  const token = localStorage.getItem('gh_pat_token');
+  
+  if (token) {
+    const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+    try {
+      const res = await fetch(url, {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (res.ok) {
+        const fileData = await res.json();
+        const decoded = decodeURIComponent(escape(atob(fileData.content)));
+        DATA = JSON.parse(decoded);
+      }
+    } catch(e) {
+      console.error("Live GitHub API authentication pull failed. Routing offline failover...", e);
+    }
+  }
   
   if (!DATA) {
-    // Failover gracefully to local storage only if offline or server fails
     const stored = localStorage.getItem('wanderer_trips');
     if (stored) { try { DATA = { trips: JSON.parse(stored), meta: {} }; } catch(e){} }
   }
   
-  if (!DATA) return;
+  if (!DATA) DATA = { trips: [], meta: {} };
   updateCountBadge();
   render();
 }
@@ -503,13 +523,27 @@ function openTripSheet(id) {
 
     ${tripNotesWidgetHtml}
 
-    <div class="ios-segmented-control">
-      <button class="ios-segment-btn ${activeSubTab==='itinerary'?'active':''}" onclick="switchSubTab('itinerary')">Itinerary</button>
-      <button class="ios-segment-btn ${activeSubTab==='ideas'?'active':''}" onclick="switchSubTab('ideas')">Ideas Bank</button>
-      <button class="ios-segment-btn ${activeSubTab==='add'?'active':''}" onclick="switchSubTab('add')">+ Add Item</button>
-    </div>
-
     <div class="ios-sheet-body" id="subTabContent"></div>
+
+    <!-- PREMIUM 4-BUTTON iOS STICKY BOTTOM NAVIGATION BAR -->
+    <div class="ios-bottom-nav">
+      <button class="ios-tab-btn ${activeSubTab==='itinerary'?'active':''}" onclick="switchSubTab('itinerary')">
+        <iconify-icon icon="mdi:map-marker-path"></iconify-icon>
+        <span>Itinerary</span>
+      </button>
+      <button class="ios-tab-btn ${activeSubTab==='lingo'?'active':''}" onclick="switchSubTab('lingo')">
+        <iconify-icon icon="mdi:translate"></iconify-icon>
+        <span>Lingo</span>
+      </button>
+      <button class="ios-tab-btn ${activeSubTab==='ideas'?'active':''}" onclick="switchSubTab('ideas')">
+        <iconify-icon icon="mdi:lightbulb-outline"></iconify-icon>
+        <span>Ideas</span>
+      </button>
+      <button class="ios-tab-btn ${activeSubTab==='add'?'active':''}" onclick="switchSubTab('add')">
+        <iconify-icon icon="mdi:plus-circle-outline"></iconify-icon>
+        <span>Add</span>
+      </button>
+    </div>
   `;
   
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -518,15 +552,22 @@ function openTripSheet(id) {
 
 function switchSubTab(target) {
   activeSubTab = target;
-  document.querySelectorAll('.ios-segment-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  document.querySelectorAll('.ios-tab-btn').forEach(b => b.classList.remove('active'));
   renderSubTab();
+  
+  const btns = document.querySelectorAll('.ios-tab-btn');
+  btns.forEach(btn => {
+    if(btn.getAttribute('onclick').includes(`'${target}'`)) {
+      btn.classList.add('active');
+    }
+  });
 }
 
 function renderSubTab() {
   const container = document.getElementById('subTabContent');
   const items = currentTrip.itinerary || [];
   
+  // 1. ADD NEW ITEM PANEL VIEW
   if (activeSubTab === 'add') {
     container.innerHTML = `
       <div class="ios-group-title">Tap an item type to add</div>
@@ -542,7 +583,26 @@ function renderSubTab() {
     return;
   }
 
-  const matches = items.filter(i => activeSubTab === 'itinerary' ? !!i.date : !i.date);
+  // 2. EXCLUSIVE LOCAL LINGO MODULE COCKPIT
+  if (activeSubTab === 'lingo') {
+    const lingoItems = items.filter(i => i.type === 'lingo');
+    if (lingoItems.length === 0) {
+      container.innerHTML = `
+        <p style="text-align:center; color:#8e8e93; margin-top:40px; font-size:14px;">No language phrases saved yet.</p>
+        <div style="text-align:center; margin-top: 15px;">
+           <button class="ios-btn-primary" style="display:inline-flex; width:auto; padding:8px 16px;" onclick="openActivityForm(-1, 'lingo')">Add Phrase</button>
+        </div>`;
+      return;
+    }
+    container.innerHTML = `<div class="ios-group-title">Local Lingo & Expressions</div>` + lingoItems.map(item => buildItemRowMarkup(item)).join('');
+    return;
+  }
+
+  // 3. DATALINKED SUBTAB SEGMENT FILTERS (Lingo items are clean-filtered out to prevent double-rendering)
+  const matches = items.filter(i => {
+    if (i.type === 'lingo') return false; 
+    return activeSubTab === 'itinerary' ? !!i.date : !i.date;
+  });
   
   if (matches.length === 0) {
     container.innerHTML = `<p style="text-align:center; color:#8e8e93; margin-top:40px; font-size:14px;">Empty section.</p>`;
@@ -569,8 +629,6 @@ function renderSubTab() {
 function buildItemRowMarkup(item) {
   const cfg = ITEM_ICONS[item.type] || { icon: 'mdi:map-marker', color: '#1c1c1e', bg: '#f2f2f7' };
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
-  
-  // Create an URL-safe encoded version of the text address for Google Maps API
   const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
 
   return `
@@ -709,8 +767,6 @@ function saveTripLevel(id, isNew) {
   updateCountBadge();
   render();
   openTripSheet(id);
-  
-  // Fire off continuous silent database background sync
   triggerGitHubAutoSync();
 }
 
@@ -721,7 +777,6 @@ function deleteTripRaw(id) {
     updateCountBadge();
     render();
     closeSheet();
-    
     triggerGitHubAutoSync();
   }
 }
@@ -729,7 +784,7 @@ function deleteTripRaw(id) {
 function openActivityForm(index, fallbackType = 'activity') {
   const sheet = document.getElementById('iosSheet');
   const isNew = index === -1;
-  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, title: '', status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' } } : currentTrip.itinerary[index];
+  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' } } : currentTrip.itinerary[index];
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -747,6 +802,7 @@ function openActivityForm(index, fallbackType = 'activity') {
             <option value="accommodation" ${item.type==='accommodation'?'selected':''}>Accommodation</option>
             <option value="food" ${item.type==='food'?'selected':''}>Food</option>
             <option value="activity" ${item.type==='activity'?'selected':''}>Activity</option>
+            <option value="lingo" ${item.type==='lingo'?'selected':''}>Local Lingo</option>
             <option value="note" ${item.type==='note'?'selected':''}>Note</option>
           </select>
         </div>
@@ -760,11 +816,22 @@ function openActivityForm(index, fallbackType = 'activity') {
         </div>
       </div>
 
+      <div class="ios-group-title">Routing Configuration</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Save to Ideas Bank</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="actIsIdea" ${!item.date ? 'checked' : ''} onchange="toggleIdeaDateConstraint(this)">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+      </div>
+
       <div class="ios-group-title">Primary Specifications</div>
       <div class="ios-group">
         <div class="ios-row">
           <label class="ios-label">Title</label>
-          <input type="text" id="actTitle" class="ios-input" placeholder="Flight / Resto Name" value="${item.title || ''}">
+          <input type="text" id="actTitle" class="ios-input" placeholder="Flight / Resto / Phrase" value="${item.title || ''}">
         </div>
         <div class="ios-row">
           <label class="ios-label">Date</label>
@@ -795,7 +862,7 @@ function openActivityForm(index, fallbackType = 'activity') {
       <div class="ios-group-title">Item Notes</div>
       <div class="ios-group">
         <div class="ios-row vertical">
-          <textarea id="actNotes" class="ios-textarea" placeholder="Table reservation names, platform info...">${item.notes || ''}</textarea>
+          <textarea id="actNotes" class="ios-textarea" placeholder="Translations, reservation parameters...">${item.notes || ''}</textarea>
         </div>
       </div>
 
@@ -810,17 +877,43 @@ function openActivityForm(index, fallbackType = 'activity') {
   document.getElementById('actType').addEventListener('change', (e) => {
     document.getElementById('rowArrTime').style.display = e.target.value === 'transit' ? 'flex' : 'none';
   });
+
+  setTimeout(() => {
+    const chk = document.getElementById('actIsIdea');
+    if (chk && chk.checked) {
+      document.getElementById('actDate').disabled = true;
+      document.getElementById('actTime').disabled = true;
+    }
+  }, 0);
+}
+
+function toggleIdeaDateConstraint(chk) {
+  const dateInput = document.getElementById('actDate');
+  const timeInput = document.getElementById('actTime');
+  if (chk.checked) {
+    dateInput.value = '';
+    timeInput.value = '';
+    dateInput.disabled = true;
+    timeInput.disabled = true;
+  } else {
+    dateInput.disabled = false;
+    timeInput.disabled = false;
+    if (!dateInput.value && currentTrip) {
+      dateInput.value = currentTrip.startDate || '';
+    }
+  }
 }
 
 function saveActivityLevel(index) {
+  const isIdeaChecked = document.getElementById('actIsIdea').checked;
   const activity = {
     id: index === -1 ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
     type: document.getElementById('actType').value,
     status: document.getElementById('actStatus').value,
     title: document.getElementById('actTitle').value,
-    date: document.getElementById('actDate').value,
-    time: document.getElementById('actTime').value,
-    arrivalTime: document.getElementById('actType').value === 'transit' ? document.getElementById('actArrTime').value : '',
+    date: isIdeaChecked ? '' : document.getElementById('actDate').value,
+    time: isIdeaChecked ? '' : document.getElementById('actTime').value,
+    arrivalTime: (!isIdeaChecked && document.getElementById('actType').value === 'transit') ? document.getElementById('actArrTime').value : '',
     location: document.getElementById('actLoc').value,
     notes: document.getElementById('actNotes').value,
     details: { pnr: document.getElementById('actPnr').value }
@@ -829,9 +922,10 @@ function saveActivityLevel(index) {
   if (index === -1) {
     if(!currentTrip.itinerary) currentTrip.itinerary = [];
     currentTrip.itinerary.push(activity);
-    activeSubTab = activity.date ? 'itinerary' : 'ideas'; 
+    activeSubTab = activity.type === 'lingo' ? 'lingo' : (activity.date ? 'itinerary' : 'ideas'); 
   } else {
     currentTrip.itinerary[index] = activity;
+    activeSubTab = activity.type === 'lingo' ? 'lingo' : (activity.date ? 'itinerary' : 'ideas');
   }
 
   const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
@@ -841,7 +935,6 @@ function saveActivityLevel(index) {
   localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
   render();
   openTripSheet(currentTrip.id);
-  
   triggerGitHubAutoSync();
 }
 
@@ -855,12 +948,10 @@ function deleteActivityRaw(index) {
     localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
     render();
     openTripSheet(currentTrip.id);
-    
     triggerGitHubAutoSync();
   }
 }
 
-// ── NEW AUTOMATED API SYNC ROUTINE ──
 function promptForGitToken() {
   const current = localStorage.getItem('gh_pat_token') || '';
   const token = prompt("Enter your GitHub Personal Access Token:", current);
@@ -871,6 +962,7 @@ function promptForGitToken() {
     } else {
       localStorage.setItem('gh_pat_token', token.trim());
       alert("Token successfully saved to this phone!");
+      loadData(); 
     }
   }
 }
@@ -878,7 +970,6 @@ function promptForGitToken() {
 async function triggerGitHubAutoSync() {
   const token = localStorage.getItem('gh_pat_token');
   if (!token) {
-    // If token hasn't been set yet, softly alert the user to complete configurations
     console.log("GitHub token missing. Saved locally only.");
     return;
   }
@@ -889,7 +980,6 @@ async function triggerGitHubAutoSync() {
   const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
   
   try {
-    // Fetch target file metadata to gather latest cryptographic SHA reference point
     const metaRes = await fetch(url, {
       headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
@@ -902,7 +992,6 @@ async function triggerGitHubAutoSync() {
       throw new Error("Could not check file identity tracking.");
     }
 
-    // Assemble uniform serialization payload
     const outputJSON = { meta: DATA.meta || {}, trips: realTrips() };
     const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(outputJSON, null, 2))));
     
