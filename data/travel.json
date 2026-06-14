@@ -470,10 +470,16 @@
         {
           "id": "it-14",
           "type": "activity",
+          "status": "booked",
           "title": "Cocktails: Salotto Bellini",
-          "status": "planned",
           "date": "2026-06-16",
-          "location": "80 Via Santa Maria di Costantinopoli"
+          "time": "",
+          "arrivalTime": "",
+          "location": "80 Via Santa Maria di Costantinopoli",
+          "notes": "Where we had negroini’s ",
+          "details": {
+            "pnr": ""
+          }
         },
         {
           "id": "it-15",
