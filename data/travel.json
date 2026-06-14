@@ -116,7 +116,7 @@
       "type": "family",
       "startDate": "2026-05-07",
       "endDate": "2026-05-21",
-      "status": "Confirmed",
+      "status": "Completed",
       "description": "Arthur's Communion + Marion family time",
       "accommodation": "Family home",
       "who": "Sahani Family",
@@ -125,7 +125,8 @@
       "budgetActual": null,
       "raceEventId": null,
       "notes": "Arthur's Communion 10 May. Book restaurant for family dinner.",
-      "itinerary": []
+      "itinerary": [],
+      "title": "Arthur’s communion"
     },
     {
       "id": "trp_2026_us_may",
