@@ -510,7 +510,7 @@
           "time": "",
           "arrivalTime": "",
           "location": "",
-          "notes": "Yes / No - Sì / No\nHello - Ciao.\nGood morning / Good day- Buongiorno\nGood afternoon - Buon pomeriggio\nGoodnight evening Buonasera \nGoodnight - Buonanotte\nGoodbye - Arrivederci\nPlease - Per favore\nThank you - Grazie\nI would like - Vorrei... (Vohr-RAY) \nA coffee please - Un caffè, per favore\nStill / Sparkling water Acqua naturale/frizzante per favore\nThe bill please - Il conto, per favore\nCan i pay by card - Posso pagare con la carta?\nExcuse me - Scusi\nExcuse me where is - Scusi, dov'è la stazione? \nWhere is the bathroom - Dov'è il bagno? \nStraight - Dritto \nTo the right / To the left- A destra / A sinistra ",
+          "notes": "Yes / No - Sì / No\nHello - Ciao.\nGood morning / Good day- Buongiorno\nGood afternoon - Buon pomeriggio\nGoodnight evening Buonasera \nGoodnight - Buonanotte\nGoodbye - Arrivederci / Ciao \nPlease - Per favore\nThank you - Grazie\nHave a good day / good evening - Buona giornata / Buona serata\nI would like - Vorrei... (Vohr-RAY) \nA coffee please - Un caffè, per favore\nStill / Sparkling water Acqua naturale/frizzante per favore\nThe bill please - Il conto, per favore\nCan i pay by card - Posso pagare con la carta?\nExcuse me - Scusi\nExcuse me where is - Scusi, dov'è la stazione? \nWhere is the bathroom - Dov'è il bagno? \nStraight - Dritto \nTo the right / To the left- A destra / A sinistra ",
           "details": {
             "pnr": ""
           }
