@@ -665,6 +665,17 @@
       "notes": "",
       "itinerary": [],
       "status": "Unplanned"
+    },
+    {
+      "id": "trp_1781445014131",
+      "title": "Bike packing in Tuscany",
+      "destination": "Tuscany, IT",
+      "type": "active",
+      "startDate": "2026-09-21",
+      "endDate": "2026-06-30",
+      "notes": "",
+      "itinerary": [],
+      "status": "Unplanned"
     }
   ]
 }
