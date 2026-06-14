@@ -265,6 +265,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781414376612",
+          "type": "food",
+          "status": "no-booking-required",
+          "title": "du Moulin",
+          "date": "2026-06-14",
+          "time": "08:00",
+          "arrivalTime": "",
+          "location": "Rue des Moulins 22, 2800 Delémont, Switzerland",
+          "notes": "Breakfast option 1 - bakery",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "title": "Marathon du Jura"
