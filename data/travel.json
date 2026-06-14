@@ -275,7 +275,7 @@
       "type": "leisure",
       "startDate": "2026-06-14",
       "endDate": "2026-06-17",
-      "status": "Planned",
+      "status": "Planning",
       "description": "",
       "accommodation": "Napoli Movie Apartments",
       "who": "M&R and S&A",
@@ -415,6 +415,20 @@
           "type": "activity",
           "title": "Lunch: La Locanda Gesù Vecchio",
           "status": "planned"
+        },
+        {
+          "id": "it-1781413768202",
+          "type": "food",
+          "status": "no-booking-required",
+          "title": "Pizzeria Starita",
+          "date": "2026-06-17",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "It’s supposed to have crazy good pizza! ",
+          "details": {
+            "pnr": ""
+          }
         }
       ]
     },
