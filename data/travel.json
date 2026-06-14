@@ -699,6 +699,20 @@
           "details": {
             "pnr": "Flight number: AY 1511"
           }
+        },
+        {
+          "id": "it-1781445759229",
+          "type": "activity",
+          "status": "booked",
+          "title": "Italian Trip",
+          "date": "2026-06-06",
+          "time": "07:00",
+          "arrivalTime": "",
+          "location": "Italy",
+          "notes": "Milan, Venice, Bologna, Florence, Piza, Rome, Napoli",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "status": "Planned"
