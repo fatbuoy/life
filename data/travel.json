@@ -236,10 +236,16 @@
         {
           "id": "it-6",
           "type": "activity",
+          "status": "booked",
           "title": "Race",
-          "status": "planned",
           "date": "2026-06-14",
-          "notes": "Cost: 79 CHF"
+          "time": "09:30",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "Cost: 79 CHF",
+          "details": {
+            "pnr": ""
+          }
         },
         {
           "id": "it-7",
