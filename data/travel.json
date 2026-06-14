@@ -222,10 +222,16 @@
         {
           "id": "it-5",
           "type": "activity",
+          "status": "booked",
           "title": "Pick up race number",
-          "status": "planned",
           "date": "2026-06-13",
-          "location": "Mercure Hotel Delémont"
+          "time": "04:00",
+          "arrivalTime": "",
+          "location": "Mercure Hotel Delémont",
+          "notes": "",
+          "details": {
+            "pnr": ""
+          }
         },
         {
           "id": "it-6",
