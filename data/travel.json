@@ -293,6 +293,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781414605437",
+          "type": "food",
+          "status": "no-booking-required",
+          "title": "Werth Pâtisserie Café Restaurant",
+          "date": "2026-06-14",
+          "time": "",
+          "arrivalTime": "",
+          "location": "Pl. de la Gare 14, 2800 Delémont, Switzerland",
+          "notes": "Breakfast option 3 - cafe also near the train station",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "title": "Marathon du Jura"
