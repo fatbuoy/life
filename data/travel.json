@@ -279,6 +279,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781414477230",
+          "type": "food",
+          "status": "not-booked",
+          "title": "Jubin Confiseur",
+          "date": "2026-06-14",
+          "time": "",
+          "arrivalTime": "",
+          "location": "Rte de Moutier 29, 2800 Delémont, Switzerland",
+          "notes": "Breakfast option 2 - near the train station",
+          "details": {
+            "pnr": ""
+          }
         }
       ],
       "title": "Marathon du Jura"
