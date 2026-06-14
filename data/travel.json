@@ -514,6 +514,20 @@
           "details": {
             "pnr": ""
           }
+        },
+        {
+          "id": "it-1781426972477",
+          "type": "food",
+          "status": "not-booked",
+          "title": "Salumeria Malinconico",
+          "date": "2026-06-14",
+          "time": "",
+          "arrivalTime": "",
+          "location": "",
+          "notes": "delicatessen, greengrocer and market all in one space, king of the marenna napulitana (Neapolitan panini) with sandwiches filled with literally everything, including fantastic fresh mozzarella",
+          "details": {
+            "pnr": ""
+          }
         }
       ]
     },
