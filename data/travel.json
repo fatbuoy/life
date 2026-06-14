@@ -685,7 +685,22 @@
       "startDate": "2026-05-31",
       "endDate": "2026-06-29",
       "notes": "",
-      "itinerary": [],
+      "itinerary": [
+        {
+          "id": "it-1781445581512",
+          "type": "transit",
+          "status": "not-booked",
+          "title": "Helsinki to Zurich",
+          "date": "2026-05-31",
+          "time": "07:55",
+          "arrivalTime": "09:40",
+          "location": "",
+          "notes": "Airline: Finnair",
+          "details": {
+            "pnr": "Flight number: AY 1511"
+          }
+        }
+      ],
       "status": "Unplanned"
     }
   ]
