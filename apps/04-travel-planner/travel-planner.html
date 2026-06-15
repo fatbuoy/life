@@ -185,6 +185,14 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .editor-container { max-width: 600px; margin: 0 auto; width:100%; }
 
 .sync-indicator { font-size: 11px; color: rgba(255,255,255,0.6); margin-right: auto; padding-left: 8px; font-weight: 500; display: none; }
+
+/* ── HIKING DASHBOARD SPECIFIC CLASSES ── */
+.hike-metrics-strip { display: flex; gap: 8px; margin-top: 6px; font-size: 11px; font-weight: 600; }
+.hike-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; color: #1c1c1e; }
+.hike-badge.dist { background: #e5f1ff; color: #007aff; }
+.hike-badge.ascent { background: #edfbe7; color: #15803d; }
+.hike-badge.descent { background: #ffebeb; color: #b91c1c; }
+.hike-stage-num { font-size: 9px; background: #ff781f; color: white; padding: 1px 5px; border-radius: 4px; font-weight: 700; text-transform: uppercase; margin-right: 4px; display: inline-block; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -278,13 +286,14 @@ let currentTrip = null;
 let activeSubTab = 'itinerary';
 
 const TYPE_META = {
-  'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
-  'family':      { label:'Family',      colour:'#8b5cf6', icon:'mdi:home-heart' },
-  'active':      { label:'Active',      colour:'#ff781f', icon:'mdi:hiking' },
-  'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'mdi:beach' },
-  'work':        { label:'Work',        colour:'#64748b', icon:'mdi:briefcase-outline' },
-  'race':        { label:'Race',        colour:'#e11d48', icon:'mdi:trophy-outline' },
-  'hibernation': { label:'Hibernation', colour:'#9d174d', icon:'custom:pomegranate' }
+  'visitors':       { label:'Visitors',       colour:'#10b981', icon:'mdi:account-group-outline' },
+  'family':         { label:'Family',         colour:'#8b5cf6', icon:'mdi:home-heart' },
+  'active':         { label:'Active',         colour:'#ff781f', icon:'mdi:hiking' },
+  'through-hiking': { label:'Through-Hiking',  colour:'#ff781f', icon:'mdi:hiking' },
+  'leisure':        { label:'Leisure',        colour:'#06b6d4', icon:'mdi:beach' },
+  'work':           { label:'Work',           colour:'#64748b', icon:'mdi:briefcase-outline' },
+  'race':           { label:'Race',           colour:'#e11d48', icon:'mdi:trophy-outline' },
+  'hibernation':    { label:'Hibernation',    colour:'#9d174d', icon:'custom:pomegranate' }
 };
 
 const ITEM_ICONS = {
@@ -398,7 +407,7 @@ function renderUpcomingStrip() {
           <div class="uc-days-lbl">${days < 0 ? 'Active' : 'Days Away'}</div>
           <div class="uc-dest">${t.title || t.destination || 'Untitled'}</div>
           <div class="uc-dates">${fmtDate(t.startDate)}</div>
-          <div class="uc-type" style="color:${colour}">${(t.type || 'Leisure').toUpperCase()}</div>
+          <div class="uc-type" style="color:${colour}">${(TYPE_META[t.type]?.label || t.type || 'Leisure').toUpperCase()}</div>
         </div>`;
   }).join('');
 }
@@ -501,12 +510,45 @@ function openTripSheet(id) {
   const meta = TYPE_META[currentTrip.type] || {};
   const colour = meta.colour || '#888';
   
+  // FIX: Added flex-shrink: 0 to prevent the notes widget from shrinking
   const tripNotesWidgetHtml = currentTrip.notes ? `
-    <div class="ios-trip-notes-widget">
+    <div class="ios-trip-notes-widget" style="flex-shrink: 0;">
       <div style="margin-top:1px;">${getIconifyTag('mdi:note-text-outline', 16, '#ffcc00')}</div>
       <div class="ios-trip-notes-text">${currentTrip.notes}</div>
     </div>
   ` : '';
+  
+  let telemetryWidgetHtml = '';
+  if (currentTrip.type === 'active' || currentTrip.type === 'through-hiking') {
+    let totalDist = 0;
+    let totalAscent = 0;
+    let totalDescent = 0;
+    if (currentTrip.itinerary) {
+      currentTrip.itinerary.forEach(item => {
+        if (item.distance_km) totalDist += parseFloat(item.distance_km);
+        if (item.ascent_m) totalAscent += parseInt(item.ascent_m);
+        if (item.descent_m) totalDescent += parseInt(item.descent_m);
+      });
+    }
+    // FIX: Added flex-shrink: 0 to both the title and metrics container
+    telemetryWidgetHtml = `
+      <div class="ios-group-title" style="margin-bottom:6px; flex-shrink: 0;">Trek Telemetry</div>
+      <div class="ios-group" style="margin: 0 16px 10px 16px; padding: 12px; display: flex; flex-direction: row; justify-content: space-around; background: #ffffff; flex-shrink: 0;">
+        <div style="text-align: center;">
+          <div style="font-size: 10px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px;">Distance</div>
+          <div style="font-size: 15px; font-weight: 700; color: #007aff; margin-top: 2px;">${totalDist.toFixed(1)} km</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 10px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px;">Ascent</div>
+          <div style="font-size: 15px; font-weight: 700; color: #15803d; margin-top: 2px;">+${totalAscent}m</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 10px; color: #8e8e93; text-transform: uppercase; font-weight: 700; letter-spacing: 0.3px;">Descent</div>
+          <div style="font-size: 15px; font-weight: 700; color: #b91c1c; margin-top: 2px;">-${totalDescent}m</div>
+        </div>
+      </div>
+    `;
+  }
   
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -515,12 +557,13 @@ function openTripSheet(id) {
       <button class="ios-link-btn bold" onclick="openTripForm('${currentTrip.id}')">Edit</button>
     </div>
 
-    <div class="ios-hero-banner" style="background: linear-gradient(135deg, ${colour}, var(--app-primary));">
-      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">${currentTrip.type}</div>
+    <div class="ios-hero-banner" style="background: linear-gradient(135deg, ${colour}, var(--app-primary)); flex-shrink: 0;">
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">${meta.label || currentTrip.type}</div>
       <div style="font-size:20px; font-weight:800; margin:2px 0;">${currentTrip.title || currentTrip.destination}</div>
       <div style="font-size:12px; opacity:0.9;">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)}</div>
     </div>
 
+    ${telemetryWidgetHtml}
     ${tripNotesWidgetHtml}
 
     <div class="ios-sheet-body" id="subTabContent"></div>
@@ -598,7 +641,7 @@ function renderSubTab() {
     return;
   }
 
-  // 3. DATALINKED SUBTAB SEGMENT FILTERS (Lingo items are clean-filtered out to prevent double-rendering)
+  // 3. DATALINKED SUBTAB SEGMENT FILTERS
   const matches = items.filter(i => {
     if (i.type === 'lingo') return false; 
     return activeSubTab === 'itinerary' ? !!i.date : !i.date;
@@ -610,7 +653,24 @@ function renderSubTab() {
   }
 
   if (activeSubTab === 'itinerary') {
-    matches.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+    // Sort primarily by date so accommodations and stages line up together chronologically
+    const isTrekActive = currentTrip.type === 'active' || currentTrip.type === 'through-hiking';
+    matches.sort((a, b) => {
+      // 1. Primary Sort: Date ascending
+      const dateCompare = a.date.localeCompare(b.date);
+      if (dateCompare !== 0) return dateCompare;
+      
+      // 2. Secondary Sort: Stage number (keeps trek stages at the top of their respective day)
+      if (isTrekActive && (a.stage_number || b.stage_number)) {
+        const stageA = parseInt(a.stage_number) || 99;
+        const stageB = parseInt(b.stage_number) || 99;
+        if (stageA !== stageB) return stageA - stageB;
+      }
+      
+      // 3. Tertiary Sort: Time chronological
+      return a.time.localeCompare(b.time);
+    });
+    
     let html = '';
     let lastDate = '';
     matches.forEach(item => {
@@ -631,16 +691,37 @@ function buildItemRowMarkup(item) {
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
   const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
 
+  // Dynamic Trailtone Custom Markup Generation
+  const isTrekActive = currentTrip.type === 'active' || currentTrip.type === 'through-hiking';
+  const isHikingDataAvailable = (item.distance_km || item.ascent_m || item.descent_m);
+  let metricsBarHtml = '';
+  let stageBadgeHtml = '';
+
+  if (isTrekActive && isHikingDataAvailable) {
+    metricsBarHtml = `
+      <div class="hike-metrics-strip">
+        ${item.distance_km ? `<span class="hike-badge dist">${getIconifyTag('mdi:map-marker-distance', 12, '#007aff')} ${item.distance_km} km</span>` : ''}
+        ${item.ascent_m ? `<span class="hike-badge ascent">${getIconifyTag('mdi:trending-up', 12, '#15803d')} +${item.ascent_m}m</span>` : ''}
+        ${item.descent_m ? `<span class="hike-badge descent">${getIconifyTag('mdi:trending-down', 12, '#b91c1c')} -${item.descent_m}m</span>` : ''}
+      </div>
+    `;
+  }
+
+  if (isTrekActive && item.stage_number) {
+    stageBadgeHtml = `<span class="hike-stage-num">Stage ${item.stage_number}</span>`;
+  }
+
   return `
     <div class="ios-item-card">
       <div class="ios-item-summary" onclick="toggleCardDetails(this)">
         <div class="ios-item-icon" style="background:${cfg.bg};">${getIconifyTag(cfg.icon, 18, cfg.color)}</div>
         <div style="flex-grow:1;">
-          <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Untitled Activity'}</div>
+          <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${stageBadgeHtml}${item.title || 'Untitled Activity'}</div>
           <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px;">
             ${item.time ? `<span>${item.time}</span>` : ''}
             <span class="status-badge status-${item.status}" style="font-size:9px; padding:2px 6px;">${item.status.replace(/-/g,' ')}</span>
           </div>
+          ${metricsBarHtml}
         </div>
         <div class="expand-chevron" style="align-self:center; transition: transform 0.2s;">${getIconifyTag('mdi:chevron-down', 18, '#c7c7cc')}</div>
       </div>
@@ -784,7 +865,31 @@ function deleteTripRaw(id) {
 function openActivityForm(index, fallbackType = 'activity') {
   const sheet = document.getElementById('iosSheet');
   const isNew = index === -1;
-  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' } } : currentTrip.itinerary[index];
+  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', stage_number: '', distance_km: '', ascent_m: '', descent_m: '', details: { pnr: '' } } : currentTrip.itinerary[index];
+
+  // Conditional Rendering Logic block for Active Hiking parameters
+  const isTrekActive = currentTrip.type === 'active' || currentTrip.type === 'through-hiking';
+  const hikeTelemetryFormFieldsHtml = isTrekActive ? `
+    <div class="ios-group-title">Trail Telemetry Metrics</div>
+    <div class="ios-group">
+      <div class="ios-row">
+        <label class="ios-label">Stage #</label>
+        <input type="number" id="actStageNum" class="ios-input" placeholder="e.g. 6" value="${item.stage_number || ''}">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Distance (km)</label>
+        <input type="number" step="0.1" id="actDistanceKm" class="ios-input" placeholder="e.g. 24.5" value="${item.distance_km || ''}">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Ascent (+m)</label>
+        <input type="number" id="actAscentM" class="ios-input" placeholder="e.g. 1100" value="${item.ascent_m || ''}">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Descent (-m)</label>
+        <input type="number" id="actDescentM" class="ios-input" placeholder="e.g. 950" value="${item.descent_m || ''}">
+      </div>
+    </div>
+  ` : '';
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -831,7 +936,7 @@ function openActivityForm(index, fallbackType = 'activity') {
       <div class="ios-group">
         <div class="ios-row">
           <label class="ios-label">Title</label>
-          <input type="text" id="actTitle" class="ios-input" placeholder="Flight / Resto / Phrase" value="${item.title || ''}">
+          <input type="text" id="actTitle" class="ios-input" placeholder="${isTrekActive ? 'Stage Route Title (e.g. Altdorf → Engelberg)' : 'Flight / Resto / Phrase'}" value="${item.title || ''}">
         </div>
         <div class="ios-row">
           <label class="ios-label">Date</label>
@@ -846,6 +951,8 @@ function openActivityForm(index, fallbackType = 'activity') {
           <input type="time" id="actArrTime" class="ios-input" value="${item.arrivalTime || ''}">
         </div>
       </div>
+
+      ${hikeTelemetryFormFieldsHtml}
 
       <div class="ios-group-title">Logistics</div>
       <div class="ios-group">
@@ -862,7 +969,7 @@ function openActivityForm(index, fallbackType = 'activity') {
       <div class="ios-group-title">Item Notes</div>
       <div class="ios-group">
         <div class="ios-row vertical">
-          <textarea id="actNotes" class="ios-textarea" placeholder="Translations, reservation parameters...">${item.notes || ''}</textarea>
+          <textarea id="actNotes" class="ios-textarea" placeholder="Translations, pass details, shortcut variants...">${item.notes || ''}</textarea>
         </div>
       </div>
 
@@ -906,6 +1013,8 @@ function toggleIdeaDateConstraint(chk) {
 
 function saveActivityLevel(index) {
   const isIdeaChecked = document.getElementById('actIsIdea').checked;
+  const isTrekActive = currentTrip.type === 'active' || currentTrip.type === 'through-hiking';
+  
   const activity = {
     id: index === -1 ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
     type: document.getElementById('actType').value,
@@ -916,7 +1025,12 @@ function saveActivityLevel(index) {
     arrivalTime: (!isIdeaChecked && document.getElementById('actType').value === 'transit') ? document.getElementById('actArrTime').value : '',
     location: document.getElementById('actLoc').value,
     notes: document.getElementById('actNotes').value,
-    details: { pnr: document.getElementById('actPnr').value }
+    details: { pnr: document.getElementById('actPnr').value },
+    // Safeguard tracking variables injection
+    stage_number: (isTrekActive && document.getElementById('actStageNum')) ? document.getElementById('actStageNum').value : '',
+    distance_km: (isTrekActive && document.getElementById('actDistanceKm')) ? document.getElementById('actDistanceKm').value : '',
+    ascent_m: (isTrekActive && document.getElementById('actAscentM')) ? document.getElementById('actAscentM').value : '',
+    descent_m: (isTrekActive && document.getElementById('actDescentM')) ? document.getElementById('actDescentM').value : ''
   };
 
   if (index === -1) {
