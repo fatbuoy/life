@@ -281,6 +281,7 @@ const TYPE_META = {
   'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
   'family':      { label:'Family',      colour:'#8b5cf6', icon:'mdi:home-heart' },
   'active':      { label:'Active',      colour:'#ff781f', icon:'mdi:hiking' },
+  'through-hike':{ label:'Through-Hike',colour:'#15803d', icon:'mdi:terrain' },
   'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'mdi:beach' },
   'work':        { label:'Work',        colour:'#64748b', icon:'mdi:briefcase-outline' },
   'race':        { label:'Race',        colour:'#e11d48', icon:'mdi:trophy-outline' },
@@ -507,6 +508,31 @@ function openTripSheet(id) {
       <div class="ios-trip-notes-text">${currentTrip.notes}</div>
     </div>
   ` : '';
+
+  let throughHikeStatsHtml = '';
+  if (currentTrip.type === 'through-hike' && currentTrip.itinerary) {
+    let totalDist = 0;
+    let totalGain = 0;
+    currentTrip.itinerary.forEach(i => {
+      if (i.distance) totalDist += parseFloat(i.distance) || 0;
+      if (i.elevationGain) totalGain += parseFloat(i.elevationGain) || 0;
+    });
+    if (totalDist > 0 || totalGain > 0) {
+      throughHikeStatsHtml = `
+        <div style="background:#ffffff; margin:12px 16px 2px 16px; padding:12px; border-radius:10px; border-left:4px solid #15803d; box-shadow:0 1px 2px rgba(0,0,0,0.04); display:flex; justify-content:space-around; align-items:center;">
+          <div style="text-align:center;">
+            <div style="font-size:10px; color:#8e8e93; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Total Distance</div>
+            <div style="font-size:16px; font-weight:700; color:#1c1c1e; margin-top:2px;">${totalDist.toFixed(1)} km</div>
+          </div>
+          <div style="width:1px; height:24px; background:#e5e5ea;"></div>
+          <div style="text-align:center;">
+            <div style="font-size:10px; color:#8e8e93; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Total Elevation</div>
+            <div style="font-size:16px; font-weight:700; color:#15803d; margin-top:2px;">+${totalGain} m</div>
+          </div>
+        </div>
+      `;
+    }
+  }
   
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -516,12 +542,13 @@ function openTripSheet(id) {
     </div>
 
     <div class="ios-hero-banner" style="background: linear-gradient(135deg, ${colour}, var(--app-primary));">
-      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">${currentTrip.type}</div>
+      <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">${meta.label || currentTrip.type}</div>
       <div style="font-size:20px; font-weight:800; margin:2px 0;">${currentTrip.title || currentTrip.destination}</div>
       <div style="font-size:12px; opacity:0.9;">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)}</div>
     </div>
 
     ${tripNotesWidgetHtml}
+    ${throughHikeStatsHtml}
 
     <div class="ios-sheet-body" id="subTabContent"></div>
 
@@ -631,12 +658,24 @@ function buildItemRowMarkup(item) {
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
   const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
 
+  let hikeSpecsHtml = '';
+  if (currentTrip.type === 'through-hike' && (item.distance || item.elevationGain || item.elevationLoss)) {
+    hikeSpecsHtml = `
+      <div style="display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 2px 0;">
+        ${item.distance ? `<span style="font-size:10px; background:#f2f2f7; color:#1c1c1e; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">🏁 ${item.distance} km</span>` : ''}
+        ${item.elevationGain ? `<span style="font-size:10px; background:#e2fbe8; color:#15803d; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▲ +${item.elevationGain}m</span>` : ''}
+        ${item.elevationLoss ? `<span style="font-size:10px; background:#ffebeb; color:#b91c1c; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▼ -${item.elevationLoss}m</span>` : ''}
+      </div>
+    `;
+  }
+
   return `
     <div class="ios-item-card">
       <div class="ios-item-summary" onclick="toggleCardDetails(this)">
         <div class="ios-item-icon" style="background:${cfg.bg};">${getIconifyTag(cfg.icon, 18, cfg.color)}</div>
         <div style="flex-grow:1;">
           <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Untitled Activity'}</div>
+          ${hikeSpecsHtml}
           <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px;">
             ${item.time ? `<span>${item.time}</span>` : ''}
             <span class="status-badge status-${item.status}" style="font-size:9px; padding:2px 6px;">${item.status.replace(/-/g,' ')}</span>
@@ -653,6 +692,7 @@ function buildItemRowMarkup(item) {
             </a>
           </div>` : ''}
         ${item.details?.pnr ? `<div style="margin-bottom:6px;"><strong>PNR/Ref:</strong> ${item.details.pnr}</div>` : ''}
+        ${item.campsite ? `<div style="margin-bottom:6px;"><strong>Hut / Camp:</strong> ${item.campsite}</div>` : ''}
         ${item.notes ? `<div class="yellow-notes">${item.notes}</div>` : ''}
         <div style="margin-top:12px; text-align:right;">
           <button class="ios-link-btn bold" onclick="openActivityForm(${idx})">Edit Details</button>
@@ -784,7 +824,32 @@ function deleteTripRaw(id) {
 function openActivityForm(index, fallbackType = 'activity') {
   const sheet = document.getElementById('iosSheet');
   const isNew = index === -1;
-  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' } } : currentTrip.itinerary[index];
+  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' }, distance: '', elevationGain: '', elevationLoss: '', campsite: '' } : currentTrip.itinerary[index];
+
+  let throughHikeFieldsHtml = '';
+  if (currentTrip.type === 'through-hike') {
+    throughHikeFieldsHtml = `
+      <div class="ios-group-title">Trail Metrics (Through-Hike)</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Distance (km)</label>
+          <input type="number" step="0.1" id="actDistance" class="ios-input" placeholder="e.g. 14.5" value="${item.distance || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Elev. Gain (m)</label>
+          <input type="number" id="actElevationGain" class="ios-input" placeholder="e.g. 850" value="${item.elevationGain || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Elev. Loss (m)</label>
+          <input type="number" id="actElevationLoss" class="ios-input" placeholder="e.g. 400" value="${item.elevationLoss || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Hut / Camp</label>
+          <input type="text" id="actCampsite" class="ios-input" placeholder="Campsite or Shelter name" value="${item.campsite || ''}">
+        </div>
+      </div>
+    `;
+  }
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -847,6 +912,8 @@ function openActivityForm(index, fallbackType = 'activity') {
         </div>
       </div>
 
+      ${throughHikeFieldsHtml}
+
       <div class="ios-group-title">Logistics</div>
       <div class="ios-group">
         <div class="ios-row">
@@ -906,6 +973,8 @@ function toggleIdeaDateConstraint(chk) {
 
 function saveActivityLevel(index) {
   const isIdeaChecked = document.getElementById('actIsIdea').checked;
+  const isThroughHike = currentTrip.type === 'through-hike';
+
   const activity = {
     id: index === -1 ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
     type: document.getElementById('actType').value,
@@ -916,7 +985,11 @@ function saveActivityLevel(index) {
     arrivalTime: (!isIdeaChecked && document.getElementById('actType').value === 'transit') ? document.getElementById('actArrTime').value : '',
     location: document.getElementById('actLoc').value,
     notes: document.getElementById('actNotes').value,
-    details: { pnr: document.getElementById('actPnr').value }
+    details: { pnr: document.getElementById('actPnr').value },
+    distance: isThroughHike ? document.getElementById('actDistance').value : '',
+    elevationGain: isThroughHike ? document.getElementById('actElevationGain').value : '',
+    elevationLoss: isThroughHike ? document.getElementById('actElevationLoss').value : '',
+    campsite: isThroughHike ? document.getElementById('actCampsite').value : ''
   };
 
   if (index === -1) {
