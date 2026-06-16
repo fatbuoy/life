@@ -335,7 +335,7 @@ let trekStageFilter = 'all';
    To reuse for a future hike or bikepacking trip, just set that
    trip's type to "through-hike" and populate the same itinerary
    fields — no code changes needed. */
-const TREK_PRIORITY_COLOUR = { 'Critical': '#e11d48', 'High': '#ff781f', 'Medium': '#d4a017', 'Low': '#8e8e93' };
+const TREK_PRIORITY_COLOUR = { 'Critical': '#e11d48', 'High': '#ff781f', 'Medium': '#d4a017', 'Low': '#8e8e93', 'Booked': '#15803d' };
 
 const TYPE_META = {
   'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
@@ -556,7 +556,7 @@ function showTab(id) {
 
 function getTrekStages(trip) {
   if (!trip || trip.type !== 'through-hike' || !Array.isArray(trip.itinerary)) return null;
-  const stages = trip.itinerary.filter(i => i.distance_km !== undefined && i.distance_km !== '');
+  const stages = trip.itinerary.filter(i => i.hasOwnProperty('distance_km'));
   return stages.length ? stages : null;
 }
 
@@ -564,7 +564,7 @@ function openTripSheet(id) {
   currentTrip = realTrips().find(t => t.id === id);
   if (!currentTrip) return;
 
-  if (getTrekStages(currentTrip)) {
+  if (currentTrip.type === 'through-hike') {
     renderTrekSheet();
     return;
   }
@@ -658,7 +658,7 @@ function openTripSheet(id) {
    populate the same itinerary fields. */
 function renderTrekSheet() {
   const sheet = document.getElementById('iosSheet');
-  const stages = getTrekStages(currentTrip);
+  const stages = getTrekStages(currentTrip) || [];
 
   const totalKm = stages.reduce((s, x) => s + (parseFloat(x.distance_km) || 0), 0);
   const totalAsc = stages.reduce((s, x) => s + (parseFloat(x.ascent_m) || 0), 0);
@@ -701,6 +701,7 @@ function renderTrekSheet() {
       <button class="trek-filter-pill ${trekStageFilter==='Critical'?'active':''}" onclick="setTrekFilter('Critical')">🔴 Critical Booking</button>
       <button class="trek-filter-pill ${trekStageFilter==='High'?'active':''}" onclick="setTrekFilter('High')">🟠 High Priority</button>
       <button class="trek-filter-pill ${trekStageFilter==='rest'?'active':''}" onclick="setTrekFilter('rest')">Rest &amp; Travel</button>
+      <button class="trek-filter-pill" style="background:#0f4c2a; color:#fff; border-color:#0f4c2a;" onclick="openStageForm(-1)">+ Add Stage</button>
     </div>
 
     <div class="ios-sheet-body" id="subTabContent" style="padding:0;"></div>
@@ -719,7 +720,15 @@ function setTrekFilter(filter) {
 
 function renderTrekStageList() {
   const container = document.getElementById('subTabContent');
-  const stages = getTrekStages(currentTrip);
+  const stages = getTrekStages(currentTrip) || [];
+
+  if (stages.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:50px 20px;">
+      ${getIconifyTag('mdi:map-marker-path', 36, '#c7c7cc')}
+      <p style="color:#8e8e93; margin-top:10px; font-size:14px;">No stages added yet.<br>Tap "+ Add Stage" above to build your trek day by day.</p>
+    </div>`;
+    return;
+  }
 
   let filtered = stages;
   if (trekStageFilter === 'Critical' || trekStageFilter === 'High') {
@@ -734,6 +743,7 @@ function renderTrekStageList() {
   }
 
   container.innerHTML = `<div class="trek-stage-list">` + filtered.map(s => {
+    const realIdx = stages.indexOf(s);
     const km = parseFloat(s.distance_km) || 0;
     const asc = parseFloat(s.ascent_m) || 0;
     const desc = parseFloat(s.descent_m) || 0;
@@ -744,6 +754,7 @@ function renderTrekStageList() {
     const badgeColor = isRest ? '#636366' : isTravel ? '#0055cc' : '#fff';
     const badgeLabel = isRest ? 'R' : isTravel ? '✈' : (s.stage_number || '');
     const priority = s.booking_priority || 'Low';
+    const isBooked = priority === 'Booked';
     const prColour = TREK_PRIORITY_COLOUR[priority] || '#8e8e93';
     const maxBar = Math.max(asc, desc, 1);
     const route = s.location || s.title || '';
@@ -784,10 +795,18 @@ function renderTrekStageList() {
         </div>
         <div class="trek-accom-row">
           ${getIconifyTag('mdi:bed-outline', 16, '#5856d6')}
-          <div class="trek-accom-name">${s.suggested_accommodation || '—'}</div>
-          <div class="trek-priority-badge" style="background:${prColour}20; color:${prColour};">${priority}</div>
+          <div class="trek-accom-name">
+            ${s.suggested_accommodation || '—'}
+            ${isBooked && s.details?.phone ? `<div style="font-size:11px; color:#8e8e93; font-weight:500; margin-top:1px;">${s.details.phone}${s.details?.confirmationRef ? ' · Ref: ' + s.details.confirmationRef : ''}</div>` : ''}
+            ${isBooked && s.details?.address ? `<div style="font-size:11px; color:#8e8e93; font-weight:500;">${s.details.address}</div>` : ''}
+          </div>
+          <div class="trek-priority-badge" style="background:${prColour}20; color:${prColour};">${isBooked ? '✓ Booked' : priority}</div>
         </div>
         ${s.notes ? `<div class="trek-notes-box">${s.notes}</div>` : ''}
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="trek-filter-pill" style="flex:1; text-align:center; background:#fff;" onclick="openStageForm(${realIdx})">${getIconifyTag('mdi:pencil-outline', 13, '#3a3a3c')} Edit Stage</button>
+          ${!isBooked ? `<button class="trek-filter-pill" style="flex:1; text-align:center; background:#e2fbe8; color:#15803d; border-color:#bbf0c9;" onclick="openStageForm(${realIdx}, true)">${getIconifyTag('mdi:check-circle-outline', 13, '#15803d')} Mark Booked</button>` : ''}
+        </div>
       </div>
     </div>`;
   }).join('') + `</div>`;
@@ -802,6 +821,215 @@ function toggleTrekStage(summaryEl) {
     chevron.querySelector('iconify-icon').setAttribute('icon', 'mdi:chevron-up');
   } else {
     chevron.querySelector('iconify-icon').setAttribute('icon', 'mdi:chevron-down');
+  }
+}
+
+/* ── STAGE EDIT FORM ──
+   Edits a single itinerary item for through-hike trips, using the
+   trek-specific fields (distance_km/ascent_m/descent_m/moving_time/
+   breaks/start_time/finish_time/suggested_accommodation/
+   booking_priority/stage_number). jumpToBooked=true opens straight
+   into the booked state so "Mark Booked" can capture contact info
+   in one step. */
+function openStageForm(index, jumpToBooked = false) {
+  const sheet = document.getElementById('iosSheet');
+  const isNew = index === -1;
+  const stages = currentTrip.itinerary || [];
+  const nextStageNum = isNew ? (stages.filter(s => !isNaN(parseInt(s.stage_number))).length + 1) : null;
+
+  const item = isNew ? {
+    id: 'it-' + Date.now(), type: 'activity', status: 'not-booked',
+    title: '', date: currentTrip.startDate || '', location: '',
+    stage_number: String(nextStageNum), distance_km: '', ascent_m: '', descent_m: '',
+    moving_time: '', breaks: '', start_time: '', finish_time: '',
+    suggested_accommodation: '', booking_priority: 'Low', notes: '', details: {}
+  } : stages[index];
+
+  const priority = jumpToBooked ? 'Booked' : (item.booking_priority || 'Low');
+  const isBooked = priority === 'Booked';
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Stage' : 'Edit Stage'}</div>
+      <button class="ios-link-btn bold" onclick="saveStageLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Stage</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Stage # (or Rest/Travel)</label>
+          <input type="text" id="stgNumber" class="ios-input" placeholder="1, Rest, Travel" value="${item.stage_number || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Route / Title</label>
+          <input type="text" id="stgRoute" class="ios-input" placeholder="Gaflei → Sargans" value="${item.location || item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="stgDate" class="ios-input" value="${item.date || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Trail Metrics</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Distance (km)</label>
+          <input type="number" step="0.1" id="stgDistance" class="ios-input" placeholder="e.g. 22" value="${item.distance_km || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Ascent (m)</label>
+          <input type="number" id="stgAscent" class="ios-input" placeholder="e.g. 1200" value="${item.ascent_m || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Descent (m)</label>
+          <input type="number" id="stgDescent" class="ios-input" placeholder="e.g. 800" value="${item.descent_m || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Moving Time</label>
+          <input type="text" id="stgMoving" class="ios-input" placeholder="e.g. 6.8 h" value="${item.moving_time || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Breaks</label>
+          <input type="text" id="stgBreaks" class="ios-input" placeholder="e.g. 2.0 h" value="${item.breaks || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Start Time</label>
+          <input type="text" id="stgStart" class="ios-input" placeholder="e.g. 08:00" value="${item.start_time || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Finish Time</label>
+          <input type="text" id="stgFinish" class="ios-input" placeholder="e.g. 16:30" value="${item.finish_time || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Accommodation &amp; Booking</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Accommodation</label>
+          <input type="text" id="stgAccom" class="ios-input" placeholder="Hotel / hut name" value="${item.suggested_accommodation || ''}">
+        </div>
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Mark as Booked</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="stgIsBooked" ${isBooked ? 'checked' : ''} onchange="toggleStageBookedFields(this)">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div class="ios-row" id="rowStgPriority" style="display:${isBooked ? 'none' : 'flex'};">
+          <label class="ios-label">Booking Priority</label>
+          <select id="stgPriority" class="ios-select">
+            <option value="Critical" ${priority==='Critical'?'selected':''}>Critical</option>
+            <option value="High" ${priority==='High'?'selected':''}>High</option>
+            <option value="Medium" ${priority==='Medium'?'selected':''}>Medium</option>
+            <option value="Low" ${priority==='Low'?'selected':''}>Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="stgBookedFields" style="display:${isBooked ? 'block' : 'none'};">
+        <div class="ios-group-title">Booking Details</div>
+        <div class="ios-group">
+          <div class="ios-row">
+            <label class="ios-label">Phone Number</label>
+            <input type="text" id="stgPhone" class="ios-input" placeholder="+41 ..." value="${item.details?.phone || ''}">
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Address</label>
+            <input type="text" id="stgAddress" class="ios-input" placeholder="Street, town" value="${item.details?.address || ''}">
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Confirmation Ref</label>
+            <input type="text" id="stgConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.confirmationRef || ''}">
+          </div>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Route Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="stgNotes" class="ios-textarea" placeholder="Pass conditions, lunch stops, cable cars...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteStageRaw(${index})">Remove Stage</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function toggleStageBookedFields(chk) {
+  document.getElementById('stgBookedFields').style.display = chk.checked ? 'block' : 'none';
+  document.getElementById('rowStgPriority').style.display = chk.checked ? 'none' : 'flex';
+}
+
+function saveStageLevel(index) {
+  const isNew = index === -1;
+  const isBooked = document.getElementById('stgIsBooked').checked;
+  const route = document.getElementById('stgRoute').value;
+
+  const stage = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'activity',
+    status: isBooked ? 'booked' : 'not-booked',
+    title: route,
+    date: document.getElementById('stgDate').value,
+    time: document.getElementById('stgStart').value,
+    location: route,
+    stage_number: document.getElementById('stgNumber').value,
+    distance_km: document.getElementById('stgDistance').value,
+    ascent_m: document.getElementById('stgAscent').value,
+    descent_m: document.getElementById('stgDescent').value,
+    moving_time: document.getElementById('stgMoving').value,
+    breaks: document.getElementById('stgBreaks').value,
+    start_time: document.getElementById('stgStart').value,
+    finish_time: document.getElementById('stgFinish').value,
+    suggested_accommodation: document.getElementById('stgAccom').value,
+    booking_priority: isBooked ? 'Booked' : document.getElementById('stgPriority').value,
+    notes: document.getElementById('stgNotes').value,
+    details: isBooked ? {
+      phone: document.getElementById('stgPhone').value,
+      address: document.getElementById('stgAddress').value,
+      confirmationRef: document.getElementById('stgConfRef').value
+    } : (isNew ? {} : (currentTrip.itinerary[index].details || {}))
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(stage);
+  } else {
+    currentTrip.itinerary[index] = stage;
+  }
+
+  // keep itinerary sorted by date so the stage list reads chronologically
+  currentTrip.itinerary.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+function deleteStageRaw(index) {
+  if (confirm("Remove this stage from your trek?")) {
+    currentTrip.itinerary.splice(index, 1);
+    const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+    DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+    DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+    localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+    render();
+    openTripSheet(currentTrip.id);
+    triggerGitHubAutoSync();
   }
 }
 
