@@ -417,6 +417,14 @@ function fmtDate(str) {
   return new Date(str + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
+function nightsBetween(startStr, endStr) {
+  if (!startStr || !endStr) return null;
+  const start = new Date(startStr + 'T00:00:00');
+  const end = new Date(endStr + 'T00:00:00');
+  const nights = Math.round((end - start) / 86400000);
+  return nights > 0 ? nights : null;
+}
+
 function changeYear(dir) {
   currentYear += dir;
   updateCountBadge();
@@ -530,6 +538,7 @@ function renderTripList() {
     const colour = TYPE_META[t.type]?.colour || '#888';
     const iconName = TYPE_META[t.type]?.icon || 'mdi:map-marker';
     const currentStatus = deriveTripStatus(t.endDate, t.itinerary);
+    const nights = nightsBetween(t.startDate, t.endDate);
     return `
     <div class="mobile-trip-row" onclick="openTripSheet('${t.id}')">
       <div class="mtr-icon" style="background:${colour}15;">
@@ -537,7 +546,7 @@ function renderTripList() {
       </div>
       <div class="mtr-info">
         <div class="mtr-title" style="color:${colour}">${t.title || t.destination || 'Untitled'}</div>
-        <div class="mtr-date">${fmtDate(t.startDate)}</div>
+        <div class="mtr-date">${fmtDate(t.startDate)}${nights ? ` · ${nights} night${nights===1?'':'s'}` : ''}</div>
       </div>
       <div>
         <span class="status-badge status-${currentStatus.toLowerCase()}">${currentStatus}</span>
@@ -1277,9 +1286,254 @@ function deleteTripRaw(id) {
   }
 }
 
-function openActivityForm(index, fallbackType = 'activity') {
+/* ── BESPOKE FOOD ITEM FORM ──
+   Reservation toggle reveals time + confirmation ref, mirroring the
+   trek booking pattern. Keeps the same itinerary item shape (type,
+   status, title, date, time, location, notes, details) so it stays
+   fully compatible with the generic itinerary list and filters. */
+function openFoodForm(index, isNew) {
   const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'food', status: 'no-booking-required', title: '', date: currentTrip.startDate || '', time: '', location: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  const needsReservation = item.status === 'booked' || item.status === 'not-booked';
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Restaurant' : 'Edit Restaurant'}</div>
+      <button class="ios-link-btn bold" onclick="saveFoodLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Restaurant</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Name</label>
+          <input type="text" id="fdTitle" class="ios-input" placeholder="e.g. Sorbillo" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Location</label>
+          <input type="text" id="fdLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="fdDate" class="ios-input" value="${item.date || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Reservation</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Needs Reservation</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="fdNeedsRes" ${needsReservation ? 'checked' : ''} onchange="toggleFoodReservationFields(this)">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div id="fdResRow" style="display:${needsReservation ? 'block' : 'none'};">
+          <div class="ios-row" style="justify-content: space-between;">
+            <label class="ios-label">Reservation Booked</label>
+            <label class="ios-switch">
+              <input type="checkbox" id="fdIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
+              <span class="ios-slider"></span>
+            </label>
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Time</label>
+            <input type="time" id="fdTime" class="ios-input" value="${item.time || ''}">
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Confirmation Ref</label>
+            <input type="text" id="fdConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.pnr || ''}">
+          </div>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="fdNotes" class="ios-textarea" placeholder="Must-try dishes, dietary notes...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function toggleFoodReservationFields(chk) {
+  document.getElementById('fdResRow').style.display = chk.checked ? 'block' : 'none';
+}
+
+function saveFoodLevel(index) {
   const isNew = index === -1;
+  const needsRes = document.getElementById('fdNeedsRes').checked;
+  const isBooked = needsRes && document.getElementById('fdIsBooked').checked;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'food',
+    status: !needsRes ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
+    title: document.getElementById('fdTitle').value,
+    date: document.getElementById('fdDate').value,
+    time: needsRes ? document.getElementById('fdTime').value : '',
+    location: document.getElementById('fdLocation').value,
+    notes: document.getElementById('fdNotes').value,
+    details: { pnr: needsRes ? document.getElementById('fdConfRef').value : '' }
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  } else {
+    currentTrip.itinerary[index] = item;
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+/* ── BESPOKE ACTIVITY ITEM FORM ──
+   Same booking-reveals-contact pattern as Food, for sightseeing,
+   tours, shows etc. that may or may not need advance booking. */
+function openActivityTypeForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'activity', status: 'no-booking-required', title: '', date: currentTrip.startDate || '', time: '', location: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  const needsBooking = item.status === 'booked' || item.status === 'not-booked' || item.status === 'planned';
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Activity' : 'Edit Activity'}</div>
+      <button class="ios-link-btn bold" onclick="saveActivityTypeLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Activity</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Name</label>
+          <input type="text" id="acvTitle" class="ios-input" placeholder="e.g. Pompeii Tour" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Location</label>
+          <input type="text" id="acvLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="acvDate" class="ios-input" value="${item.date || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Booking</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Needs Booking</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="acvNeedsBooking" ${needsBooking ? 'checked' : ''} onchange="toggleActivityBookingFields(this)">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div id="acvBookingRow" style="display:${needsBooking ? 'block' : 'none'};">
+          <div class="ios-row" style="justify-content: space-between;">
+            <label class="ios-label">Booked</label>
+            <label class="ios-switch">
+              <input type="checkbox" id="acvIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
+              <span class="ios-slider"></span>
+            </label>
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Time</label>
+            <input type="time" id="acvTime" class="ios-input" value="${item.time || ''}">
+          </div>
+          <div class="ios-row">
+            <label class="ios-label">Confirmation Ref</label>
+            <input type="text" id="acvConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.pnr || ''}">
+          </div>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="acvNotes" class="ios-textarea" placeholder="What to bring, tips...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function toggleActivityBookingFields(chk) {
+  document.getElementById('acvBookingRow').style.display = chk.checked ? 'block' : 'none';
+}
+
+function saveActivityTypeLevel(index) {
+  const isNew = index === -1;
+  const needsBooking = document.getElementById('acvNeedsBooking').checked;
+  const isBooked = needsBooking && document.getElementById('acvIsBooked').checked;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'activity',
+    status: !needsBooking ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
+    title: document.getElementById('acvTitle').value,
+    date: document.getElementById('acvDate').value,
+    time: needsBooking ? document.getElementById('acvTime').value : '',
+    location: document.getElementById('acvLocation').value,
+    notes: document.getElementById('acvNotes').value,
+    details: { pnr: needsBooking ? document.getElementById('acvConfRef').value : '' }
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  } else {
+    currentTrip.itinerary[index] = item;
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+function openActivityForm(index, fallbackType = 'activity') {
+  const isNew = index === -1;
+  const existingType = isNew ? fallbackType : currentTrip.itinerary[index].type;
+
+  if (existingType === 'activity') { openActivityTypeForm(index, isNew); return; }
+  if (existingType === 'food') { openFoodForm(index, isNew); return; }
+
+  const sheet = document.getElementById('iosSheet');
   const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' }, distance: '', elevationGain: '', elevationLoss: '', campsite: '' } : currentTrip.itinerary[index];
 
   let throughHikeFieldsHtml = '';
