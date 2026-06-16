@@ -185,6 +185,53 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .editor-container { max-width: 600px; margin: 0 auto; width:100%; }
 
 .sync-indicator { font-size: 11px; color: rgba(255,255,255,0.6); margin-right: auto; padding-left: 8px; font-weight: 500; display: none; }
+
+/* ── VIA ALPINA BESPOKE MODAL ── */
+.trek-hero { background: linear-gradient(160deg, #0f4c2a 0%, #1a1050 100%); padding: 16px; flex-shrink: 0; }
+.trek-hero-eyebrow { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.6); }
+.trek-hero-title { font-size: 20px; font-weight: 800; color: #fff; margin: 3px 0 2px; letter-spacing: -0.4px; }
+.trek-hero-sub { font-size: 12px; color: rgba(255,255,255,0.75); }
+.trek-stats-bar { display: flex; gap: 0; background: rgba(255,255,255,0.08); border-radius: 10px; margin-top: 14px; overflow: hidden; }
+.trek-stat { flex: 1; padding: 10px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
+.trek-stat:last-child { border-right: none; }
+.trek-stat-val { font-size: 16px; font-weight: 800; color: #fff; line-height: 1; }
+.trek-stat-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+
+.trek-filter-bar { display: flex; gap: 6px; padding: 10px 14px 6px; overflow-x: auto; flex-shrink: 0; scrollbar-width: none; background: #f2f2f7; }
+.trek-filter-bar::-webkit-scrollbar { display: none; }
+.trek-filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; color: #636366; cursor: pointer; white-space: nowrap; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+.trek-filter-pill.active { background: #0f4c2a; color: #fff; border-color: #0f4c2a; }
+
+.trek-stage-list { padding: 8px 14px 30px; }
+.trek-stage-card { background: #fff; border-radius: 12px; margin-bottom: 8px; overflow: hidden; border: 1px solid #e5e5ea; }
+.trek-stage-summary { display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.trek-stage-badge { flex-shrink: 0; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.trek-stage-mid { flex-grow: 1; min-width: 0; }
+.trek-stage-route { font-size: 13px; font-weight: 700; color: #1c1c1e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trek-stage-date { font-size: 11px; color: #8e8e93; margin-top: 1px; }
+.trek-stage-chips { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.trek-chip { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 5px; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+.trek-chip-dist { background: #f0f0f5; color: #3a3a3c; }
+.trek-chip-asc  { background: #e2fbe8; color: #15803d; }
+.trek-chip-desc { background: #fff0ec; color: #c2410c; }
+.trek-chip-time { background: #e5f1ff; color: #0055cc; }
+
+.trek-priority-dot { flex-shrink: 0; width: 9px; height: 9px; border-radius: 50%; }
+.trek-elev-bar { height: 4px; background: #f2f2f7; border-radius: 2px; margin-top: 6px; overflow: hidden; display: flex; gap: 1px; }
+.trek-elev-asc  { background: #15803d; border-radius: 2px 0 0 2px; height: 100%; }
+.trek-elev-desc { background: #e11d48; border-radius: 0 2px 2px 0; height: 100%; }
+
+.trek-stage-detail { padding: 12px 14px 14px; background: #fafafa; border-top: 1px solid #e5e5ea; }
+.trek-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.trek-detail-cell { background: #fff; border-radius: 8px; padding: 8px 10px; border: 1px solid #f0f0f0; }
+.trek-detail-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #8e8e93; }
+.trek-detail-val { font-size: 13px; font-weight: 600; color: #1c1c1e; margin-top: 2px; }
+.trek-accom-row { background: #fff; border-radius: 8px; padding: 9px 11px; border: 1px solid #f0f0f0; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.trek-accom-name { font-size: 13px; font-weight: 600; color: #1c1c1e; flex-grow: 1; }
+.trek-priority-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; }
+.trek-notes-box { font-size: 12px; line-height: 1.5; color: #3a3a3c; font-style: italic; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 9px 11px; }
+
+.trek-section-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #6c6c70; margin: 14px 0 6px 2px; }
 </style>
 </head>
 <body>
@@ -276,6 +323,19 @@ let DATA = null;
 let currentYear = 2026;
 let currentTrip = null;
 let activeSubTab = 'itinerary';
+let trekStageFilter = 'all';
+
+/* ── REUSABLE MULTI-DAY TREK / BIKEPACKING STAGE VIEW ──
+   Any trip with type "through-hike" gets the bespoke stage-list
+   modal below instead of the generic itinerary view. Stage data is
+   read directly from that trip's itinerary array in travel.json —
+   each item needs distance_km/ascent_m/descent_m/moving_time/breaks/
+   start_time/finish_time/suggested_accommodation/booking_priority/
+   stage_number fields (rest & travel days simply have 0 distance).
+   To reuse for a future hike or bikepacking trip, just set that
+   trip's type to "through-hike" and populate the same itinerary
+   fields — no code changes needed. */
+const TREK_PRIORITY_COLOUR = { 'Critical': '#e11d48', 'High': '#ff781f', 'Medium': '#d4a017', 'Low': '#8e8e93' };
 
 const TYPE_META = {
   'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
@@ -494,10 +554,21 @@ function showTab(id) {
   document.getElementById('tabBtn-'+id).classList.add('active');
 }
 
+function getTrekStages(trip) {
+  if (!trip || trip.type !== 'through-hike' || !Array.isArray(trip.itinerary)) return null;
+  const stages = trip.itinerary.filter(i => i.distance_km !== undefined && i.distance_km !== '');
+  return stages.length ? stages : null;
+}
+
 function openTripSheet(id) {
   currentTrip = realTrips().find(t => t.id === id);
   if (!currentTrip) return;
-  
+
+  if (getTrekStages(currentTrip)) {
+    renderTrekSheet();
+    return;
+  }
+
   const sheet = document.getElementById('iosSheet');
   const meta = TYPE_META[currentTrip.type] || {};
   const colour = meta.colour || '#888';
@@ -575,6 +646,163 @@ function openTripSheet(id) {
   
   document.getElementById('iosOverlay').style.display = 'flex';
   renderSubTab();
+}
+
+/* ── REUSABLE MULTI-DAY TREK STAGE MODAL ──
+   Renders a bespoke stage-list view for any trip with type
+   "through-hike", reading stage data straight from that trip's
+   itinerary array in travel.json (distance_km/ascent_m/descent_m/
+   moving_time/breaks/start_time/finish_time/suggested_accommodation/
+   booking_priority/stage_number fields). Reusable as-is for future
+   hikes or bikepacking trips — just set type to "through-hike" and
+   populate the same itinerary fields. */
+function renderTrekSheet() {
+  const sheet = document.getElementById('iosSheet');
+  const stages = getTrekStages(currentTrip);
+
+  const totalKm = stages.reduce((s, x) => s + (parseFloat(x.distance_km) || 0), 0);
+  const totalAsc = stages.reduce((s, x) => s + (parseFloat(x.ascent_m) || 0), 0);
+  const totalDesc = stages.reduce((s, x) => s + (parseFloat(x.descent_m) || 0), 0);
+  const movingDays = stages.filter(x => (parseFloat(x.distance_km) || 0) > 0).length;
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="closeSheet()">Close</button>
+      <div class="ios-nav-title">${currentTrip.title || currentTrip.destination || 'Trip Details'}</div>
+      <button class="ios-link-btn bold" onclick="openTripForm('${currentTrip.id}')">Edit</button>
+    </div>
+
+    <div class="trek-hero">
+      <div class="trek-hero-eyebrow">${(TYPE_META[currentTrip.type]?.label || currentTrip.type || 'Trek').toUpperCase()}</div>
+      <div class="trek-hero-title">${currentTrip.title || currentTrip.destination}</div>
+      <div class="trek-hero-sub">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)} · ${movingDays} stage${movingDays===1?'':'s'}</div>
+      <div class="trek-stats-bar">
+        <div class="trek-stat">
+          <div class="trek-stat-val">${totalKm}</div>
+          <div class="trek-stat-lbl">km total</div>
+        </div>
+        <div class="trek-stat">
+          <div class="trek-stat-val" style="color:#7fffa0;">+${totalAsc.toLocaleString()}</div>
+          <div class="trek-stat-lbl">m ascent</div>
+        </div>
+        <div class="trek-stat">
+          <div class="trek-stat-val" style="color:#ff9d8a;">-${totalDesc.toLocaleString()}</div>
+          <div class="trek-stat-lbl">m descent</div>
+        </div>
+        <div class="trek-stat">
+          <div class="trek-stat-val">${stages.length}</div>
+          <div class="trek-stat-lbl">days</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trek-filter-bar">
+      <button class="trek-filter-pill ${trekStageFilter==='all'?'active':''}" onclick="setTrekFilter('all')">All Stages</button>
+      <button class="trek-filter-pill ${trekStageFilter==='Critical'?'active':''}" onclick="setTrekFilter('Critical')">🔴 Critical Booking</button>
+      <button class="trek-filter-pill ${trekStageFilter==='High'?'active':''}" onclick="setTrekFilter('High')">🟠 High Priority</button>
+      <button class="trek-filter-pill ${trekStageFilter==='rest'?'active':''}" onclick="setTrekFilter('rest')">Rest &amp; Travel</button>
+    </div>
+
+    <div class="ios-sheet-body" id="subTabContent" style="padding:0;"></div>
+  `;
+
+  document.getElementById('iosOverlay').style.display = 'flex';
+  renderTrekStageList();
+}
+
+function setTrekFilter(filter) {
+  trekStageFilter = filter;
+  document.querySelectorAll('.trek-filter-pill').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTrekStageList();
+}
+
+function renderTrekStageList() {
+  const container = document.getElementById('subTabContent');
+  const stages = getTrekStages(currentTrip);
+
+  let filtered = stages;
+  if (trekStageFilter === 'Critical' || trekStageFilter === 'High') {
+    filtered = stages.filter(s => s.booking_priority === trekStageFilter);
+  } else if (trekStageFilter === 'rest') {
+    filtered = stages.filter(s => (parseFloat(s.distance_km) || 0) === 0);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p style="text-align:center; color:#8e8e93; margin-top:40px; font-size:14px;">No stages match this filter.</p>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="trek-stage-list">` + filtered.map(s => {
+    const km = parseFloat(s.distance_km) || 0;
+    const asc = parseFloat(s.ascent_m) || 0;
+    const desc = parseFloat(s.descent_m) || 0;
+    const stageLabel = String(s.stage_number || '').toLowerCase();
+    const isRest = stageLabel === 'rest';
+    const isTravel = stageLabel === 'travel';
+    const badgeBg = isRest ? '#f2f2f7' : isTravel ? '#e5f1ff' : '#0f4c2a';
+    const badgeColor = isRest ? '#636366' : isTravel ? '#0055cc' : '#fff';
+    const badgeLabel = isRest ? 'R' : isTravel ? '✈' : (s.stage_number || '');
+    const priority = s.booking_priority || 'Low';
+    const prColour = TREK_PRIORITY_COLOUR[priority] || '#8e8e93';
+    const maxBar = Math.max(asc, desc, 1);
+    const route = s.location || s.title || '';
+
+    return `
+    <div class="trek-stage-card">
+      <div class="trek-stage-summary" onclick="toggleTrekStage(this)">
+        <div class="trek-stage-badge" style="background:${badgeBg}; color:${badgeColor};">${badgeLabel}</div>
+        <div class="trek-stage-mid">
+          <div class="trek-stage-route">${route}</div>
+          <div class="trek-stage-date">${fmtDate(s.date)}${km>0 ? ' · ' + (s.start_time||'') + '–' + (s.finish_time||'') : ''}</div>
+          ${km > 0 ? `
+            <div class="trek-stage-chips">
+              <span class="trek-chip trek-chip-dist">${km} km</span>
+              <span class="trek-chip trek-chip-asc">▲ ${asc}m</span>
+              <span class="trek-chip trek-chip-desc">▼ ${desc}m</span>
+              <span class="trek-chip trek-chip-time">${s.moving_time||''}</span>
+            </div>
+            <div class="trek-elev-bar">
+              <div class="trek-elev-asc" style="width:${(asc/maxBar*50)}%;"></div>
+              <div class="trek-elev-desc" style="width:${(desc/maxBar*50)}%;"></div>
+            </div>
+          ` : ''}
+        </div>
+        <div class="trek-priority-dot" style="background:${prColour};" title="${priority} booking priority"></div>
+        <div class="expand-chevron" style="align-self:center; transition: transform 0.2s; flex-shrink:0;">${getIconifyTag('mdi:chevron-down', 18, '#c7c7cc')}</div>
+      </div>
+      <div class="trek-stage-detail" style="display:none;">
+        <div class="trek-detail-grid">
+          <div class="trek-detail-cell">
+            <div class="trek-detail-lbl">Moving Time</div>
+            <div class="trek-detail-val">${s.moving_time || '—'}</div>
+          </div>
+          <div class="trek-detail-cell">
+            <div class="trek-detail-lbl">Breaks</div>
+            <div class="trek-detail-val">${s.breaks || '—'}</div>
+          </div>
+        </div>
+        <div class="trek-accom-row">
+          ${getIconifyTag('mdi:bed-outline', 16, '#5856d6')}
+          <div class="trek-accom-name">${s.suggested_accommodation || '—'}</div>
+          <div class="trek-priority-badge" style="background:${prColour}20; color:${prColour};">${priority}</div>
+        </div>
+        ${s.notes ? `<div class="trek-notes-box">${s.notes}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function toggleTrekStage(summaryEl) {
+  const detailsEl = summaryEl.nextElementSibling;
+  const chevron = summaryEl.querySelector('.expand-chevron');
+  const isHidden = detailsEl.style.display === 'none';
+  detailsEl.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    chevron.querySelector('iconify-icon').setAttribute('icon', 'mdi:chevron-up');
+  } else {
+    chevron.querySelector('iconify-icon').setAttribute('icon', 'mdi:chevron-down');
+  }
 }
 
 function switchSubTab(target) {
