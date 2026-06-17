@@ -357,6 +357,11 @@ const ITEM_ICONS = {
   'note': { icon: 'mdi:note-text-outline', color: '#8e8e93', bg: '#f2f2f7', lbl: 'Quick Note' }
 };
 
+const TRANSIT_MODE_ICONS = {
+  'train': 'mdi:train', 'flight': 'mdi:airplane', 'bus': 'mdi:bus',
+  'ferry': 'mdi:ferry', 'car': 'mdi:car', 'other': 'mdi:dots-horizontal-circle-outline'
+};
+
 function getIconifyTag(name, size = 18, color = 'currentColor') {
   if (name === 'custom:pomegranate') {
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;">
@@ -1118,7 +1123,110 @@ function renderSubTab() {
   }
 }
 
+/* ── MULTI-LEG TRANSIT JOURNEY CARD ──
+   A single itinerary item of type "transit" with a `legs` array
+   renders as one collapsible card: rolled-up total duration and
+   booking status when collapsed, each leg (mode, from/to, times,
+   carrier ref, status) plus transfer gaps between legs when
+   expanded. Reusable for any future multi-leg journey — flights,
+   trains, or mixed — just populate `legs` in the same shape. */
+function minutesFromTime(t) {
+  if (!t || !/^\d{1,2}:\d{2}$/.test(t)) return null;
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function fmtMinutes(mins) {
+  if (mins === null || mins === undefined || isNaN(mins)) return '—';
+  if (mins < 0) mins += 24 * 60; // assume overnight rollover
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function journeyTotals(legs) {
+  const first = legs[0];
+  const last = legs[legs.length - 1];
+  const startMin = minutesFromTime(first?.depart);
+  const endMin = minutesFromTime(last?.arrive);
+  const totalDuration = (startMin !== null && endMin !== null) ? fmtMinutes(endMin - startMin) : null;
+  const allBooked = legs.every(l => l.status === 'booked');
+  const anyBooked = legs.some(l => l.status === 'booked');
+  const overallStatus = allBooked ? 'booked' : (anyBooked ? 'not-booked' : 'not-booked');
+  return { startMin, endMin, totalDuration, overallStatus, legCount: legs.length };
+}
+
+function buildJourneyCardMarkup(item) {
+  const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
+  const legs = item.legs || [];
+  const totals = journeyTotals(legs);
+  const first = legs[0] || {};
+  const last = legs[legs.length - 1] || {};
+
+  const legsHtml = legs.map((leg, i) => {
+    const modeIcon = TRANSIT_MODE_ICONS[leg.mode] || TRANSIT_MODE_ICONS.other;
+    const legDuration = fmtMinutes(minutesFromTime(leg.arrive) - minutesFromTime(leg.depart));
+    const legStatusColour = leg.status === 'booked' ? '#15803d' : '#ff781f';
+
+    let transferHtml = '';
+    if (i > 0) {
+      const prevArrive = minutesFromTime(legs[i-1].arrive);
+      const thisDepart = minutesFromTime(leg.depart);
+      const gap = (prevArrive !== null && thisDepart !== null) ? fmtMinutes(thisDepart - prevArrive) : null;
+      transferHtml = `
+        <div style="display:flex; align-items:center; gap:8px; padding:4px 0 4px 17px; font-size:11px; color:#8e8e93;">
+          <div style="width:2px; align-self:stretch; background:#e5e5ea; min-height:14px;"></div>
+          <span>Transfer at ${leg.from || '—'}${gap ? ` · ${gap} wait` : ''}</span>
+        </div>`;
+    }
+
+    return `
+      ${transferHtml}
+      <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+        <div style="width:26px; height:26px; border-radius:7px; background:#f2f2f7; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">
+          ${getIconifyTag(modeIcon, 14, '#3a3a3c')}
+        </div>
+        <div style="flex-grow:1; min-width:0;">
+          <div style="font-size:13px; font-weight:600; color:#1c1c1e;">${leg.from || '?'} → ${leg.to || '?'}</div>
+          <div style="font-size:11px; color:#8e8e93; margin-top:1px;">${leg.depart || '—'} – ${leg.arrive || '—'} · ${legDuration}${leg.carrierRef ? ' · ' + leg.carrierRef : ''}</div>
+        </div>
+        <span class="status-badge status-${leg.status}" style="font-size:8px; padding:2px 6px; flex-shrink:0; margin-top:2px;">${(leg.status||'').replace(/-/g,' ')}</span>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="ios-item-card">
+      <div class="ios-item-summary" onclick="toggleCardDetails(this)">
+        <div class="ios-item-icon" style="background:#e5f1ff;">${getIconifyTag('mdi:transit-connection-variant', 18, '#007aff')}</div>
+        <div style="flex-grow:1;">
+          <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Journey'}</div>
+          <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span>${first.depart || ''} → ${last.arrive || ''}</span>
+            <span>·</span>
+            <span>${totals.totalDuration || '—'} total</span>
+            <span>·</span>
+            <span>${totals.legCount} leg${totals.legCount===1?'':'s'}</span>
+            <span class="status-badge status-${totals.overallStatus}" style="font-size:9px; padding:2px 6px;">${totals.overallStatus.replace(/-/g,' ')}</span>
+          </div>
+        </div>
+        <div class="expand-chevron" style="align-self:center; transition: transform 0.2s;">${getIconifyTag('mdi:chevron-down', 18, '#c7c7cc')}</div>
+      </div>
+      <div class="ios-item-details" style="display:none;">
+        <div style="margin:-4px 0 8px;">${legsHtml}</div>
+        ${item.notes ? `<div class="yellow-notes">${item.notes}</div>` : ''}
+        <div style="margin-top:12px; text-align:right;">
+          <button class="ios-link-btn bold" onclick="openActivityForm(${idx})">Edit Journey</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function buildItemRowMarkup(item) {
+  if (item.type === 'transit' && Array.isArray(item.legs)) {
+    return buildJourneyCardMarkup(item);
+  }
+
   const cfg = ITEM_ICONS[item.type] || { icon: 'mdi:map-marker', color: '#1c1c1e', bg: '#f2f2f7' };
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
   const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
@@ -1526,12 +1634,168 @@ function saveActivityTypeLevel(index) {
   triggerGitHubAutoSync();
 }
 
+/* ── MULTI-LEG TRANSIT JOURNEY EDIT FORM ──
+   Edits a transit item's `legs` array. journeyLegsDraft holds the
+   in-progress legs while the form is open; each leg row re-renders
+   from this array so legs can be added/removed dynamically. Saving
+   reads the draft back out, recalculates nothing else (durations
+   are derived at render time in buildJourneyCardMarkup), and writes
+   to currentTrip.itinerary like every other item type. */
+let journeyLegsDraft = [];
+
+function openJourneyForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'transit', title: '', date: currentTrip.startDate || '', notes: '', legs: [] }
+    : currentTrip.itinerary[index];
+
+  journeyLegsDraft = (item.legs && item.legs.length)
+    ? JSON.parse(JSON.stringify(item.legs))
+    : [{ mode: 'train', from: '', to: '', depart: '', arrive: '', carrierRef: '', status: 'not-booked' }];
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Journey' : 'Edit Journey'}</div>
+      <button class="ios-link-btn bold" onclick="saveJourneyLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Journey</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Title</label>
+          <input type="text" id="jrnTitle" class="ios-input" placeholder="e.g. Outbound: Home → Napoli" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="jrnDate" class="ios-input" value="${item.date || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Legs</div>
+      <div id="journeyLegsContainer"></div>
+      <div style="padding: 0 8px; margin-top: 6px;">
+        <button class="ios-link-btn bold" style="width:100%; text-align:center; background:#e5f1ff; color:#007aff; padding:10px; border-radius:10px;" onclick="addJourneyLeg()">+ Add Leg</button>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="jrnNotes" class="ios-textarea" placeholder="Seat numbers, platform notes...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Journey</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  document.getElementById('iosOverlay').style.display = 'flex';
+  renderJourneyLegRows();
+}
+
+function renderJourneyLegRows() {
+  const container = document.getElementById('journeyLegsContainer');
+  container.innerHTML = journeyLegsDraft.map((leg, i) => `
+    <div class="ios-group" style="margin-bottom:8px;">
+      <div class="ios-row" style="justify-content:space-between; padding-bottom:0;">
+        <span style="font-size:11px; font-weight:700; color:#8e8e93; text-transform:uppercase; letter-spacing:0.4px;">Leg ${i + 1}</span>
+        ${journeyLegsDraft.length > 1 ? `<button class="ios-link-btn danger" style="font-size:12px;" onclick="removeJourneyLeg(${i})">Remove</button>` : ''}
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Mode</label>
+        <select class="ios-select" onchange="updateJourneyLeg(${i}, 'mode', this.value)">
+          ${['train','flight','bus','ferry','car','other'].map(m => `<option value="${m}" ${leg.mode===m?'selected':''}>${m.charAt(0).toUpperCase()+m.slice(1)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">From</label>
+        <input type="text" class="ios-input" placeholder="Origin" value="${leg.from || ''}" oninput="updateJourneyLeg(${i}, 'from', this.value)">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">To</label>
+        <input type="text" class="ios-input" placeholder="Destination" value="${leg.to || ''}" oninput="updateJourneyLeg(${i}, 'to', this.value)">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Departs</label>
+        <input type="time" class="ios-input" value="${leg.depart || ''}" oninput="updateJourneyLeg(${i}, 'depart', this.value)">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Arrives</label>
+        <input type="time" class="ios-input" value="${leg.arrive || ''}" oninput="updateJourneyLeg(${i}, 'arrive', this.value)">
+      </div>
+      <div class="ios-row">
+        <label class="ios-label">Flight/Train No.</label>
+        <input type="text" class="ios-input" placeholder="e.g. IR56, LX1234" value="${leg.carrierRef || ''}" oninput="updateJourneyLeg(${i}, 'carrierRef', this.value)">
+      </div>
+      <div class="ios-row" style="justify-content:space-between;">
+        <label class="ios-label">Booked</label>
+        <label class="ios-switch">
+          <input type="checkbox" ${leg.status === 'booked' ? 'checked' : ''} onchange="updateJourneyLeg(${i}, 'status', this.checked ? 'booked' : 'not-booked')">
+          <span class="ios-slider"></span>
+        </label>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateJourneyLeg(i, field, value) {
+  journeyLegsDraft[i][field] = value;
+}
+
+function addJourneyLeg() {
+  const last = journeyLegsDraft[journeyLegsDraft.length - 1];
+  journeyLegsDraft.push({ mode: last?.mode || 'train', from: last?.to || '', to: '', depart: '', arrive: '', carrierRef: '', status: 'not-booked' });
+  renderJourneyLegRows();
+}
+
+function removeJourneyLeg(i) {
+  journeyLegsDraft.splice(i, 1);
+  renderJourneyLegRows();
+}
+
+function saveJourneyLevel(index) {
+  const isNew = index === -1;
+  const legs = journeyLegsDraft.filter(l => l.from || l.to || l.depart);
+  const allBooked = legs.length > 0 && legs.every(l => l.status === 'booked');
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'transit',
+    status: allBooked ? 'booked' : 'not-booked',
+    title: document.getElementById('jrnTitle').value,
+    date: document.getElementById('jrnDate').value,
+    legs: legs,
+    notes: document.getElementById('jrnNotes').value
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+  } else {
+    currentTrip.itinerary[index] = item;
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
 function openActivityForm(index, fallbackType = 'activity') {
   const isNew = index === -1;
   const existingType = isNew ? fallbackType : currentTrip.itinerary[index].type;
 
   if (existingType === 'activity') { openActivityTypeForm(index, isNew); return; }
   if (existingType === 'food') { openFoodForm(index, isNew); return; }
+  if (existingType === 'transit') { openJourneyForm(index, isNew); return; }
 
   const sheet = document.getElementById('iosSheet');
   const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' }, distance: '', elevationGain: '', elevationLoss: '', campsite: '' } : currentTrip.itinerary[index];
