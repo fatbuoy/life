@@ -458,18 +458,24 @@ function deriveTripStatus(endDate, items) {
 
 function renderUpcomingStrip() {
   const el = document.getElementById('upcomingStrip');
-  const upcoming = realTrips().filter(t => daysUntil(t.startDate) >= -2 && daysUntil(t.startDate) <= 120).sort((a,b) => a.startDate.localeCompare(b.startDate));
+  const todayStr = new Date().toISOString().split('T')[0];
+  const upcoming = realTrips().filter(t => {
+    const isInProgress = t.startDate <= todayStr && t.endDate >= todayStr;
+    const isUpcomingSoon = daysUntil(t.startDate) >= 0 && daysUntil(t.startDate) <= 120;
+    return isInProgress || isUpcomingSoon;
+  }).sort((a,b) => a.startDate.localeCompare(b.startDate));
   if(upcoming.length === 0) {
     el.innerHTML = `<p style="color:#8e8e93; font-style:italic; padding:10px 4px; margin:0;">No upcoming trips planned for the next 120 days.</p>`;
     return;
   }
   el.innerHTML = upcoming.map(t => {
     const days = daysUntil(t.startDate);
+    const isInProgress = t.startDate <= todayStr && t.endDate >= todayStr;
     const colour = TYPE_META[t.type]?.colour || '#666';
     return `
       <div class="upcoming-card" style="border-top-color:${colour}" onclick="openTripSheet('${t.id}')">
-          <div class="uc-days" style="color:${colour}">${days < 0 ? 'Now' : days}</div>
-          <div class="uc-days-lbl">${days < 0 ? 'Active' : 'Days Away'}</div>
+          <div class="uc-days" style="color:${colour}">${isInProgress ? 'Now' : days}</div>
+          <div class="uc-days-lbl">${isInProgress ? 'In Progress' : 'Days Away'}</div>
           <div class="uc-dest">${t.title || t.destination || 'Untitled'}</div>
           <div class="uc-dates">${fmtDate(t.startDate)}</div>
           <div class="uc-type" style="color:${colour}">${(t.type || 'Leisure').toUpperCase()}</div>
@@ -1428,6 +1434,10 @@ function openFoodForm(index, isNew) {
           <label class="ios-label">Date</label>
           <input type="date" id="fdDate" class="ios-input" value="${item.date || ''}">
         </div>
+        <div class="ios-row">
+          <label class="ios-label">Time</label>
+          <input type="time" id="fdTime" class="ios-input" value="${item.time || ''}">
+        </div>
       </div>
 
       <div class="ios-group-title">Reservation</div>
@@ -1446,10 +1456,6 @@ function openFoodForm(index, isNew) {
               <input type="checkbox" id="fdIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
               <span class="ios-slider"></span>
             </label>
-          </div>
-          <div class="ios-row">
-            <label class="ios-label">Time</label>
-            <input type="time" id="fdTime" class="ios-input" value="${item.time || ''}">
           </div>
           <div class="ios-row">
             <label class="ios-label">Confirmation Ref</label>
@@ -1490,7 +1496,7 @@ function saveFoodLevel(index) {
     status: !needsRes ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
     title: document.getElementById('fdTitle').value,
     date: document.getElementById('fdDate').value,
-    time: needsRes ? document.getElementById('fdTime').value : '',
+    time: document.getElementById('fdTime').value,
     location: document.getElementById('fdLocation').value,
     notes: document.getElementById('fdNotes').value,
     details: { pnr: needsRes ? document.getElementById('fdConfRef').value : '' }
@@ -1547,6 +1553,10 @@ function openActivityTypeForm(index, isNew) {
           <label class="ios-label">Date</label>
           <input type="date" id="acvDate" class="ios-input" value="${item.date || ''}">
         </div>
+        <div class="ios-row">
+          <label class="ios-label">Time</label>
+          <input type="time" id="acvTime" class="ios-input" value="${item.time || ''}">
+        </div>
       </div>
 
       <div class="ios-group-title">Booking</div>
@@ -1565,10 +1575,6 @@ function openActivityTypeForm(index, isNew) {
               <input type="checkbox" id="acvIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
               <span class="ios-slider"></span>
             </label>
-          </div>
-          <div class="ios-row">
-            <label class="ios-label">Time</label>
-            <input type="time" id="acvTime" class="ios-input" value="${item.time || ''}">
           </div>
           <div class="ios-row">
             <label class="ios-label">Confirmation Ref</label>
@@ -1609,7 +1615,7 @@ function saveActivityTypeLevel(index) {
     status: !needsBooking ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
     title: document.getElementById('acvTitle').value,
     date: document.getElementById('acvDate').value,
-    time: needsBooking ? document.getElementById('acvTime').value : '',
+    time: document.getElementById('acvTime').value,
     location: document.getElementById('acvLocation').value,
     notes: document.getElementById('acvNotes').value,
     details: { pnr: needsBooking ? document.getElementById('acvConfRef').value : '' }
