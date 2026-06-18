@@ -223,7 +223,10 @@ body {
 .lib-entry-row:last-child { border-bottom: none; }
 .lib-entry-title { font-size: 13px; font-weight: 600; color: #1c1c1e; }
 .lib-entry-sub { font-size: 11px; color: #8e8e93; margin-top: 1px; }
-.lib-entry-actions { display: flex; gap: 10px; flex-shrink: 0; margin-top: 1px; }
+.lib-entry-actions { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+.lib-action-btn { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; min-height: 34px; -webkit-tap-highlight-color: transparent; }
+.lib-action-btn-edit   { color: var(--app-accent); background: #e5f1ff; }
+.lib-action-btn-delete { color: #ff3b30; background: #ffebe9; }
 .lib-share-btn { font-size: 11px; font-weight: 600; color: var(--app-accent); background: #e5f1ff; padding: 4px 10px; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; }
 
 /* ── LINGO PHRASE CARD ── */
@@ -1186,7 +1189,15 @@ function renderSubTab() {
   }
 
   if (activeSubTab === 'itinerary') {
-    matches.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+    function itemSortKey(item) {
+      const date = item.date || '';
+      let time = item.time || '';
+      if (!time && item.type === 'transit' && item.legs && item.legs.length > 0) {
+        time = item.legs[0].depart || '';
+      }
+      return date + time;
+    }
+    matches.sort((a, b) => itemSortKey(a).localeCompare(itemSortKey(b)));
     let html = '';
     let lastDate = '';
     matches.forEach(item => {
@@ -1609,8 +1620,8 @@ function renderLibraryTab() {
               ${e.location ? `<div class="lib-entry-sub">${e.location}</div>` : ''}
             </div>
             <div class="lib-entry-actions">
-              <button class="ios-link-btn" style="font-size:12px;" onclick="openLibraryEntryForm('${e.id}')">Edit</button>
-              <button class="ios-link-btn danger" style="font-size:12px;" onclick="deleteLibraryEntry('${e.id}')">Delete</button>
+              <button class="lib-action-btn lib-action-btn-edit" onclick="openLibraryEntryForm('${e.id}')">Edit</button>
+              <button class="lib-action-btn lib-action-btn-delete" onclick="deleteLibraryEntry('${e.id}')">Delete</button>
             </div>
           </div>
         `).join('')}
@@ -2551,34 +2562,34 @@ function renderJourneyLegRows() {
       </div>
       <div class="ios-row">
         <label class="ios-label">Mode</label>
-        <select class="ios-select" onchange="updateJourneyLeg(${i}, 'mode', this.value)">
+        <select class="ios-select" data-leg="${i}" data-field="mode" onchange="updateJourneyLeg(${i}, 'mode', this.value)">
           ${['train','flight','bus','ferry','car','other'].map(m => `<option value="${m}" ${leg.mode===m?'selected':''}>${m.charAt(0).toUpperCase()+m.slice(1)}</option>`).join('')}
         </select>
       </div>
       <div class="ios-row">
         <label class="ios-label">From</label>
-        <input type="text" class="ios-input" placeholder="Origin" value="${leg.from || ''}" oninput="updateJourneyLeg(${i}, 'from', this.value)">
+        <input type="text" class="ios-input" placeholder="Origin" data-leg="${i}" data-field="from" value="${leg.from || ''}" oninput="updateJourneyLeg(${i}, 'from', this.value)">
       </div>
       <div class="ios-row">
         <label class="ios-label">To</label>
-        <input type="text" class="ios-input" placeholder="Destination" value="${leg.to || ''}" oninput="updateJourneyLeg(${i}, 'to', this.value)">
+        <input type="text" class="ios-input" placeholder="Destination" data-leg="${i}" data-field="to" value="${leg.to || ''}" oninput="updateJourneyLeg(${i}, 'to', this.value)">
       </div>
       <div class="ios-row">
         <label class="ios-label">Departs</label>
-        <input type="time" class="ios-input" value="${leg.depart || ''}" oninput="updateJourneyLeg(${i}, 'depart', this.value)">
+        <input type="time" class="ios-input" data-leg="${i}" data-field="depart" value="${leg.depart || ''}" oninput="updateJourneyLeg(${i}, 'depart', this.value)">
       </div>
       <div class="ios-row">
         <label class="ios-label">Arrives</label>
-        <input type="time" class="ios-input" value="${leg.arrive || ''}" oninput="updateJourneyLeg(${i}, 'arrive', this.value)">
+        <input type="time" class="ios-input" data-leg="${i}" data-field="arrive" value="${leg.arrive || ''}" oninput="updateJourneyLeg(${i}, 'arrive', this.value)">
       </div>
       <div class="ios-row">
         <label class="ios-label">Flight/Train No.</label>
-        <input type="text" class="ios-input" placeholder="e.g. IR56, LX1234" value="${leg.carrierRef || ''}" oninput="updateJourneyLeg(${i}, 'carrierRef', this.value)">
+        <input type="text" class="ios-input" placeholder="e.g. IR56, LX1234" data-leg="${i}" data-field="carrierRef" value="${leg.carrierRef || ''}" oninput="updateJourneyLeg(${i}, 'carrierRef', this.value)">
       </div>
       <div class="ios-row" style="justify-content:space-between;">
         <label class="ios-label">Booked</label>
         <label class="ios-switch">
-          <input type="checkbox" ${leg.status === 'booked' ? 'checked' : ''} onchange="updateJourneyLeg(${i}, 'status', this.checked ? 'booked' : 'not-booked')">
+          <input type="checkbox" data-leg="${i}" data-field="status" ${leg.status === 'booked' ? 'checked' : ''} onchange="updateJourneyLeg(${i}, 'status', this.checked ? 'booked' : 'not-booked')">
           <span class="ios-slider"></span>
         </label>
       </div>
@@ -2590,18 +2601,41 @@ function updateJourneyLeg(i, field, value) {
   journeyLegsDraft[i][field] = value;
 }
 
+/* Flush current DOM input values into journeyLegsDraft before any
+   re-render. iOS can delay oninput until blur, so without this flush
+   the last-typed value in a focused field is lost when innerHTML is
+   replaced. data-leg / data-field attributes added to every control
+   in renderJourneyLegRows make the query trivial. */
+function flushJourneyLegInputs() {
+  const container = document.getElementById('journeyLegsContainer');
+  if (!container) return;
+  container.querySelectorAll('[data-leg][data-field]').forEach(el => {
+    const i = parseInt(el.dataset.leg, 10);
+    const field = el.dataset.field;
+    if (i >= journeyLegsDraft.length) return;
+    if (el.type === 'checkbox') {
+      journeyLegsDraft[i][field] = el.checked ? 'booked' : 'not-booked';
+    } else {
+      journeyLegsDraft[i][field] = el.value;
+    }
+  });
+}
+
 function addJourneyLeg() {
+  flushJourneyLegInputs();
   const last = journeyLegsDraft[journeyLegsDraft.length - 1];
   journeyLegsDraft.push({ mode: last?.mode || 'train', from: last?.to || '', to: '', depart: '', arrive: '', carrierRef: '', status: 'not-booked' });
   renderJourneyLegRows();
 }
 
 function removeJourneyLeg(i) {
+  flushJourneyLegInputs();
   journeyLegsDraft.splice(i, 1);
   renderJourneyLegRows();
 }
 
 function saveJourneyLevel(index) {
+  flushJourneyLegInputs();
   const isNew = index === -1;
   const legs = journeyLegsDraft.filter(l => l.from || l.to || l.depart);
   const allBooked = legs.length > 0 && legs.every(l => l.status === 'booked');
