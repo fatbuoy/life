@@ -12,6 +12,8 @@
  *   Period:   renderPeriodStrip(containerId, periods, selected, onSelect)
  *   Charts:   drawTrendChart(canvas, series, labels, colors)
  *             drawHeroSparkline(canvas, current, prior, budget)
+ *   Sync:     syncToGitHub(config, buildPayload, indicatorId?)
+ *             promptForGitToken()
  * ─────────────────────────────────────────────────────────────────────
  */
 
@@ -460,6 +462,93 @@ window.addEventListener('resize', () => {
   clearTimeout(_resizeTimer);
   _resizeTimer = setTimeout(() => _redrawFns.forEach(fn => fn()), 150);
 });
+
+
+/* ─── GITHUB AUTO-SYNC ──────────────────────────────────────────────── */
+
+/**
+ * Generic GitHub auto-sync: PUTs a JSON payload to a file in a GitHub repo
+ * using a Personal Access Token stored in localStorage under 'gh_pat_token'.
+ * Each app calls this with its own {owner, repo, path, branch} config and a
+ * function that builds its payload object, e.g.:
+ *   function triggerGitHubAutoSync() { return syncToGitHub(GITHUB_CONFIG, buildExportPayload); }
+ * Failures fall back silently to local-only — the data is already in
+ * localStorage via the app's own persistLocal(), this just mirrors it to git.
+ * @param {{owner:string, repo:string, path:string, branch:string}} config
+ * @param {() => object} buildPayload  Returns the JSON-serialisable object to write
+ * @param {string} [indicatorId='syncIndicator']  Element id to show/hide while syncing
+ */
+async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator') {
+  const token = localStorage.getItem('gh_pat_token');
+  if (!token) {
+    console.log('GitHub token missing. Saved locally only.');
+    return;
+  }
+
+  const ind = document.getElementById(indicatorId);
+  if (ind) ind.style.display = 'inline-block';
+
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`;
+
+  try {
+    const metaRes = await fetch(url, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+
+    let sha = '';
+    if (metaRes.ok) {
+      sha = (await metaRes.json()).sha;
+    } else if (metaRes.status !== 404) {
+      throw new Error('Could not check file identity tracking.');
+    }
+
+    const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(), null, 2))));
+
+    const payload = {
+      message: `Sync updates from application mobile interface [Automated]`,
+      content: base64Content,
+      branch: config.branch
+    };
+    if (sha) payload.sha = sha;
+
+    const pushRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!pushRes.ok) {
+      const errPayload = await pushRes.json();
+      throw new Error(errPayload.message || 'Unknown write error occurred.');
+    }
+
+    console.log('GitHub sync successful.');
+  } catch (err) {
+    console.error(err);
+    alert(`Auto-Sync Warning: Locally saved, but failed pushing directly to GitHub.\nReason: ${err.message}`);
+  } finally {
+    if (ind) ind.style.display = 'none';
+  }
+}
+
+/**
+ * Prompt for / clear the GitHub Personal Access Token used by syncToGitHub.
+ * Reloads data afterwards via the app's own loadData(), if one is defined.
+ */
+function promptForGitToken() {
+  const current = localStorage.getItem('gh_pat_token') || '';
+  const token = prompt('Enter your GitHub Personal Access Token:', current);
+  if (token !== null) {
+    if (token.trim() === '') {
+      localStorage.removeItem('gh_pat_token');
+      alert('Token removed.');
+    } else {
+      localStorage.setItem('gh_pat_token', token.trim());
+      alert('Token successfully saved to this phone!');
+      if (typeof loadData === 'function') loadData();
+    }
+  }
+}
 
 
 /* ─── CROSS-APP DATA HELPERS (for integration) ──────────────────────── */

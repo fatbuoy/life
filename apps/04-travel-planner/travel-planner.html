@@ -124,16 +124,11 @@ body {
 .status-planning { background: #fff7ed; color: #c2410c; }
 .status-completed, .status-no-booking-required { background: #f2f2f7; color: #636366; }
 
-/* ── APPLE MODAL ARCHITECTURE ── */
-.ios-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); justify-content: center; align-items: flex-start; }
-.ios-sheet { background: #f2f2f7; width: 100%; max-width: 540px; height: 94vh; margin-top: 6vh; border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -8px 30px rgba(0,0,0,0.15); animation: slideUp 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94); }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-.ios-nav-bar { background: #ffffff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #c6c6c8; flex-shrink: 0; }
-.ios-nav-title { font-size: 16px; font-weight: 600; color: #1c1c1e; text-align: center; flex-grow: 1; margin: 0 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ios-link-btn { background: none; border: none; font-size: 16px; color: var(--app-accent); cursor: pointer; padding: 0; font-weight: 400; -webkit-tap-highlight-color: transparent; }
-.ios-link-btn.bold { font-weight: 600; }
-.ios-link-btn.danger { color: var(--app-destructive); }
+/* ── APPLE MODAL ARCHITECTURE ──
+   The overlay/sheet/nav-bar/group/row/switch system now lives in
+   ../../shared/base.css §22 (ios-*) so other Sahani Suite apps can
+   reuse the same add/edit sheet markup. Only the page-specific hero
+   banner and trip-notes widget stay here. */
 .ios-hero-banner { padding: 16px; color: white; display: flex; flex-direction: column; justify-content: flex-end; flex-shrink: 0; }
 
 .ios-trip-notes-widget { background: #ffffff; margin: 12px 16px 2px 16px; padding: 12px; border-radius: 10px; border-left: 4px solid #ffcc00; box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: flex; gap: 10px; align-items: flex-start; }
@@ -145,27 +140,9 @@ body {
 .ios-tab-btn iconify-icon { font-size: 22px; display: block; }
 .ios-tab-btn.active { color: var(--app-accent); font-weight: 600; }
 
-.ios-sheet-body { flex-grow: 1; overflow-y: auto; padding: 0 16px 30px 16px; -webkit-overflow-scrolling: touch; }
-
-/* ── CELL COMPONENTS ── */
-.ios-group-title { font-size: 12px; font-weight: 400; color: #6c6c70; text-transform: uppercase; margin: 18px 0 6px 8px; letter-spacing: 0.3px; }
-.ios-group { background: #ffffff; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
-.ios-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #e5e5ea; position: relative; gap: 10px; background: #ffffff; }
-.ios-row:last-child { border-bottom: none; }
-.ios-label { font-size: 15px; color: #1c1c1e; min-width: 95px; flex-shrink: 0; }
-.ios-input, .ios-select, .ios-textarea { flex-grow: 1; border: none; background: none; font-size: 15px; color: #1c1c1e; padding: 0; font-family: inherit; width: 100%; text-align: right; outline: none; }
-.ios-select { appearance: none; color: #8e8e93; direction: rtl; cursor: pointer; }
-.ios-textarea { text-align: left; resize: none; min-height: 70px; padding-top: 4px; }
-.ios-row.vertical { flex-direction: column; align-items: flex-start; }
-.ios-row.vertical .ios-label { margin-bottom: 6px; }
-
-/* ── iOS TOGGLE SWITCH ── */
-.ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
-.ios-switch input { opacity: 0; width: 0; height: 0; }
-.ios-slider { position: absolute; cursor: pointer; inset: 0; background-color: #e5e5ea; transition: background-color .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 26px; }
-.ios-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: transform .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-input:checked + .ios-slider { background-color: #34c759; }
-input:checked + .ios-slider:before { transform: translateX(20px); }
+/* ── ios-sheet-body / ios-group* / ios-row* / ios-label / ios-input /
+   ios-select / ios-textarea / ios-switch / ios-slider now live in
+   ../../shared/base.css §22 ── */
 
 /* ── ITINERARY CARDS ── */
 .ios-item-card { background: #ffffff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #e5e5ea; }
@@ -262,11 +239,8 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 /* ── FAVOURITE HEART ── */
 .fav-btn { background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-/* ── NEUTRAL FILTER PILL (Library tab) ── */
-.filter-pill-bar { display: flex; gap: 6px; padding: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
-.filter-pill-bar::-webkit-scrollbar { display: none; }
-.filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; color: #636366; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
-.filter-pill.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
+/* ── .filter-pill-bar / .filter-pill now live in ../../shared/base.css §22 ── */
+
 </style>
 </head>
 <body>
@@ -501,13 +475,39 @@ async function loadData() {
    Library survive offline / before a GitHub sync. Replaces the old
    trips-only 'wanderer_trips' key, which is still read once as a
    legacy fallback in loadData() above. */
-function persistLocal() {
-  localStorage.setItem('wanderer_data_v2', JSON.stringify({
+/* Single source of truth for the exportable snapshot of app data — used
+   by persistLocal() (localStorage), triggerGitHubAutoSync() (git push),
+   and exportJSON() (manual backup download) so the three never drift
+   out of sync with each other. */
+function buildExportPayload() {
+  return {
     meta: DATA.meta || {},
     trips: realTrips(),
     ideaBank: DATA.ideaBank || [],
     lingoLibrary: DATA.lingoLibrary || {}
-  }));
+  };
+}
+
+function persistLocal() {
+  localStorage.setItem('wanderer_data_v2', JSON.stringify(buildExportPayload()));
+}
+
+/* ── SHARED ITINERARY COMMIT ──
+   Every itinerary-level save/delete (food, sightseeing, accommodation,
+   activity, note, lingo, journey, trek stage) ends the same way: write
+   currentTrip.itinerary back into the master DATA.trips record,
+   recompute the trip's derived status, persist, re-render, and re-open
+   the trip sheet. Centralised here so each save*Level/delete*Raw
+   function only needs to mutate currentTrip.itinerary, then call this. */
+function commitItinerary() {
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  persistLocal();
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
 }
 
 function updateCountBadge() {
@@ -1016,10 +1016,10 @@ function openStageForm(index, jumpToBooked = false) {
           <label class="ios-label">Accommodation</label>
           <input type="text" id="stgAccom" class="ios-input" placeholder="Hotel / hut name" value="${item.suggested_accommodation || ''}">
         </div>
-        <div class="ios-row" style="justify-content: space-between;">
+        <div class="ios-row ios-row-between">
           <label class="ios-label">Mark as Booked</label>
           <label class="ios-switch">
-            <input type="checkbox" id="stgIsBooked" ${isBooked ? 'checked' : ''} onchange="toggleStageBookedFields(this)">
+            <input type="checkbox" id="stgIsBooked" ${isBooked ? 'checked' : ''} onchange="toggleFieldVisibility(this, ['stgBookedFields','block'], ['rowStgPriority','none','flex'])">
             <span class="ios-slider"></span>
           </label>
         </div>
@@ -1052,27 +1052,27 @@ function openStageForm(index, jumpToBooked = false) {
         </div>
       </div>
 
-      <div class="ios-group-title">Route Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="stgNotes" class="ios-textarea" placeholder="Pass conditions, lunch stops, cable cars...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Route Notes', 'stgNotes', 'Pass conditions, lunch stops, cable cars...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteStageRaw(${index})">Remove Stage</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew, 'deleteStageRaw', 'Remove Stage')}
     </div>
   `;
 
   document.getElementById('iosOverlay').style.display = 'flex';
 }
 
-function toggleStageBookedFields(chk) {
-  document.getElementById('stgBookedFields').style.display = chk.checked ? 'block' : 'none';
-  document.getElementById('rowStgPriority').style.display = chk.checked ? 'none' : 'flex';
+/* ── GENERIC SHOW/HIDE TOGGLE ──
+   Flips one or more elements' display based on a checkbox's checked
+   state. Pass [elementId, displayWhenChecked, displayWhenUnchecked?]
+   tuples — displayWhenUnchecked defaults to 'none'. Replaces the old
+   toggleFoodReservationFields / toggleSightseeingBookingFields /
+   toggleStageBookedFields, which were all the same one-or-two-element
+   show/hide with different ids baked in. */
+function toggleFieldVisibility(chk, ...rules) {
+  rules.forEach(([id, shownDisplay, hiddenDisplay = 'none']) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = chk.checked ? shownDisplay : hiddenDisplay;
+  });
 }
 
 function saveStageLevel(index) {
@@ -1116,27 +1116,13 @@ function saveStageLevel(index) {
   // keep itinerary sorted by date so the stage list reads chronologically
   currentTrip.itinerary.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 function deleteStageRaw(index) {
   if (confirm("Remove this stage from your trek?")) {
     currentTrip.itinerary.splice(index, 1);
-    const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-    DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-    DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-    persistLocal();
-    render();
-    openTripSheet(currentTrip.id);
-    triggerGitHubAutoSync();
+    commitItinerary();
   }
 }
 
@@ -1725,18 +1711,9 @@ function openLibraryEntryForm(id) {
         </div>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="libNotes" class="ios-textarea" placeholder="What makes it worth coming back to...">${entry.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'libNotes', 'What makes it worth coming back to...', entry.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="closeSheet(); deleteLibraryEntry('${id}');">Remove from Library</button>
-        </div>
-      ` : ''}
+      ${dangerFooterHtml(isNew, `closeSheet(); deleteLibraryEntry('${id}');`, 'Remove from Library')}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -1815,18 +1792,9 @@ function openTripForm(id) {
         </div>
       </div>
 
-      <div class="ios-group-title">General Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="editTripNotes" class="ios-textarea" placeholder="Pack light, checklist metrics...">${trip.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('General Notes', 'editTripNotes', 'Pack light, checklist metrics...', trip.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteTripRaw('${trip.id}')">Delete Entire Trip</button>
-        </div>
-      ` : ''}
+      ${dangerFooterHtml(isNew, `deleteTripRaw('${trip.id}')`, 'Delete Entire Trip')}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -1901,6 +1869,62 @@ function toggleIdeaDateFields(chk, dateId, timeId) {
   }
 }
 
+/* ── SHARED FORM MARKUP HELPERS ──
+   These three blocks repeat near-verbatim across food / sightseeing /
+   accommodation / activity / note / lingo / journey forms below — only
+   element ids, labels and placeholders change between them. Templating
+   them keeps each open*Form function focused on the fields that are
+   actually specific to that item type. */
+
+/** The "Save to Trip Ideas (no date yet)" switch row that appears at
+ *  the top of every dated item's form. fieldB is optional (e.g.
+ *  accommodation passes its check-out field instead of a time field —
+ *  toggleIdeaDateFields just disables whichever second field it gets). */
+function ideaToggleRowHtml(toggleId, fieldA, fieldB, label, isIdea) {
+  return `
+        <div class="ios-row ios-row-between">
+          <label class="ios-label">${label}</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="${toggleId}" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'${fieldA}','${fieldB || ''}')">
+            <span class="ios-slider"></span>
+          </label>
+        </div>`;
+}
+
+/** A titled notes/free-text group — the same "ios-group-title + single
+ *  textarea" shape used by every form's Notes section (and a couple of
+ *  other free-text fields like the lingo phrase list). */
+function notesGroupHtml(groupTitle, fieldId, placeholder, value, extraStyle = '') {
+  return `
+      <div class="ios-group-title">${groupTitle}</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="${fieldId}" class="ios-textarea"${extraStyle ? ` style="${extraStyle}"` : ''} placeholder="${placeholder}">${value || ''}</textarea>
+        </div>
+      </div>`;
+}
+
+/** The "Remove Item" danger button pinned to the bottom of every
+ *  edit form — omitted entirely when isNew (nothing to remove yet). */
+function removeItemFooterHtml(index, isNew, deleteFn = 'deleteActivityRaw', label = 'Remove Item') {
+  if (isNew) return '';
+  return `
+      <div class="ios-danger-block">
+        <button class="ios-link-btn danger bold ios-danger-btn" onclick="${deleteFn}(${index})">${label}</button>
+      </div>`;
+}
+
+/** Same danger-button footer as removeItemFooterHtml, but for the two
+ *  callers (library entry, trip-level) whose delete action isn't a
+ *  simple deleteFn(index) — takes the literal onclick string instead. */
+function dangerFooterHtml(isNew, onclickStr, label) {
+  if (isNew) return '';
+  return `
+      <div class="ios-danger-block">
+        <button class="ios-link-btn danger bold ios-danger-btn" onclick="${onclickStr}">${label}</button>
+      </div>`;
+}
+
 function openFoodForm(index, isNew) {
   const sheet = document.getElementById('iosSheet');
   const item = isNew
@@ -1919,13 +1943,7 @@ function openFoodForm(index, isNew) {
     <div class="ios-sheet-body">
       <div class="ios-group-title">Restaurant / Food / Drink</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="fdIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'fdDate','fdTime')">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
+        ${ideaToggleRowHtml('fdIsIdea', 'fdDate', 'fdTime', 'Save to Trip Ideas (no date yet)', isIdea)}
         <div class="ios-row">
           <label class="ios-label">Name</label>
           <input type="text" id="fdTitle" class="ios-input" placeholder="e.g. Sorbillo" value="${item.title || ''}">
@@ -1946,15 +1964,15 @@ function openFoodForm(index, isNew) {
 
       <div class="ios-group-title">Reservation</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
+        <div class="ios-row ios-row-between">
           <label class="ios-label">Needs Reservation</label>
           <label class="ios-switch">
-            <input type="checkbox" id="fdNeedsRes" ${needsReservation ? 'checked' : ''} onchange="toggleFoodReservationFields(this)">
+            <input type="checkbox" id="fdNeedsRes" ${needsReservation ? 'checked' : ''} onchange="toggleFieldVisibility(this, ['fdResRow','block'])">
             <span class="ios-slider"></span>
           </label>
         </div>
         <div id="fdResRow" style="display:${needsReservation ? 'block' : 'none'};">
-          <div class="ios-row" style="justify-content: space-between;">
+          <div class="ios-row ios-row-between">
             <label class="ios-label">Reservation Booked</label>
             <label class="ios-switch">
               <input type="checkbox" id="fdIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
@@ -1968,25 +1986,12 @@ function openFoodForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="fdNotes" class="ios-textarea" placeholder="Must-try dishes, dietary notes...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'fdNotes', 'Must-try dishes, dietary notes...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
-}
-
-function toggleFoodReservationFields(chk) {
-  document.getElementById('fdResRow').style.display = chk.checked ? 'block' : 'none';
 }
 
 function saveFoodLevel(index) {
@@ -2021,19 +2026,9 @@ function saveFoodLevel(index) {
     activeSubTab = item.date ? 'itinerary' : 'ideas';
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
-/* ── BESPOKE ACTIVITY ITEM FORM ──
-   Same booking-reveals-contact pattern as Food, for sightseeing,
-   tours, shows etc. that may or may not need advance booking. */
 /* ── SIGHT-SEEING ITEM FORM ──
    Same booking-reveals-contact pattern as Food, for tours, museums,
    shows etc. that may or may not need advance booking. Title /
@@ -2057,13 +2052,7 @@ function openSightseeingForm(index, isNew) {
     <div class="ios-sheet-body">
       <div class="ios-group-title">Sight-Seeing</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="sgtIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'sgtDate','sgtTime')">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
+        ${ideaToggleRowHtml('sgtIsIdea', 'sgtDate', 'sgtTime', 'Save to Trip Ideas (no date yet)', isIdea)}
         <div class="ios-row">
           <label class="ios-label">Name</label>
           <input type="text" id="sgtTitle" class="ios-input" placeholder="e.g. Pompeii Tour" value="${item.title || ''}">
@@ -2084,15 +2073,15 @@ function openSightseeingForm(index, isNew) {
 
       <div class="ios-group-title">Booking</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
+        <div class="ios-row ios-row-between">
           <label class="ios-label">Needs Booking</label>
           <label class="ios-switch">
-            <input type="checkbox" id="sgtNeedsBooking" ${needsBooking ? 'checked' : ''} onchange="toggleSightseeingBookingFields(this)">
+            <input type="checkbox" id="sgtNeedsBooking" ${needsBooking ? 'checked' : ''} onchange="toggleFieldVisibility(this, ['sgtBookingRow','block'])">
             <span class="ios-slider"></span>
           </label>
         </div>
         <div id="sgtBookingRow" style="display:${needsBooking ? 'block' : 'none'};">
-          <div class="ios-row" style="justify-content: space-between;">
+          <div class="ios-row ios-row-between">
             <label class="ios-label">Booked</label>
             <label class="ios-switch">
               <input type="checkbox" id="sgtIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
@@ -2106,25 +2095,12 @@ function openSightseeingForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="sgtNotes" class="ios-textarea" placeholder="What to bring, tips...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'sgtNotes', 'What to bring, tips...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
-}
-
-function toggleSightseeingBookingFields(chk) {
-  document.getElementById('sgtBookingRow').style.display = chk.checked ? 'block' : 'none';
 }
 
 function saveSightseeingLevel(index) {
@@ -2159,14 +2135,7 @@ function saveSightseeingLevel(index) {
     activeSubTab = item.date ? 'itinerary' : 'ideas';
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── ACCOMMODATION ITEM FORM ──
@@ -2191,13 +2160,7 @@ function openAccommodationForm(index, isNew) {
     <div class="ios-sheet-body">
       <div class="ios-group-title">Accommodation</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Idea Bank Entry (no dates yet)</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="acmIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'acmCheckIn','acmCheckOut')">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
+        ${ideaToggleRowHtml('acmIsIdea', 'acmCheckIn', 'acmCheckOut', 'Idea Bank Entry (no dates yet)', isIdea)}
         <div class="ios-row">
           <label class="ios-label">Name</label>
           <input type="text" id="acmTitle" class="ios-input" placeholder="e.g. Hotel Piazza Bellini" value="${item.title || ''}">
@@ -2232,18 +2195,9 @@ function openAccommodationForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="acmNotes" class="ios-textarea" placeholder="Room type, breakfast, parking...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'acmNotes', 'Room type, breakfast, parking...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -2279,14 +2233,7 @@ function saveAccommodationLevel(index) {
     activeSubTab = item.date ? 'itinerary' : 'ideas';
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── ACTIVITY (RUN / HIKE / BIKE) ITEM FORM ──
@@ -2311,13 +2258,7 @@ function openTripActivityForm(index, isNew) {
     <div class="ios-sheet-body">
       <div class="ios-group-title">Activity</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="tavIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'tavDate','tavTime')">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
+        ${ideaToggleRowHtml('tavIsIdea', 'tavDate', 'tavTime', 'Save to Trip Ideas (no date yet)', isIdea)}
         <div class="ios-row">
           <label class="ios-label">Type</label>
           <select id="tavSubtype" class="ios-select">
@@ -2360,18 +2301,9 @@ function openTripActivityForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="tavNotes" class="ios-textarea" placeholder="Route notes, pace target...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'tavNotes', 'Route notes, pace target...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -2406,14 +2338,7 @@ function saveTripActivityLevel(index) {
     activeSubTab = item.date ? 'itinerary' : 'ideas';
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── QUICK NOTE ITEM FORM ──
@@ -2437,13 +2362,7 @@ function openNoteForm(index, isNew) {
     <div class="ios-sheet-body">
       <div class="ios-group-title">Quick Note</div>
       <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="ntIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'ntDate','ntTime')">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
+        ${ideaToggleRowHtml('ntIsIdea', 'ntDate', 'ntTime', 'Save to Trip Ideas (no date yet)', isIdea)}
         <div class="ios-row">
           <label class="ios-label">Title</label>
           <input type="text" id="ntTitle" class="ios-input" placeholder="e.g. Pack rain jacket" value="${item.title || ''}">
@@ -2458,18 +2377,9 @@ function openNoteForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Note</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="ntNotes" class="ios-textarea" placeholder="Anything you don't want to forget...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Note', 'ntNotes', "Anything you don't want to forget...", item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -2499,14 +2409,7 @@ function saveNoteLevel(index) {
     activeSubTab = item.date ? 'itinerary' : 'ideas';
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── LOCAL LINGO ITEM FORM ──
@@ -2541,25 +2444,11 @@ function openLingoForm(index, isNew) {
         </div>
       </div>
 
-      <div class="ios-group-title">Phrases — one per line, "English - Local"</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="lngPhrases" class="ios-textarea" style="min-height:160px;" placeholder="Hello - Ciao&#10;Thank you - Grazie">${item.phrases || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Phrases — one per line, "English - Local"', 'lngPhrases', 'Hello - Ciao&#10;Thank you - Grazie', item.phrases, 'min-height:160px;')}
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="lngNotes" class="ios-textarea" placeholder="Pronunciation tips, regional variants...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'lngNotes', 'Pronunciation tips, regional variants...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew)}
     </div>
   `;
   document.getElementById('iosOverlay').style.display = 'flex';
@@ -2595,14 +2484,7 @@ function saveLingoLevel(index) {
     DATA.lingoLibrary[country][item.occasion] = { title: item.title, phrases: item.phrases };
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── MULTI-LEG TRANSIT JOURNEY EDIT FORM ──
@@ -2649,18 +2531,9 @@ function openJourneyForm(index, isNew) {
         <button class="ios-link-btn bold" style="width:100%; text-align:center; background:#e5f1ff; color:#007aff; padding:10px; border-radius:10px;" onclick="addJourneyLeg()">+ Add Leg</button>
       </div>
 
-      <div class="ios-group-title">Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="jrnNotes" class="ios-textarea" placeholder="Seat numbers, platform notes...">${item.notes || ''}</textarea>
-        </div>
-      </div>
+      ${notesGroupHtml('Notes', 'jrnNotes', 'Seat numbers, platform notes...', item.notes)}
 
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Journey</button>
-        </div>
-      ` : ''}
+      ${removeItemFooterHtml(index, isNew, 'deleteActivityRaw', 'Remove Journey')}
     </div>
   `;
 
@@ -2750,14 +2623,7 @@ function saveJourneyLevel(index) {
     currentTrip.itinerary[index] = item;
   }
 
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  persistLocal();
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  commitItinerary();
 }
 
 /* ── ITEM FORM ROUTER ──
@@ -2781,92 +2647,22 @@ function openActivityForm(index, fallbackType = 'note') {
 function deleteActivityRaw(index) {
   if (confirm("Remove this item from your trip?")) {
     currentTrip.itinerary.splice(index, 1);
-    const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-    DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-    DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-    
-    persistLocal();
-    render();
-    openTripSheet(currentTrip.id);
-    triggerGitHubAutoSync();
+    commitItinerary();
   }
 }
 
-function promptForGitToken() {
-  const current = localStorage.getItem('gh_pat_token') || '';
-  const token = prompt("Enter your GitHub Personal Access Token:", current);
-  if (token !== null) {
-    if(token.trim() === "") {
-      localStorage.removeItem('gh_pat_token');
-      alert("Token removed.");
-    } else {
-      localStorage.setItem('gh_pat_token', token.trim());
-      alert("Token successfully saved to this phone!");
-      loadData(); 
-    }
-  }
-}
-
-async function triggerGitHubAutoSync() {
-  const token = localStorage.getItem('gh_pat_token');
-  if (!token) {
-    console.log("GitHub token missing. Saved locally only.");
-    return;
-  }
-
-  const ind = document.getElementById('syncIndicator');
-  if(ind) ind.style.display = 'inline-block';
-
-  const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-  
-  try {
-    const metaRes = await fetch(url, {
-      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    
-    let sha = "";
-    if (metaRes.ok) {
-      const metaData = await metaRes.json();
-      sha = metaData.sha;
-    } else if (metaRes.status !== 404) {
-      throw new Error("Could not check file identity tracking.");
-    }
-
-    const outputJSON = { meta: DATA.meta || {}, trips: realTrips(), ideaBank: DATA.ideaBank || [], lingoLibrary: DATA.lingoLibrary || {} };
-    const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(outputJSON, null, 2))));
-    
-    const payload = {
-      message: `Sync updates from application mobile interface [Automated]`,
-      content: base64Content,
-      branch: GITHUB_CONFIG.branch
-    };
-    if (sha) payload.sha = sha;
-
-    const pushRes = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!pushRes.ok) {
-      const errPayload = await pushRes.json();
-      throw new Error(errPayload.message || "Unknown write error occurred.");
-    }
-    
-    console.log("GitHub sync successful.");
-  } catch (err) {
-    console.error(err);
-    alert(`Auto-Sync Warning: Locally saved, but failed pushing directly to GitHub.\nReason: ${err.message}`);
-  } finally {
-    if(ind) ind.style.display = 'none';
-  }
+/* promptForGitToken() and the core sync PUT request now live in
+   ../../shared/utils.js as promptForGitToken()/syncToGitHub() — every
+   Sahani Suite app can call them the same way. This wrapper just
+   supplies travel-planner's own GITHUB_CONFIG and payload shape so
+   every existing triggerGitHubAutoSync() call site elsewhere in this
+   file keeps working unchanged. */
+function triggerGitHubAutoSync() {
+  return syncToGitHub(GITHUB_CONFIG, buildExportPayload);
 }
 
 function exportJSON() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ meta: DATA.meta, trips: realTrips(), ideaBank: DATA.ideaBank || [], lingoLibrary: DATA.lingoLibrary || {} }, null, 2));
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(buildExportPayload(), null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
   downloadAnchor.setAttribute("download", `wanderer_local_backup_${currentYear}.json`);

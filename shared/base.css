@@ -44,6 +44,7 @@
  *  §19 Password modal
  *  §20 Navigation helpers
  *  §21 Utilities
+ *  §22 Bottom-sheet modal forms (ios-* — add/edit record sheets)
  * ═══════════════════════════════════════════════════════════════════
  */
 
@@ -846,3 +847,84 @@ body.privacy .num-private {
 .quick-list-emoji { font-size: 16px; min-width: 20px }
 .quick-list-label { color: var(--text); flex: 1 }
 .quick-list-value { color: var(--app-accent); font-weight: 600 }
+
+/* ── §22 BOTTOM-SHEET MODAL FORMS (ios-*) ─────────────────────────────
+   A full-screen "Add / Edit" sheet that slides up from the bottom, for
+   any app that needs a record-editing form. First built for travel-
+   planner's item/stage/trip forms; any app can reuse the same markup
+   for its own add/edit modals (a budget transaction, a recipe, etc).
+
+   Typical markup:
+     <div class="ios-overlay" id="iosOverlay">
+       <div class="ios-sheet" id="iosSheet">
+         <div class="ios-nav-bar">
+           <button class="ios-link-btn" onclick="...">Cancel</button>
+           <div class="ios-nav-title">Edit Thing</div>
+           <button class="ios-link-btn bold" onclick="...">Done</button>
+         </div>
+         <div class="ios-sheet-body">
+           <div class="ios-group-title">Section</div>
+           <div class="ios-group">
+             <div class="ios-row">
+               <label class="ios-label">Field</label>
+               <input class="ios-input">
+             </div>
+             <div class="ios-row ios-row-between">
+               <label class="ios-label">Toggle</label>
+               <label class="ios-switch">
+                 <input type="checkbox"><span class="ios-slider"></span>
+               </label>
+             </div>
+           </div>
+           <div class="ios-danger-block">
+             <button class="ios-link-btn danger bold ios-danger-btn">Remove</button>
+           </div>
+         </div>
+       </div>
+     </div>
+
+   Note: travel-planner's own .status-badge component (status-booked /
+   -planned / -confirmed / -not-booked / -completed etc.) deliberately
+   stayed local rather than moving here — its modifier class names
+   collide with the existing §9 .status-pill modifiers above, which
+   use different colours. Worth reconciling the two systems on
+   purpose later rather than silently merging them. */
+.ios-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); justify-content: center; align-items: flex-start; }
+.ios-sheet { background: #f2f2f7; width: 100%; max-width: 540px; height: 94vh; margin-top: 6vh; border-top-left-radius: 12px; border-top-right-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -8px 30px rgba(0,0,0,0.15); animation: iosSheetSlideUp 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94); }
+@keyframes iosSheetSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.ios-nav-bar { background: #ffffff; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #c6c6c8; flex-shrink: 0; }
+.ios-nav-title { font-size: 16px; font-weight: 600; color: #1c1c1e; text-align: center; flex-grow: 1; margin: 0 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ios-link-btn { background: none; border: none; font-size: 16px; color: var(--app-accent); cursor: pointer; padding: 0; font-weight: 400; -webkit-tap-highlight-color: transparent; }
+.ios-link-btn.bold { font-weight: 600; }
+.ios-link-btn.danger { color: var(--app-destructive, #ff3b30); }
+
+.ios-sheet-body { flex-grow: 1; overflow-y: auto; padding: 0 16px 30px 16px; -webkit-overflow-scrolling: touch; }
+
+.ios-group-title { font-size: 12px; font-weight: 400; color: #6c6c70; text-transform: uppercase; margin: 18px 0 6px 8px; letter-spacing: 0.3px; }
+.ios-group { background: #ffffff; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.ios-row { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid #e5e5ea; position: relative; gap: 10px; background: #ffffff; }
+.ios-row:last-child { border-bottom: none; }
+.ios-row-between { justify-content: space-between; }
+.ios-row.vertical { flex-direction: column; align-items: flex-start; }
+.ios-row.vertical .ios-label { margin-bottom: 6px; }
+.ios-label { font-size: 15px; color: #1c1c1e; min-width: 95px; flex-shrink: 0; }
+.ios-input, .ios-select, .ios-textarea { flex-grow: 1; border: none; background: none; font-size: 15px; color: #1c1c1e; padding: 0; font-family: inherit; width: 100%; text-align: right; outline: none; }
+.ios-select { appearance: none; color: #8e8e93; direction: rtl; cursor: pointer; }
+.ios-textarea { text-align: left; resize: none; min-height: 70px; padding-top: 4px; }
+
+.ios-switch { position: relative; display: inline-block; width: 46px; height: 26px; flex-shrink: 0; }
+.ios-switch input { opacity: 0; width: 0; height: 0; }
+.ios-slider { position: absolute; cursor: pointer; inset: 0; background-color: #e5e5ea; transition: background-color .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 26px; }
+.ios-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background-color: white; transition: transform .2s cubic-bezier(0.1, 0.76, 0.55, 0.94); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+input:checked + .ios-slider { background-color: #34c759; }
+input:checked + .ios-slider:before { transform: translateX(20px); }
+
+.ios-danger-block { margin-top: 24px; padding: 0 8px; }
+.ios-danger-btn { width: 100%; text-align: center; background: white; padding: 12px; border-radius: 10px; border: 1px solid #e5e5ea; }
+
+/* ── Neutral filter pill (e.g. a library/category filter strip) ── */
+.filter-pill-bar { display: flex; gap: 6px; padding: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
+.filter-pill-bar::-webkit-scrollbar { display: none; }
+.filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; color: #636366; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.filter-pill.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
