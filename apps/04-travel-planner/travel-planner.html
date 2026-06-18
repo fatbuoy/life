@@ -90,7 +90,7 @@ body {
 /* ── NAVIGATION ── */
 .app-nav { background: var(--app-primary); display: flex; align-items: center; padding: 0 16px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,.08); }
 .header { margin-bottom: 0; }
-.nav-pills { display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px; margin: 8px 0; width: 100%; max-width: 320px; }
+.nav-pills { display: flex; gap: 2px; background: rgba(255,255,255,.08); border-radius: 8px; padding: 3px; margin: 8px 0; width: 100%; max-width: 420px; }
 .nav-pills button { cursor: pointer; }
 .nav-pill { flex: 1; background: none; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 14px; border-radius: 6px; color: rgba(255,255,255,.5); font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .nav-pill.active { background: rgba(255,255,255,.15); color: #fff; }
@@ -232,6 +232,41 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .trek-notes-box { font-size: 12px; line-height: 1.5; color: #3a3a3c; font-style: italic; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 9px 11px; }
 
 .trek-section-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #6c6c70; margin: 14px 0 6px 2px; }
+
+/* ── IDEA BANK LIBRARY ── */
+.lib-search-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.lib-search-input { flex-grow: 1; background: #fff; border: 1px solid #e5e5ea; border-radius: 10px; padding: 9px 12px; font-size: 14px; outline: none; }
+.lib-dest-group { background: #fff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #e5e5ea; }
+.lib-dest-hdr { display: flex; align-items: center; gap: 8px; padding: 12px 14px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lib-dest-name { font-weight: 700; font-size: 14px; color: #1c1c1e; flex-grow: 1; }
+.lib-dest-count { font-size: 11px; color: #8e8e93; font-weight: 600; background: #f2f2f7; padding: 2px 8px; border-radius: 10px; }
+.lib-dest-body { padding: 0 14px 12px; border-top: 1px solid #e5e5ea; }
+.lib-cat-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #8e8e93; margin: 10px 0 4px; }
+.lib-entry-row { display: flex; align-items: flex-start; gap: 8px; padding: 7px 0; border-bottom: 1px solid #f2f2f7; }
+.lib-entry-row:last-child { border-bottom: none; }
+.lib-entry-title { font-size: 13px; font-weight: 600; color: #1c1c1e; }
+.lib-entry-sub { font-size: 11px; color: #8e8e93; margin-top: 1px; }
+.lib-entry-actions { display: flex; gap: 10px; flex-shrink: 0; margin-top: 1px; }
+.lib-share-btn { font-size: 11px; font-weight: 600; color: var(--app-accent); background: #e5f1ff; padding: 4px 10px; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; }
+
+/* ── LINGO PHRASE CARD ── */
+.lingo-card { background: #fff; border-radius: 12px; margin-bottom: 10px; overflow: hidden; border: 1px solid #ffe5ec; }
+.lingo-card-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #fff0f4; }
+.lingo-card-title { font-weight: 700; font-size: 14px; color: #1c1c1e; flex-grow: 1; }
+.lingo-phrase-list { padding: 4px 14px 12px; }
+.lingo-phrase-row { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f2f2f7; font-size: 13px; }
+.lingo-phrase-row:last-child { border-bottom: none; }
+.lingo-phrase-en { color: #3a3a3c; }
+.lingo-phrase-local { color: #1c1c1e; font-weight: 600; text-align: right; }
+
+/* ── FAVOURITE HEART ── */
+.fav-btn { background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* ── NEUTRAL FILTER PILL (Library tab) ── */
+.filter-pill-bar { display: flex; gap: 6px; padding: 0 0 10px; overflow-x: auto; scrollbar-width: none; }
+.filter-pill-bar::-webkit-scrollbar { display: none; }
+.filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; color: #636366; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+.filter-pill.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
 </style>
 </head>
 <body>
@@ -269,6 +304,9 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
       <button class="nav-pill" id="tabBtn-trips" onclick="showTab('trips')">
         <iconify-icon icon="mdi:format-list-bulleted"></iconify-icon> List
       </button>
+      <button class="nav-pill" id="tabBtn-library" onclick="showTab('library')">
+        <iconify-icon icon="mdi:lightbulb-on-outline"></iconify-icon> Library
+      </button>
     </div>
   </div>
 </nav>
@@ -303,12 +341,36 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
        </div>
     </div>
 
+    <div class="tab-panel" id="tab-library">
+      <div class="editor-container">
+
+        <div class="ios-action-bar">
+          <button class="ios-btn-primary" onclick="openLibraryEntryForm(null)">
+            <iconify-icon icon="mdi:plus"></iconify-icon> Add Idea
+          </button>
+        </div>
+
+        <div class="lib-search-row">
+          <input type="text" id="libSearchInput" class="lib-search-input" placeholder="Search destination or title..." oninput="onLibrarySearchInput(this.value)">
+        </div>
+        <div class="filter-pill-bar">
+          <button class="filter-pill" id="libFilter-all" onclick="setLibraryFilter('all')">All</button>
+          <button class="filter-pill" id="libFilter-accommodation" onclick="setLibraryFilter('accommodation')">Accommodation</button>
+          <button class="filter-pill" id="libFilter-food" onclick="setLibraryFilter('food')">Food &amp; Drink</button>
+          <button class="filter-pill" id="libFilter-sightseeing" onclick="setLibraryFilter('sightseeing')">Sight-Seeing</button>
+        </div>
+
+        <div id="libraryList"></div>
+      </div>
+    </div>
+
   </div>
 </main>
 
 <div id="iosOverlay" class="ios-overlay" onclick="closeSheet()">
   <div class="ios-sheet" id="iosSheet" onclick="event.stopPropagation()"></div>
 </div>
+<datalist id="knownDestinations"></datalist>
 
 <script src="../../shared/utils.js"></script>
 <script>
@@ -324,37 +386,58 @@ let currentYear = 2026;
 let currentTrip = null;
 let activeSubTab = 'itinerary';
 let trekStageFilter = 'all';
+let libraryFilter = 'all';
+let librarySearch = '';
 
 /* ── REUSABLE MULTI-DAY TREK / BIKEPACKING STAGE VIEW ──
-   Any trip with type "through-hike" gets the bespoke stage-list
+   Any trip with type "adventure" gets the bespoke stage-list
    modal below instead of the generic itinerary view. Stage data is
    read directly from that trip's itinerary array in travel.json —
    each item needs distance_km/ascent_m/descent_m/moving_time/breaks/
    start_time/finish_time/suggested_accommodation/booking_priority/
    stage_number fields (rest & travel days simply have 0 distance).
    To reuse for a future hike or bikepacking trip, just set that
-   trip's type to "through-hike" and populate the same itinerary
+   trip's type to "adventure" and populate the same itinerary
    fields — no code changes needed. */
 const TREK_PRIORITY_COLOUR = { 'Critical': '#e11d48', 'High': '#ff781f', 'Medium': '#d4a017', 'Low': '#8e8e93', 'Booked': '#15803d' };
 
 const TYPE_META = {
   'visitors':    { label:'Visitors',    colour:'#10b981', icon:'mdi:account-group-outline' },
   'family':      { label:'Family',      colour:'#8b5cf6', icon:'mdi:home-heart' },
-  'active':      { label:'Active',      colour:'#ff781f', icon:'mdi:hiking' },
-  'through-hike':{ label:'Through-Hike',colour:'#15803d', icon:'mdi:terrain' },
+  'adventure':   { label:'Adventure',   colour:'#15803d', icon:'mdi:terrain' },
   'leisure':     { label:'Leisure',     colour:'#06b6d4', icon:'mdi:beach' },
   'work':        { label:'Work',        colour:'#64748b', icon:'mdi:briefcase-outline' },
   'race':        { label:'Race',        colour:'#e11d48', icon:'mdi:trophy-outline' },
   'hibernation': { label:'Hibernation', colour:'#9d174d', icon:'custom:pomegranate' }
 };
 
+/* ── ITEM TYPES ──
+   'sightseeing' replaces the old generic 'activity' (tours, cafes,
+   sights — anything that isn't a physical workout). 'activity' now
+   means a run / hike / bike ride logged against the trip, using the
+   same distance_km/ascent_m/descent_m/moving_time fields as the
+   Adventure trip stages. Accommodation, Food & Drink and
+   Sight-Seeing are the three categories eligible for the Idea Bank
+   (favourite heart on the card -> saved to the cross-trip library). */
 const ITEM_ICONS = {
   'transit': { icon: 'mdi:transit-connection-variant', color: '#007aff', bg: '#e5f1ff', lbl: 'Transit' },
   'accommodation': { icon: 'mdi:bed-outline', color: '#5856d6', bg: '#f0eeff', lbl: 'Accommodation' },
-  'food': { icon: 'mdi:silverware-fork-knife', color: '#ff9500', bg: '#fff5e6', lbl: 'Food & Drink' },
-  'activity': { icon: 'mdi:compass-outline', color: '#4cd964', bg: '#edfbe7', lbl: 'Activity' },
+  'food': { icon: 'mdi:silverware-fork-knife', color: '#ff9500', bg: '#fff5e6', lbl: 'Restaurant / Food / Drink' },
+  'sightseeing': { icon: 'mdi:binoculars', color: '#4cd964', bg: '#edfbe7', lbl: 'Sight-Seeing' },
+  'activity': { icon: 'mdi:run-fast', color: '#ff781f', bg: '#fff1e6', lbl: 'Activity (Run / Hike / Bike)' },
   'lingo': { icon: 'mdi:translate', color: '#ff2d55', bg: '#ffe5ec', lbl: 'Local Lingo' },
   'note': { icon: 'mdi:note-text-outline', color: '#8e8e93', bg: '#f2f2f7', lbl: 'Quick Note' }
+};
+
+const IDEA_BANK_CATEGORIES = ['accommodation', 'food', 'sightseeing'];
+const ACTIVITY_SUBTYPE_ICONS = { 'run': 'mdi:run-fast', 'hike': 'mdi:hiking', 'bike': 'mdi:bike' };
+
+const LINGO_OCCASIONS = {
+  'greetings':  'Basic Greetings',
+  'restaurant': 'Restaurant: Ordering & Paying',
+  'shopping':   'Shopping',
+  'directions': 'Directions & Transport',
+  'custom':     'Custom / Other'
 };
 
 const TRANSIT_MODE_ICONS = {
@@ -393,13 +476,38 @@ async function loadData() {
   }
   
   if (!DATA) {
+    const storedFull = localStorage.getItem('wanderer_data_v2');
+    if (storedFull) {
+      try { DATA = JSON.parse(storedFull); } catch(e) {}
+    }
+  }
+
+  if (!DATA) {
+    // Legacy fallback: pre-Idea-Bank local saves only ever held the trips array.
     const stored = localStorage.getItem('wanderer_trips');
     if (stored) { try { DATA = { trips: JSON.parse(stored), meta: {} }; } catch(e){} }
   }
   
   if (!DATA) DATA = { trips: [], meta: {} };
+  if (!DATA.ideaBank) DATA.ideaBank = [];
+  if (!DATA.lingoLibrary) DATA.lingoLibrary = {};
+
   updateCountBadge();
   render();
+}
+
+/* Single source of truth for local persistence: the whole DATA object
+   (trips + ideaBank + lingoLibrary + meta), so the Idea Bank and Lingo
+   Library survive offline / before a GitHub sync. Replaces the old
+   trips-only 'wanderer_trips' key, which is still read once as a
+   legacy fallback in loadData() above. */
+function persistLocal() {
+  localStorage.setItem('wanderer_data_v2', JSON.stringify({
+    meta: DATA.meta || {},
+    trips: realTrips(),
+    ideaBank: DATA.ideaBank || [],
+    lingoLibrary: DATA.lingoLibrary || {}
+  }));
 }
 
 function updateCountBadge() {
@@ -414,6 +522,8 @@ function render() {
   renderCalendar();
   renderUpcomingStrip();
   renderTripList();
+  renderLibraryTab();
+  updateKnownDestinationsList();
 }
 
 function realTrips() { return DATA.trips ? DATA.trips.filter(t => !t._comment) : []; }
@@ -575,7 +685,7 @@ function showTab(id) {
 }
 
 function getTrekStages(trip) {
-  if (!trip || trip.type !== 'through-hike' || !Array.isArray(trip.itinerary)) return null;
+  if (!trip || trip.type !== 'adventure' || !Array.isArray(trip.itinerary)) return null;
   const stages = trip.itinerary.filter(i => i.hasOwnProperty('distance_km'));
   return stages.length ? stages : null;
 }
@@ -584,7 +694,7 @@ function openTripSheet(id) {
   currentTrip = realTrips().find(t => t.id === id);
   if (!currentTrip) return;
 
-  if (currentTrip.type === 'through-hike') {
+  if (currentTrip.type === 'adventure') {
     renderTrekSheet();
     return;
   }
@@ -600,30 +710,8 @@ function openTripSheet(id) {
     </div>
   ` : '';
 
-  let throughHikeStatsHtml = '';
-  if (currentTrip.type === 'through-hike' && currentTrip.itinerary) {
-    let totalDist = 0;
-    let totalGain = 0;
-    currentTrip.itinerary.forEach(i => {
-      if (i.distance) totalDist += parseFloat(i.distance) || 0;
-      if (i.elevationGain) totalGain += parseFloat(i.elevationGain) || 0;
-    });
-    if (totalDist > 0 || totalGain > 0) {
-      throughHikeStatsHtml = `
-        <div style="background:#ffffff; margin:12px 16px 2px 16px; padding:12px; border-radius:10px; border-left:4px solid #15803d; box-shadow:0 1px 2px rgba(0,0,0,0.04); display:flex; justify-content:space-around; align-items:center;">
-          <div style="text-align:center;">
-            <div style="font-size:10px; color:#8e8e93; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Total Distance</div>
-            <div style="font-size:16px; font-weight:700; color:#1c1c1e; margin-top:2px;">${totalDist.toFixed(1)} km</div>
-          </div>
-          <div style="width:1px; height:24px; background:#e5e5ea;"></div>
-          <div style="text-align:center;">
-            <div style="font-size:10px; color:#8e8e93; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Total Elevation</div>
-            <div style="font-size:16px; font-weight:700; color:#15803d; margin-top:2px;">+${totalGain} m</div>
-          </div>
-        </div>
-      `;
-    }
-  }
+  const tripNights = nightsBetween(currentTrip.startDate, currentTrip.endDate);
+  const tripDays = tripNights !== null ? tripNights + 1 : null;
   
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -635,11 +723,10 @@ function openTripSheet(id) {
     <div class="ios-hero-banner" style="background: linear-gradient(135deg, ${colour}, var(--app-primary));">
       <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">${meta.label || currentTrip.type}</div>
       <div style="font-size:20px; font-weight:800; margin:2px 0;">${currentTrip.title || currentTrip.destination}</div>
-      <div style="font-size:12px; opacity:0.9;">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)}</div>
+      <div style="font-size:12px; opacity:0.9;">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)}${tripDays ? ` · ${tripDays} day${tripDays===1?'':'s'}` : ''}</div>
     </div>
 
     ${tripNotesWidgetHtml}
-    ${throughHikeStatsHtml}
 
     <div class="ios-sheet-body" id="subTabContent"></div>
 
@@ -670,11 +757,11 @@ function openTripSheet(id) {
 
 /* ── REUSABLE MULTI-DAY TREK STAGE MODAL ──
    Renders a bespoke stage-list view for any trip with type
-   "through-hike", reading stage data straight from that trip's
+   "adventure", reading stage data straight from that trip's
    itinerary array in travel.json (distance_km/ascent_m/descent_m/
    moving_time/breaks/start_time/finish_time/suggested_accommodation/
    booking_priority/stage_number fields). Reusable as-is for future
-   hikes or bikepacking trips — just set type to "through-hike" and
+   hikes or bikepacking trips — just set type to "adventure" and
    populate the same itinerary fields. */
 function renderTrekSheet() {
   const sheet = document.getElementById('iosSheet');
@@ -845,7 +932,7 @@ function toggleTrekStage(summaryEl) {
 }
 
 /* ── STAGE EDIT FORM ──
-   Edits a single itinerary item for through-hike trips, using the
+   Edits a single itinerary item for adventure trips, using the
    trek-specific fields (distance_km/ascent_m/descent_m/moving_time/
    breaks/start_time/finish_time/suggested_accommodation/
    booking_priority/stage_number). jumpToBooked=true opens straight
@@ -1033,7 +1120,7 @@ function saveStageLevel(index) {
   DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
   DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
 
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  persistLocal();
   render();
   openTripSheet(currentTrip.id);
   triggerGitHubAutoSync();
@@ -1046,7 +1133,7 @@ function deleteStageRaw(index) {
     DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
     DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
 
-    localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+    persistLocal();
     render();
     openTripSheet(currentTrip.id);
     triggerGitHubAutoSync();
@@ -1232,32 +1319,44 @@ function buildItemRowMarkup(item) {
   if (item.type === 'transit' && Array.isArray(item.legs)) {
     return buildJourneyCardMarkup(item);
   }
+  if (item.type === 'lingo') {
+    return buildLingoCardMarkup(item);
+  }
 
   const cfg = ITEM_ICONS[item.type] || { icon: 'mdi:map-marker', color: '#1c1c1e', bg: '#f2f2f7' };
   const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
   const mapsUrl = item.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}` : '#';
 
-  let hikeSpecsHtml = '';
-  if (currentTrip.type === 'through-hike' && (item.distance || item.elevationGain || item.elevationLoss)) {
-    hikeSpecsHtml = `
+  // Run / Hike / Bike stat badges — used both for the new generic
+  // 'activity' item type (any trip) and reads the same field names
+  // as the Adventure trip stage form for consistency.
+  let activitySpecsHtml = '';
+  if (item.type === 'activity' && (item.distance_km || item.ascent_m || item.descent_m)) {
+    activitySpecsHtml = `
       <div style="display:flex; flex-wrap:wrap; gap:4px; margin:4px 0 2px 0;">
-        ${item.distance ? `<span style="font-size:10px; background:#f2f2f7; color:#1c1c1e; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">🏁 ${item.distance} km</span>` : ''}
-        ${item.elevationGain ? `<span style="font-size:10px; background:#e2fbe8; color:#15803d; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▲ +${item.elevationGain}m</span>` : ''}
-        ${item.elevationLoss ? `<span style="font-size:10px; background:#ffebeb; color:#b91c1c; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▼ -${item.elevationLoss}m</span>` : ''}
+        ${item.distance_km ? `<span style="font-size:10px; background:#f2f2f7; color:#1c1c1e; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">🏁 ${item.distance_km} km</span>` : ''}
+        ${item.ascent_m ? `<span style="font-size:10px; background:#e2fbe8; color:#15803d; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▲ +${item.ascent_m}m</span>` : ''}
+        ${item.descent_m ? `<span style="font-size:10px; background:#ffebeb; color:#b91c1c; padding:1px 5px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:2px;">▼ -${item.descent_m}m</span>` : ''}
+        ${item.moving_time ? `<span style="font-size:10px; background:#e5f1ff; color:#0055cc; padding:1px 5px; border-radius:4px; font-weight:600;">${item.moving_time}</span>` : ''}
       </div>
     `;
   }
 
+  const isFavouritable = IDEA_BANK_CATEGORIES.includes(item.type);
+  const showStatusBadge = item.type !== 'note';
+  const fromLibraryTagHtml = item.fromLibrary ? `<span style="font-size:9px; color:#8e8e93; font-weight:600; background:#f2f2f7; padding:1px 6px; border-radius:6px;">📚 From Idea Bank</span>` : '';
+
   return `
     <div class="ios-item-card">
       <div class="ios-item-summary" onclick="toggleCardDetails(this)">
-        <div class="ios-item-icon" style="background:${cfg.bg};">${getIconifyTag(cfg.icon, 18, cfg.color)}</div>
+        <div class="ios-item-icon" style="background:${cfg.bg};">${getIconifyTag(item.type === 'activity' && item.activitySubtype ? (ACTIVITY_SUBTYPE_ICONS[item.activitySubtype] || cfg.icon) : cfg.icon, 18, cfg.color)}</div>
         <div style="flex-grow:1;">
-          <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Untitled Activity'}</div>
-          ${hikeSpecsHtml}
-          <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px;">
+          <div style="font-weight:600; color:#1c1c1e; font-size:14px;">${item.title || 'Untitled'}</div>
+          ${activitySpecsHtml}
+          <div style="font-size:12px; color:#8e8e93; margin-top:2px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
             ${item.time ? `<span>${item.time}</span>` : ''}
-            <span class="status-badge status-${item.status}" style="font-size:9px; padding:2px 6px;">${item.status.replace(/-/g,' ')}</span>
+            ${showStatusBadge ? `<span class="status-badge status-${item.status}" style="font-size:9px; padding:2px 6px;">${(item.status||'').replace(/-/g,' ')}</span>` : ''}
+            ${fromLibraryTagHtml}
           </div>
         </div>
         <div class="expand-chevron" style="align-self:center; transition: transform 0.2s;">${getIconifyTag('mdi:chevron-down', 18, '#c7c7cc')}</div>
@@ -1265,15 +1364,21 @@ function buildItemRowMarkup(item) {
       <div class="ios-item-details" style="display:none;">
         ${item.location ? `
           <div style="margin-bottom:6px;">
-            <strong>Location:</strong> 
+            <strong>${item.type === 'accommodation' ? 'Address' : 'Location'}:</strong> 
             <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--app-accent); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; word-break: break-all;">
               ${item.location} ${getIconifyTag('mdi:map-marker-radius-outline', 14, 'var(--app-accent)')}
             </a>
           </div>` : ''}
-        ${item.details?.pnr ? `<div style="margin-bottom:6px;"><strong>PNR/Ref:</strong> ${item.details.pnr}</div>` : ''}
+        ${item.type === 'accommodation' && item.checkOutDate ? `<div style="margin-bottom:6px;"><strong>Check-out:</strong> ${fmtDate(item.checkOutDate)}</div>` : ''}
+        ${item.details?.pnr ? `<div style="margin-bottom:6px;"><strong>${item.type === 'accommodation' ? 'Booking Number' : 'PNR/Ref'}:</strong> ${item.details.pnr}</div>` : ''}
         ${item.campsite ? `<div style="margin-bottom:6px;"><strong>Hut / Camp:</strong> ${item.campsite}</div>` : ''}
         ${item.notes ? `<div class="yellow-notes">${item.notes}</div>` : ''}
-        <div style="margin-top:12px; text-align:right;">
+        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+          ${isFavouritable ? `
+            <button class="fav-btn" style="color:${item.favourite ? '#ff2d55' : '#8e8e93'};" onclick="toggleItemFavourite(${idx})">
+              ${getIconifyTag(item.favourite ? 'mdi:heart' : 'mdi:heart-outline', 15, item.favourite ? '#ff2d55' : '#8e8e93')} ${item.favourite ? 'Saved to Idea Bank' : 'Save to Idea Bank'}
+            </button>
+          ` : '<span></span>'}
           <button class="ios-link-btn bold" onclick="openActivityForm(${idx})">Edit Details</button>
         </div>
       </div>
@@ -1293,9 +1398,379 @@ function toggleCardDetails(summaryEl) {
   }
 }
 
+/* ── LOCAL LINGO PHRASE CARD ──
+   Renders a 'lingo' itinerary item. phrases is free text, one
+   phrase per line in "English - Local translation" form (matching
+   how phrases were originally captured for Napoli); split on the
+   first " - " so translations containing dashes still display
+   correctly. */
+function buildLingoCardMarkup(item) {
+  const lines = (item.phrases || '').split('\n').map(l => l.trim()).filter(Boolean);
+  const rows = lines.map(line => {
+    const sepIdx = line.indexOf(' - ');
+    if (sepIdx === -1) return `<div class="lingo-phrase-row"><span class="lingo-phrase-en">${line}</span></div>`;
+    const en = line.slice(0, sepIdx);
+    const local = line.slice(sepIdx + 3);
+    return `<div class="lingo-phrase-row"><span class="lingo-phrase-en">${en}</span><span class="lingo-phrase-local">${local}</span></div>`;
+  }).join('');
+
+  const idx = currentTrip.itinerary.findIndex(i => i.id === item.id);
+
+  return `
+    <div class="lingo-card">
+      <div class="lingo-card-hdr">
+        ${getIconifyTag('mdi:translate', 16, '#ff2d55')}
+        <div class="lingo-card-title">${item.title || LINGO_OCCASIONS[item.occasion] || 'Phrases'}</div>
+        <button class="ios-link-btn bold" style="font-size:12px;" onclick="openActivityForm(${idx})">Edit</button>
+      </div>
+      <div class="lingo-phrase-list">
+        ${rows || '<p style="color:#8e8e93; font-size:12px; margin:6px 0;">No phrases added yet.</p>'}
+        ${item.notes ? `<div class="yellow-notes" style="margin-top:8px;">${item.notes}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
 function closeSheet() {
   document.getElementById('iosOverlay').style.display = 'none';
   currentTrip = null;
+}
+
+/* ── IDEA BANK LIBRARY ──
+   A cross-trip collection of favourite accommodation / food / drink
+   / sight-seeing entries, grouped by destination. Items become
+   library entries when their heart toggle is switched on inside a
+   trip; new trips are auto-seeded with any library entries that
+   match their destination string (case/whitespace-insensitive). */
+function normDest(s) { return (s || '').trim().toLowerCase(); }
+
+function extractCountry(destination) {
+  if (!destination) return '';
+  const parts = destination.split(',');
+  return parts[parts.length - 1].trim();
+}
+
+function upsertIdeaBankEntry(item, category) {
+  if (!DATA.ideaBank) DATA.ideaBank = [];
+  const destNorm = normDest(currentTrip.destination);
+  const titleNorm = (item.title || '').trim().toLowerCase();
+  let existing = DATA.ideaBank.find(e => normDest(e.destination) === destNorm && e.category === category && e.title.trim().toLowerCase() === titleNorm);
+
+  if (existing) {
+    existing.title = item.title || existing.title;
+    existing.location = item.location || '';
+    existing.notes = item.notes || '';
+    return existing.id;
+  }
+
+  const id = 'idea-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+  DATA.ideaBank.push({
+    id,
+    destination: currentTrip.destination,
+    category,
+    title: item.title || '',
+    location: item.location || '',
+    notes: item.notes || '',
+    addedAt: new Date().toISOString(),
+    sourceTripId: currentTrip.id
+  });
+  return id;
+}
+
+function toggleItemFavourite(idx) {
+  const item = currentTrip.itinerary[idx];
+  item.favourite = !item.favourite;
+  if (item.favourite) {
+    item.libraryId = upsertIdeaBankEntry(item, item.type);
+  }
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  persistLocal();
+  renderSubTab();
+  renderLibraryTab();
+  triggerGitHubAutoSync();
+}
+
+/* Seeds a brand-new trip's itinerary (as date-less "idea" items) with
+   any Idea Bank entries matching its destination. Only ever called
+   for newly-created trips, so editing an existing trip's destination
+   later won't repeatedly re-merge the library back in. */
+function seedIdeaBankIntoTrip(trip) {
+  if (!DATA.ideaBank || !DATA.ideaBank.length) return;
+  const destNorm = normDest(trip.destination);
+  if (!destNorm) return;
+  const matches = DATA.ideaBank.filter(e => normDest(e.destination) === destNorm);
+  if (!matches.length) return;
+
+  if (!trip.itinerary) trip.itinerary = [];
+  const existingKeys = new Set(trip.itinerary.map(i => i.type + '::' + (i.title || '').trim().toLowerCase()));
+
+  matches.forEach(entry => {
+    const key = entry.category + '::' + entry.title.trim().toLowerCase();
+    if (existingKeys.has(key)) return;
+    trip.itinerary.push({
+      id: 'it-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+      type: entry.category,
+      status: entry.category === 'accommodation' ? 'not-booked' : 'no-booking-required',
+      title: entry.title,
+      date: '', time: '',
+      location: entry.location || '',
+      notes: entry.notes || '',
+      details: { pnr: '' },
+      favourite: true,
+      libraryId: entry.id,
+      fromLibrary: true
+    });
+    existingKeys.add(key);
+  });
+}
+
+/* Seeds Local Lingo entries for a trip's country from the Lingo
+   Library, skipping any occasion the trip already has (and skipping
+   any library occasion with no phrases yet). Safe to call on every
+   trip save, new or edited — it never duplicates or overwrites. */
+function seedLingoFromLibrary(trip) {
+  const country = extractCountry(trip.destination);
+  const lib = DATA.lingoLibrary && DATA.lingoLibrary[country];
+  if (!lib) return;
+
+  if (!trip.itinerary) trip.itinerary = [];
+  const existingOccasions = new Set(trip.itinerary.filter(i => i.type === 'lingo').map(i => i.occasion));
+
+  Object.entries(lib).forEach(([occasion, entry]) => {
+    if (existingOccasions.has(occasion)) return;
+    if (!entry || !entry.phrases) return;
+    trip.itinerary.push({
+      id: 'it-' + Date.now() + '-' + occasion,
+      type: 'lingo', status: 'no-booking-required',
+      occasion, title: entry.title || LINGO_OCCASIONS[occasion] || occasion,
+      phrases: entry.phrases, notes: '', details: {}
+    });
+    existingOccasions.add(occasion);
+  });
+}
+
+function updateKnownDestinationsList() {
+  const dl = document.getElementById('knownDestinations');
+  if (!dl) return;
+  const dests = new Set();
+  realTrips().forEach(t => { if (t.destination) dests.add(t.destination); });
+  (DATA.ideaBank || []).forEach(e => { if (e.destination) dests.add(e.destination); });
+  dl.innerHTML = Array.from(dests).sort().map(d => `<option value="${d}"></option>`).join('');
+}
+
+function setLibraryFilter(filter) {
+  libraryFilter = filter;
+  renderLibraryTab();
+}
+
+function onLibrarySearchInput(value) {
+  librarySearch = value.trim().toLowerCase();
+  renderLibraryTab();
+}
+
+function toggleLibraryGroup(headerEl) {
+  const body = headerEl.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+const LIB_CATEGORY_LABELS = { accommodation: 'Accommodation', food: 'Restaurants, Food & Drink', sightseeing: 'Sight-Seeing' };
+
+function renderLibraryTab() {
+  const container = document.getElementById('libraryList');
+  if (!container) return;
+
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('libFilter-' + libraryFilter);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  let entries = DATA.ideaBank || [];
+  if (libraryFilter !== 'all') entries = entries.filter(e => e.category === libraryFilter);
+  if (librarySearch) {
+    entries = entries.filter(e =>
+      (e.destination || '').toLowerCase().includes(librarySearch) ||
+      (e.title || '').toLowerCase().includes(librarySearch)
+    );
+  }
+
+  if (entries.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:50px 20px;">
+      ${getIconifyTag('mdi:lightbulb-on-outline', 36, '#c7c7cc')}
+      <p style="color:#8e8e93; margin-top:10px; font-size:14px;">No saved ideas yet.<br>Heart an accommodation, food or sight-seeing entry in any trip to save it here, or tap "Add Idea" above.</p>
+    </div>`;
+    return;
+  }
+
+  const byDest = {};
+  entries.forEach(e => {
+    if (!byDest[e.destination]) byDest[e.destination] = [];
+    byDest[e.destination].push(e);
+  });
+
+  container.innerHTML = Object.keys(byDest).sort().map(dest => {
+    const items = byDest[dest];
+    const byCat = { accommodation: [], food: [], sightseeing: [] };
+    items.forEach(e => { if (byCat[e.category]) byCat[e.category].push(e); });
+
+    const catBlocksHtml = Object.entries(byCat).map(([cat, list]) => {
+      if (!list.length) return '';
+      return `
+        <div class="lib-cat-lbl">${LIB_CATEGORY_LABELS[cat]}</div>
+        ${list.map(e => `
+          <div class="lib-entry-row">
+            <div style="flex-grow:1; min-width:0;">
+              <div class="lib-entry-title">${e.title}</div>
+              ${e.location ? `<div class="lib-entry-sub">${e.location}</div>` : ''}
+            </div>
+            <div class="lib-entry-actions">
+              <button class="ios-link-btn" style="font-size:12px;" onclick="openLibraryEntryForm('${e.id}')">Edit</button>
+              <button class="ios-link-btn danger" style="font-size:12px;" onclick="deleteLibraryEntry('${e.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    }).join('');
+
+    return `
+      <div class="lib-dest-group">
+        <div class="lib-dest-hdr" onclick="toggleLibraryGroup(this)">
+          <div class="lib-dest-name">${dest}</div>
+          <span class="lib-dest-count">${items.length}</span>
+          <button class="lib-share-btn" onclick="event.stopPropagation(); exportIdeaBankCity('${dest.replace(/'/g, "\\'")}')">${getIconifyTag('mdi:share-variant-outline', 13, 'var(--app-accent)')} Share</button>
+        </div>
+        <div class="lib-dest-body">
+          ${catBlocksHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function exportIdeaBankCity(destination) {
+  const entries = (DATA.ideaBank || []).filter(e => e.destination === destination);
+  if (!entries.length) return;
+
+  const byCat = { accommodation: [], food: [], sightseeing: [] };
+  entries.forEach(e => { if (byCat[e.category]) byCat[e.category].push(e); });
+
+  let text = `${destination} — Saved Ideas\n${'='.repeat(destination.length + 14)}\n\n`;
+  Object.entries(byCat).forEach(([cat, list]) => {
+    if (!list.length) return;
+    text += `${LIB_CATEGORY_LABELS[cat]}\n`;
+    list.forEach(e => {
+      text += `• ${e.title}${e.location ? ' — ' + e.location : ''}\n`;
+      if (e.notes) text += `  ${e.notes.replace(/\n/g, '\n  ')}\n`;
+    });
+    text += `\n`;
+  });
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  const dataStr = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+  const a = document.createElement('a');
+  a.setAttribute('href', dataStr);
+  a.setAttribute('download', `${destination.replace(/[^a-z0-9]+/gi, '_')}_ideas.txt`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  alert(`Saved ideas for ${destination} copied to clipboard and downloaded as a text file — ready to share.`);
+}
+
+function deleteLibraryEntry(id) {
+  if (!confirm("Remove this idea from your library?")) return;
+  DATA.ideaBank = (DATA.ideaBank || []).filter(e => e.id !== id);
+  persistLocal();
+  renderLibraryTab();
+  triggerGitHubAutoSync();
+}
+
+/* Add/Edit form for a library entry, used both for entries created
+   directly from the Library tab and for editing an existing one. */
+function openLibraryEntryForm(id) {
+  const sheet = document.getElementById('iosSheet');
+  const isNew = !id;
+  const entry = isNew
+    ? { id: null, destination: '', category: 'sightseeing', title: '', location: '', notes: '' }
+    : DATA.ideaBank.find(e => e.id === id);
+  if (!entry) return;
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="closeSheet(); renderLibraryTab();">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Idea' : 'Edit Idea'}</div>
+      <button class="ios-link-btn bold" onclick="saveLibraryEntryLevel('${id || ''}')">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Idea</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Destination</label>
+          <input type="text" id="libDest" class="ios-input" placeholder="City, Country" list="knownDestinations" value="${entry.destination || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Category</label>
+          <select id="libCategory" class="ios-select">
+            ${IDEA_BANK_CATEGORIES.map(c => `<option value="${c}" ${entry.category===c?'selected':''}>${LIB_CATEGORY_LABELS[c]}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Title / Name</label>
+          <input type="text" id="libTitle" class="ios-input" placeholder="e.g. Sorbillo" value="${entry.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">${entry.category === 'accommodation' ? 'Address' : 'Location'}</label>
+          <input type="text" id="libLocation" class="ios-input" placeholder="Address or area" value="${entry.location || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="libNotes" class="ios-textarea" placeholder="What makes it worth coming back to...">${entry.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="closeSheet(); deleteLibraryEntry('${id}');">Remove from Library</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function saveLibraryEntryLevel(id) {
+  const destination = document.getElementById('libDest').value.trim();
+  const category = document.getElementById('libCategory').value;
+  const title = document.getElementById('libTitle').value.trim();
+  const location = document.getElementById('libLocation').value.trim();
+  const notes = document.getElementById('libNotes').value;
+
+  if (!destination || !title) {
+    alert("Please enter at least a destination and a title.");
+    return;
+  }
+
+  if (!DATA.ideaBank) DATA.ideaBank = [];
+  if (id) {
+    const existing = DATA.ideaBank.find(e => e.id === id);
+    if (existing) Object.assign(existing, { destination, category, title, location, notes });
+  } else {
+    DATA.ideaBank.push({
+      id: 'idea-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      destination, category, title, location, notes,
+      addedAt: new Date().toISOString(), sourceTripId: null
+    });
+  }
+
+  persistLocal();
+  renderLibraryTab();
+  updateKnownDestinationsList();
+  closeSheet();
+  triggerGitHubAutoSync();
 }
 
 function openTripForm(id) {
@@ -1318,7 +1793,7 @@ function openTripForm(id) {
         </div>
         <div class="ios-row">
           <label class="ios-label">Destination</label>
-          <input type="text" id="editTripDest" class="ios-input" placeholder="City, Country" value="${trip.destination || ''}">
+          <input type="text" id="editTripDest" class="ios-input" placeholder="City, Country" list="knownDestinations" value="${trip.destination || ''}">
         </div>
         <div class="ios-row">
           <label class="ios-label">Category</label>
@@ -1367,7 +1842,9 @@ function saveTripLevel(id, isNew) {
 
   if (isNew) {
     const newObj = { id, title: tTitle, destination: tDest, type: tType, startDate: tStart, endDate: tEnd, notes: tNotes, itinerary: [] };
-    newObj.status = deriveTripStatus(tEnd, []);
+    seedIdeaBankIntoTrip(newObj);
+    seedLingoFromLibrary(newObj);
+    newObj.status = deriveTripStatus(tEnd, newObj.itinerary);
     DATA.trips.push(newObj);
   } else {
     const idx = DATA.trips.findIndex(t => t.id === id);
@@ -1378,11 +1855,12 @@ function saveTripLevel(id, isNew) {
       DATA.trips[idx].startDate = tStart;
       DATA.trips[idx].endDate = tEnd;
       DATA.trips[idx].notes = tNotes;
+      seedLingoFromLibrary(DATA.trips[idx]);
       DATA.trips[idx].status = deriveTripStatus(tEnd, DATA.trips[idx].itinerary);
     }
   }
 
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  persistLocal();
   updateCountBadge();
   render();
   openTripSheet(id);
@@ -1392,7 +1870,7 @@ function saveTripLevel(id, isNew) {
 function deleteTripRaw(id) {
   if (confirm("Delete this trip?")) {
     DATA.trips = realTrips().filter(t => t.id !== id);
-    localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+    persistLocal();
     updateCountBadge();
     render();
     closeSheet();
@@ -1405,6 +1883,24 @@ function deleteTripRaw(id) {
    trek booking pattern. Keeps the same itinerary item shape (type,
    status, title, date, time, location, notes, details) so it stays
    fully compatible with the generic itinerary list and filters. */
+/* Shared by every per-item dedicated form below: flipping this
+   switch clears & disables the date (and time, if present) so the
+   item lands in the trip's date-less "Ideas" sub-tab instead of the
+   scheduled itinerary — exactly the same mechanism a date-less
+   Idea Bank import or a manually-added idea uses, so both flavours
+   of "idea" show up side by side in that tab. */
+function toggleIdeaDateFields(chk, dateId, timeId) {
+  const dateEl = document.getElementById(dateId);
+  const timeEl = timeId ? document.getElementById(timeId) : null;
+  if (chk.checked) {
+    if (dateEl) dateEl.disabled = true;
+    if (timeEl) timeEl.disabled = true;
+  } else {
+    if (dateEl) { dateEl.disabled = false; if (!dateEl.value && currentTrip) dateEl.value = currentTrip.startDate || ''; }
+    if (timeEl) timeEl.disabled = false;
+  }
+}
+
 function openFoodForm(index, isNew) {
   const sheet = document.getElementById('iosSheet');
   const item = isNew
@@ -1412,16 +1908,24 @@ function openFoodForm(index, isNew) {
     : currentTrip.itinerary[index];
 
   const needsReservation = item.status === 'booked' || item.status === 'not-booked';
+  const isIdea = !item.date;
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
       <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
-      <div class="ios-nav-title">${isNew ? 'New Restaurant' : 'Edit Restaurant'}</div>
+      <div class="ios-nav-title">${isNew ? 'New Restaurant / Food / Drink' : 'Edit Restaurant / Food / Drink'}</div>
       <button class="ios-link-btn bold" onclick="saveFoodLevel(${index})">Done</button>
     </div>
     <div class="ios-sheet-body">
-      <div class="ios-group-title">Restaurant</div>
+      <div class="ios-group-title">Restaurant / Food / Drink</div>
       <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="fdIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'fdDate','fdTime')">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
         <div class="ios-row">
           <label class="ios-label">Name</label>
           <input type="text" id="fdTitle" class="ios-input" placeholder="e.g. Sorbillo" value="${item.title || ''}">
@@ -1432,11 +1936,11 @@ function openFoodForm(index, isNew) {
         </div>
         <div class="ios-row">
           <label class="ios-label">Date</label>
-          <input type="date" id="fdDate" class="ios-input" value="${item.date || ''}">
+          <input type="date" id="fdDate" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
         </div>
         <div class="ios-row">
           <label class="ios-label">Time</label>
-          <input type="time" id="fdTime" class="ios-input" value="${item.time || ''}">
+          <input type="time" id="fdTime" class="ios-input" value="${item.time || ''}" ${isIdea ? 'disabled' : ''}>
         </div>
       </div>
 
@@ -1487,6 +1991,7 @@ function toggleFoodReservationFields(chk) {
 
 function saveFoodLevel(index) {
   const isNew = index === -1;
+  const isIdea = document.getElementById('fdIsIdea').checked;
   const needsRes = document.getElementById('fdNeedsRes').checked;
   const isBooked = needsRes && document.getElementById('fdIsBooked').checked;
 
@@ -1495,12 +2000,17 @@ function saveFoodLevel(index) {
     type: 'food',
     status: !needsRes ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
     title: document.getElementById('fdTitle').value,
-    date: document.getElementById('fdDate').value,
-    time: document.getElementById('fdTime').value,
+    date: isIdea ? '' : document.getElementById('fdDate').value,
+    time: isIdea ? '' : document.getElementById('fdTime').value,
     location: document.getElementById('fdLocation').value,
     notes: document.getElementById('fdNotes').value,
     details: { pnr: needsRes ? document.getElementById('fdConfRef').value : '' }
   };
+  if (!isNew) {
+    item.favourite = currentTrip.itinerary[index].favourite;
+    item.libraryId = currentTrip.itinerary[index].libraryId;
+    item.fromLibrary = currentTrip.itinerary[index].fromLibrary;
+  }
 
   if (isNew) {
     if (!currentTrip.itinerary) currentTrip.itinerary = [];
@@ -1515,7 +2025,7 @@ function saveFoodLevel(index) {
   DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
   DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
 
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  persistLocal();
   render();
   openTripSheet(currentTrip.id);
   triggerGitHubAutoSync();
@@ -1524,38 +2034,51 @@ function saveFoodLevel(index) {
 /* ── BESPOKE ACTIVITY ITEM FORM ──
    Same booking-reveals-contact pattern as Food, for sightseeing,
    tours, shows etc. that may or may not need advance booking. */
-function openActivityTypeForm(index, isNew) {
+/* ── SIGHT-SEEING ITEM FORM ──
+   Same booking-reveals-contact pattern as Food, for tours, museums,
+   shows etc. that may or may not need advance booking. Title /
+   Location / Notes double as the fields carried into the Idea Bank
+   library when the card's favourite heart is toggled on. */
+function openSightseeingForm(index, isNew) {
   const sheet = document.getElementById('iosSheet');
   const item = isNew
-    ? { id: 'it-' + Date.now(), type: 'activity', status: 'no-booking-required', title: '', date: currentTrip.startDate || '', time: '', location: '', notes: '', details: {} }
+    ? { id: 'it-' + Date.now(), type: 'sightseeing', status: 'no-booking-required', title: '', date: currentTrip.startDate || '', time: '', location: '', notes: '', details: {} }
     : currentTrip.itinerary[index];
 
   const needsBooking = item.status === 'booked' || item.status === 'not-booked' || item.status === 'planned';
+  const isIdea = !item.date;
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
       <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
-      <div class="ios-nav-title">${isNew ? 'New Activity' : 'Edit Activity'}</div>
-      <button class="ios-link-btn bold" onclick="saveActivityTypeLevel(${index})">Done</button>
+      <div class="ios-nav-title">${isNew ? 'New Sight-Seeing' : 'Edit Sight-Seeing'}</div>
+      <button class="ios-link-btn bold" onclick="saveSightseeingLevel(${index})">Done</button>
     </div>
     <div class="ios-sheet-body">
-      <div class="ios-group-title">Activity</div>
+      <div class="ios-group-title">Sight-Seeing</div>
       <div class="ios-group">
-        <div class="ios-row">
-          <label class="ios-label">Name</label>
-          <input type="text" id="acvTitle" class="ios-input" placeholder="e.g. Pompeii Tour" value="${item.title || ''}">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="sgtIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'sgtDate','sgtTime')">
+            <span class="ios-slider"></span>
+          </label>
         </div>
         <div class="ios-row">
-          <label class="ios-label">Location</label>
-          <input type="text" id="acvLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
+          <label class="ios-label">Name</label>
+          <input type="text" id="sgtTitle" class="ios-input" placeholder="e.g. Pompeii Tour" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Address</label>
+          <input type="text" id="sgtLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
         </div>
         <div class="ios-row">
           <label class="ios-label">Date</label>
-          <input type="date" id="acvDate" class="ios-input" value="${item.date || ''}">
+          <input type="date" id="sgtDate" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
         </div>
         <div class="ios-row">
           <label class="ios-label">Time</label>
-          <input type="time" id="acvTime" class="ios-input" value="${item.time || ''}">
+          <input type="time" id="sgtTime" class="ios-input" value="${item.time || ''}" ${isIdea ? 'disabled' : ''}>
         </div>
       </div>
 
@@ -1564,21 +2087,21 @@ function openActivityTypeForm(index, isNew) {
         <div class="ios-row" style="justify-content: space-between;">
           <label class="ios-label">Needs Booking</label>
           <label class="ios-switch">
-            <input type="checkbox" id="acvNeedsBooking" ${needsBooking ? 'checked' : ''} onchange="toggleActivityBookingFields(this)">
+            <input type="checkbox" id="sgtNeedsBooking" ${needsBooking ? 'checked' : ''} onchange="toggleSightseeingBookingFields(this)">
             <span class="ios-slider"></span>
           </label>
         </div>
-        <div id="acvBookingRow" style="display:${needsBooking ? 'block' : 'none'};">
+        <div id="sgtBookingRow" style="display:${needsBooking ? 'block' : 'none'};">
           <div class="ios-row" style="justify-content: space-between;">
             <label class="ios-label">Booked</label>
             <label class="ios-switch">
-              <input type="checkbox" id="acvIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
+              <input type="checkbox" id="sgtIsBooked" ${item.status === 'booked' ? 'checked' : ''}>
               <span class="ios-slider"></span>
             </label>
           </div>
           <div class="ios-row">
             <label class="ios-label">Confirmation Ref</label>
-            <input type="text" id="acvConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.pnr || ''}">
+            <input type="text" id="sgtConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.pnr || ''}">
           </div>
         </div>
       </div>
@@ -1586,7 +2109,7 @@ function openActivityTypeForm(index, isNew) {
       <div class="ios-group-title">Notes</div>
       <div class="ios-group">
         <div class="ios-row vertical">
-          <textarea id="acvNotes" class="ios-textarea" placeholder="What to bring, tips...">${item.notes || ''}</textarea>
+          <textarea id="sgtNotes" class="ios-textarea" placeholder="What to bring, tips...">${item.notes || ''}</textarea>
         </div>
       </div>
 
@@ -1600,25 +2123,278 @@ function openActivityTypeForm(index, isNew) {
   document.getElementById('iosOverlay').style.display = 'flex';
 }
 
-function toggleActivityBookingFields(chk) {
-  document.getElementById('acvBookingRow').style.display = chk.checked ? 'block' : 'none';
+function toggleSightseeingBookingFields(chk) {
+  document.getElementById('sgtBookingRow').style.display = chk.checked ? 'block' : 'none';
 }
 
-function saveActivityTypeLevel(index) {
+function saveSightseeingLevel(index) {
   const isNew = index === -1;
-  const needsBooking = document.getElementById('acvNeedsBooking').checked;
-  const isBooked = needsBooking && document.getElementById('acvIsBooked').checked;
+  const isIdea = document.getElementById('sgtIsIdea').checked;
+  const needsBooking = document.getElementById('sgtNeedsBooking').checked;
+  const isBooked = needsBooking && document.getElementById('sgtIsBooked').checked;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'sightseeing',
+    status: !needsBooking ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
+    title: document.getElementById('sgtTitle').value,
+    date: isIdea ? '' : document.getElementById('sgtDate').value,
+    time: isIdea ? '' : document.getElementById('sgtTime').value,
+    location: document.getElementById('sgtLocation').value,
+    notes: document.getElementById('sgtNotes').value,
+    details: { pnr: needsBooking ? document.getElementById('sgtConfRef').value : '' }
+  };
+  if (!isNew) {
+    item.favourite = currentTrip.itinerary[index].favourite;
+    item.libraryId = currentTrip.itinerary[index].libraryId;
+    item.fromLibrary = currentTrip.itinerary[index].fromLibrary;
+  }
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  } else {
+    currentTrip.itinerary[index] = item;
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  persistLocal();
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+/* ── ACCOMMODATION ITEM FORM ──
+   Name / address / booking number / check-in & check-out dates /
+   booking status. The "Save to Trip Ideas" toggle doubles as the
+   Idea-Bank-vs-Final distinction requested for this item type: an
+   idea has no dates yet, a final entry does. */
+function openAccommodationForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'accommodation', status: 'not-booked', title: '', date: currentTrip.startDate || '', checkOutDate: '', location: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  const isIdea = !item.date;
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Accommodation' : 'Edit Accommodation'}</div>
+      <button class="ios-link-btn bold" onclick="saveAccommodationLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Accommodation</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Idea Bank Entry (no dates yet)</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="acmIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'acmCheckIn','acmCheckOut')">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Name</label>
+          <input type="text" id="acmTitle" class="ios-input" placeholder="e.g. Hotel Piazza Bellini" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Address</label>
+          <input type="text" id="acmLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Check-in</label>
+          <input type="date" id="acmCheckIn" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Check-out</label>
+          <input type="date" id="acmCheckOut" class="ios-input" value="${item.checkOutDate || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Booking</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Booking Number</label>
+          <input type="text" id="acmBookingNum" class="ios-input" placeholder="Confirmation / booking number" value="${item.details?.pnr || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Booking Status</label>
+          <select id="acmStatus" class="ios-select">
+            <option value="not-booked" ${item.status==='not-booked'?'selected':''}>Not Booked</option>
+            <option value="booked" ${item.status==='booked'?'selected':''}>Booked</option>
+            <option value="no-booking-required" ${item.status==='no-booking-required'?'selected':''}>No Booking Required</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="acmNotes" class="ios-textarea" placeholder="Room type, breakfast, parking...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function saveAccommodationLevel(index) {
+  const isNew = index === -1;
+  const isIdea = document.getElementById('acmIsIdea').checked;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'accommodation',
+    status: document.getElementById('acmStatus').value,
+    title: document.getElementById('acmTitle').value,
+    date: isIdea ? '' : document.getElementById('acmCheckIn').value,
+    checkOutDate: isIdea ? '' : document.getElementById('acmCheckOut').value,
+    location: document.getElementById('acmLocation').value,
+    notes: document.getElementById('acmNotes').value,
+    details: { pnr: document.getElementById('acmBookingNum').value }
+  };
+  if (!isNew) {
+    item.favourite = currentTrip.itinerary[index].favourite;
+    item.libraryId = currentTrip.itinerary[index].libraryId;
+    item.fromLibrary = currentTrip.itinerary[index].fromLibrary;
+  }
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  } else {
+    currentTrip.itinerary[index] = item;
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  persistLocal();
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+/* ── ACTIVITY (RUN / HIKE / BIKE) ITEM FORM ──
+   For a logged workout within any non-Adventure trip — same stat
+   fields as an Adventure-trip stage (distance_km/ascent_m/descent_m/
+   moving_time) so the two render consistently, but lighter-weight
+   since there's no booking/priority/accommodation context here. */
+function openTripActivityForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'activity', status: 'no-booking-required', activitySubtype: 'run', title: '', date: currentTrip.startDate || '', time: '', distance_km: '', ascent_m: '', descent_m: '', moving_time: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  const isIdea = !item.date;
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Activity' : 'Edit Activity'}</div>
+      <button class="ios-link-btn bold" onclick="saveTripActivityLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Activity</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="tavIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'tavDate','tavTime')">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Type</label>
+          <select id="tavSubtype" class="ios-select">
+            <option value="run" ${item.activitySubtype==='run'?'selected':''}>Run</option>
+            <option value="hike" ${item.activitySubtype==='hike'?'selected':''}>Hike</option>
+            <option value="bike" ${item.activitySubtype==='bike'?'selected':''}>Bike</option>
+          </select>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Title / Route</label>
+          <input type="text" id="tavTitle" class="ios-input" placeholder="e.g. Lakeside loop" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="tavDate" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Start Time</label>
+          <input type="time" id="tavTime" class="ios-input" value="${item.time || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Stats</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Distance (km)</label>
+          <input type="number" step="0.1" id="tavDistance" class="ios-input" placeholder="e.g. 10" value="${item.distance_km || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Ascent (m)</label>
+          <input type="number" id="tavAscent" class="ios-input" placeholder="e.g. 150" value="${item.ascent_m || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Descent (m)</label>
+          <input type="number" id="tavDescent" class="ios-input" placeholder="e.g. 150" value="${item.descent_m || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Moving Time</label>
+          <input type="text" id="tavMovingTime" class="ios-input" placeholder="e.g. 1h05" value="${item.moving_time || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="tavNotes" class="ios-textarea" placeholder="Route notes, pace target...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function saveTripActivityLevel(index) {
+  const isNew = index === -1;
+  const isIdea = document.getElementById('tavIsIdea').checked;
 
   const item = {
     id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
     type: 'activity',
-    status: !needsBooking ? 'no-booking-required' : (isBooked ? 'booked' : 'not-booked'),
-    title: document.getElementById('acvTitle').value,
-    date: document.getElementById('acvDate').value,
-    time: document.getElementById('acvTime').value,
-    location: document.getElementById('acvLocation').value,
-    notes: document.getElementById('acvNotes').value,
-    details: { pnr: needsBooking ? document.getElementById('acvConfRef').value : '' }
+    status: 'no-booking-required',
+    activitySubtype: document.getElementById('tavSubtype').value,
+    title: document.getElementById('tavTitle').value,
+    date: isIdea ? '' : document.getElementById('tavDate').value,
+    time: isIdea ? '' : document.getElementById('tavTime').value,
+    distance_km: document.getElementById('tavDistance').value,
+    ascent_m: document.getElementById('tavAscent').value,
+    descent_m: document.getElementById('tavDescent').value,
+    moving_time: document.getElementById('tavMovingTime').value,
+    notes: document.getElementById('tavNotes').value,
+    details: {}
   };
 
   if (isNew) {
@@ -1634,7 +2410,196 @@ function saveActivityTypeLevel(index) {
   DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
   DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
 
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  persistLocal();
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+/* ── QUICK NOTE ITEM FORM ──
+   Deliberately minimal: title, date, time, free text. Renders as a
+   collapsed card inline with the rest of the day's items, sorted by
+   date/time exactly like every other itinerary entry. */
+function openNoteForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'note', status: 'no-booking-required', title: '', date: currentTrip.startDate || '', time: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  const isIdea = !item.date;
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Note' : 'Edit Note'}</div>
+      <button class="ios-link-btn bold" onclick="saveNoteLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Quick Note</div>
+      <div class="ios-group">
+        <div class="ios-row" style="justify-content: space-between;">
+          <label class="ios-label">Save to Trip Ideas (no date yet)</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="ntIsIdea" ${isIdea ? 'checked' : ''} onchange="toggleIdeaDateFields(this,'ntDate','ntTime')">
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Title</label>
+          <input type="text" id="ntTitle" class="ios-input" placeholder="e.g. Pack rain jacket" value="${item.title || ''}">
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Date</label>
+          <input type="date" id="ntDate" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Time</label>
+          <input type="time" id="ntTime" class="ios-input" value="${item.time || ''}" ${isIdea ? 'disabled' : ''}>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Note</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="ntNotes" class="ios-textarea" placeholder="Anything you don't want to forget...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function saveNoteLevel(index) {
+  const isNew = index === -1;
+  const isIdea = document.getElementById('ntIsIdea').checked;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'note',
+    status: 'no-booking-required',
+    title: document.getElementById('ntTitle').value,
+    date: isIdea ? '' : document.getElementById('ntDate').value,
+    time: isIdea ? '' : document.getElementById('ntTime').value,
+    notes: document.getElementById('ntNotes').value,
+    details: {}
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  } else {
+    currentTrip.itinerary[index] = item;
+    activeSubTab = item.date ? 'itinerary' : 'ideas';
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  persistLocal();
+  render();
+  openTripSheet(currentTrip.id);
+  triggerGitHubAutoSync();
+}
+
+/* ── LOCAL LINGO ITEM FORM ──
+   Purpose-built for phrase sheets rather than the generic
+   title/date/location pattern: pick an occasion (which also
+   determines which slot this fills in that country's Lingo Library),
+   then one phrase per line as "English - Local translation". */
+function openLingoForm(index, isNew) {
+  const sheet = document.getElementById('iosSheet');
+  const item = isNew
+    ? { id: 'it-' + Date.now(), type: 'lingo', status: 'no-booking-required', occasion: 'greetings', title: '', phrases: '', notes: '', details: {} }
+    : currentTrip.itinerary[index];
+
+  sheet.innerHTML = `
+    <div class="ios-nav-bar">
+      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
+      <div class="ios-nav-title">${isNew ? 'New Phrase Sheet' : 'Edit Phrase Sheet'}</div>
+      <button class="ios-link-btn bold" onclick="saveLingoLevel(${index})">Done</button>
+    </div>
+    <div class="ios-sheet-body">
+      <div class="ios-group-title">Local Lingo</div>
+      <div class="ios-group">
+        <div class="ios-row">
+          <label class="ios-label">Occasion</label>
+          <select id="lngOccasion" class="ios-select" onchange="document.getElementById('lngTitle').value = this.options[this.selectedIndex].text;">
+            ${Object.entries(LINGO_OCCASIONS).map(([k,v]) => `<option value="${k}" ${item.occasion===k?'selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>
+        <div class="ios-row">
+          <label class="ios-label">Title</label>
+          <input type="text" id="lngTitle" class="ios-input" value="${item.title || LINGO_OCCASIONS[item.occasion] || ''}">
+        </div>
+      </div>
+
+      <div class="ios-group-title">Phrases — one per line, "English - Local"</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="lngPhrases" class="ios-textarea" style="min-height:160px;" placeholder="Hello - Ciao&#10;Thank you - Grazie">${item.phrases || ''}</textarea>
+        </div>
+      </div>
+
+      <div class="ios-group-title">Notes</div>
+      <div class="ios-group">
+        <div class="ios-row vertical">
+          <textarea id="lngNotes" class="ios-textarea" placeholder="Pronunciation tips, regional variants...">${item.notes || ''}</textarea>
+        </div>
+      </div>
+
+      ${!isNew ? `
+        <div style="margin-top:24px; padding:0 8px;">
+          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  document.getElementById('iosOverlay').style.display = 'flex';
+}
+
+function saveLingoLevel(index) {
+  const isNew = index === -1;
+
+  const item = {
+    id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
+    type: 'lingo',
+    status: 'no-booking-required',
+    occasion: document.getElementById('lngOccasion').value,
+    title: document.getElementById('lngTitle').value,
+    phrases: document.getElementById('lngPhrases').value,
+    notes: document.getElementById('lngNotes').value,
+    details: {}
+  };
+
+  if (isNew) {
+    if (!currentTrip.itinerary) currentTrip.itinerary = [];
+    currentTrip.itinerary.push(item);
+  } else {
+    currentTrip.itinerary[index] = item;
+  }
+
+  // Push this phrase sheet up into the country's Lingo Library too,
+  // so future trips to the same country get it automatically.
+  const country = extractCountry(currentTrip.destination);
+  if (country && item.phrases) {
+    if (!DATA.lingoLibrary) DATA.lingoLibrary = {};
+    if (!DATA.lingoLibrary[country]) DATA.lingoLibrary[country] = {};
+    DATA.lingoLibrary[country][item.occasion] = { title: item.title, phrases: item.phrases };
+  }
+
+  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
+  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
+  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
+
+  persistLocal();
   render();
   openTripSheet(currentTrip.id);
   triggerGitHubAutoSync();
@@ -1789,206 +2754,28 @@ function saveJourneyLevel(index) {
   DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
   DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
 
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+  persistLocal();
   render();
   openTripSheet(currentTrip.id);
   triggerGitHubAutoSync();
 }
 
-function openActivityForm(index, fallbackType = 'activity') {
+/* ── ITEM FORM ROUTER ──
+   Every item type now has its own purpose-built form (added above);
+   this just dispatches to the right one. fallbackType is used only
+   when creating a brand-new item (the "Add" tile grid passes its
+   own type in), since an existing item already carries its type. */
+function openActivityForm(index, fallbackType = 'note') {
   const isNew = index === -1;
   const existingType = isNew ? fallbackType : currentTrip.itinerary[index].type;
 
-  if (existingType === 'activity') { openActivityTypeForm(index, isNew); return; }
+  if (existingType === 'sightseeing') { openSightseeingForm(index, isNew); return; }
   if (existingType === 'food') { openFoodForm(index, isNew); return; }
   if (existingType === 'transit') { openJourneyForm(index, isNew); return; }
-
-  const sheet = document.getElementById('iosSheet');
-  const item = isNew ? { id: 'it-'+Date.now(), type: fallbackType, status: 'not-booked', date: currentTrip.startDate, time: '', arrivalTime: '', location: '', notes: '', details: { pnr: '' }, distance: '', elevationGain: '', elevationLoss: '', campsite: '' } : currentTrip.itinerary[index];
-
-  let throughHikeFieldsHtml = '';
-  if (currentTrip.type === 'through-hike') {
-    throughHikeFieldsHtml = `
-      <div class="ios-group-title">Trail Metrics (Through-Hike)</div>
-      <div class="ios-group">
-        <div class="ios-row">
-          <label class="ios-label">Distance (km)</label>
-          <input type="number" step="0.1" id="actDistance" class="ios-input" placeholder="e.g. 14.5" value="${item.distance || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Elev. Gain (m)</label>
-          <input type="number" id="actElevationGain" class="ios-input" placeholder="e.g. 850" value="${item.elevationGain || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Elev. Loss (m)</label>
-          <input type="number" id="actElevationLoss" class="ios-input" placeholder="e.g. 400" value="${item.elevationLoss || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Hut / Camp</label>
-          <input type="text" id="actCampsite" class="ios-input" placeholder="Campsite or Shelter name" value="${item.campsite || ''}">
-        </div>
-      </div>
-    `;
-  }
-
-  sheet.innerHTML = `
-    <div class="ios-nav-bar">
-      <button class="ios-link-btn" onclick="openTripSheet('${currentTrip.id}')">Cancel</button>
-      <div class="ios-nav-title">${isNew ? 'New Item' : 'Edit Item'}</div>
-      <button class="ios-link-btn bold" onclick="saveActivityLevel(${index})">Done</button>
-    </div>
-    <div class="ios-sheet-body">
-      <div class="ios-group-title">Classification</div>
-      <div class="ios-group">
-        <div class="ios-row">
-          <label class="ios-label">Type</label>
-          <select id="actType" class="ios-select">
-            <option value="transit" ${item.type==='transit'?'selected':''}>Transit</option>
-            <option value="accommodation" ${item.type==='accommodation'?'selected':''}>Accommodation</option>
-            <option value="food" ${item.type==='food'?'selected':''}>Food</option>
-            <option value="activity" ${item.type==='activity'?'selected':''}>Activity</option>
-            <option value="lingo" ${item.type==='lingo'?'selected':''}>Local Lingo</option>
-            <option value="note" ${item.type==='note'?'selected':''}>Note</option>
-          </select>
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Booking Status</label>
-          <select id="actStatus" class="ios-select">
-            <option value="booked" ${item.status==='booked'?'selected':''}>Booked</option>
-            <option value="not-booked" ${item.status==='not-booked'?'selected':''}>Not Booked</option>
-            <option value="no-booking-required" ${item.status==='no-booking-required'?'selected':''}>No Booking Required</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="ios-group-title">Routing Configuration</div>
-      <div class="ios-group">
-        <div class="ios-row" style="justify-content: space-between;">
-          <label class="ios-label">Save to Ideas Bank</label>
-          <label class="ios-switch">
-            <input type="checkbox" id="actIsIdea" ${!item.date ? 'checked' : ''} onchange="toggleIdeaDateConstraint(this)">
-            <span class="ios-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="ios-group-title">Primary Specifications</div>
-      <div class="ios-group">
-        <div class="ios-row">
-          <label class="ios-label">Title</label>
-          <input type="text" id="actTitle" class="ios-input" placeholder="Flight / Resto / Phrase" value="${item.title || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Date</label>
-          <input type="date" id="actDate" class="ios-input" value="${item.date || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">Time</label>
-          <input type="time" id="actTime" class="ios-input" value="${item.time || ''}">
-        </div>
-        <div class="ios-row" id="rowArrTime" style="display: ${item.type==='transit'?'flex':'none'};">
-          <label class="ios-label">Arrival Time</label>
-          <input type="time" id="actArrTime" class="ios-input" value="${item.arrivalTime || ''}">
-        </div>
-      </div>
-
-      ${throughHikeFieldsHtml}
-
-      <div class="ios-group-title">Logistics</div>
-      <div class="ios-group">
-        <div class="ios-row">
-          <label class="ios-label">Location</label>
-          <input type="text" id="actLoc" class="ios-input" placeholder="Address or Coordinates" value="${item.location || ''}">
-        </div>
-        <div class="ios-row">
-          <label class="ios-label">PNR / Ref</label>
-          <input type="text" id="actPnr" class="ios-input" placeholder="Confirmation Code" value="${item.details?.pnr || ''}">
-        </div>
-      </div>
-
-      <div class="ios-group-title">Item Notes</div>
-      <div class="ios-group">
-        <div class="ios-row vertical">
-          <textarea id="actNotes" class="ios-textarea" placeholder="Translations, reservation parameters...">${item.notes || ''}</textarea>
-        </div>
-      </div>
-
-      ${!isNew ? `
-        <div style="margin-top:24px; padding:0 8px;">
-          <button class="ios-link-btn danger bold" style="width:100%; text-align:center; background:white; padding:12px; border-radius:10px; border:1px solid #e5e5ea;" onclick="deleteActivityRaw(${index})">Remove Item</button>
-        </div>
-      ` : ''}
-    </div>
-  `;
-
-  document.getElementById('actType').addEventListener('change', (e) => {
-    document.getElementById('rowArrTime').style.display = e.target.value === 'transit' ? 'flex' : 'none';
-  });
-
-  setTimeout(() => {
-    const chk = document.getElementById('actIsIdea');
-    if (chk && chk.checked) {
-      document.getElementById('actDate').disabled = true;
-      document.getElementById('actTime').disabled = true;
-    }
-  }, 0);
-}
-
-function toggleIdeaDateConstraint(chk) {
-  const dateInput = document.getElementById('actDate');
-  const timeInput = document.getElementById('actTime');
-  if (chk.checked) {
-    dateInput.value = '';
-    timeInput.value = '';
-    dateInput.disabled = true;
-    timeInput.disabled = true;
-  } else {
-    dateInput.disabled = false;
-    timeInput.disabled = false;
-    if (!dateInput.value && currentTrip) {
-      dateInput.value = currentTrip.startDate || '';
-    }
-  }
-}
-
-function saveActivityLevel(index) {
-  const isIdeaChecked = document.getElementById('actIsIdea').checked;
-  const isThroughHike = currentTrip.type === 'through-hike';
-
-  const activity = {
-    id: index === -1 ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
-    type: document.getElementById('actType').value,
-    status: document.getElementById('actStatus').value,
-    title: document.getElementById('actTitle').value,
-    date: isIdeaChecked ? '' : document.getElementById('actDate').value,
-    time: isIdeaChecked ? '' : document.getElementById('actTime').value,
-    arrivalTime: (!isIdeaChecked && document.getElementById('actType').value === 'transit') ? document.getElementById('actArrTime').value : '',
-    location: document.getElementById('actLoc').value,
-    notes: document.getElementById('actNotes').value,
-    details: { pnr: document.getElementById('actPnr').value },
-    distance: isThroughHike ? document.getElementById('actDistance').value : '',
-    elevationGain: isThroughHike ? document.getElementById('actElevationGain').value : '',
-    elevationLoss: isThroughHike ? document.getElementById('actElevationLoss').value : '',
-    campsite: isThroughHike ? document.getElementById('actCampsite').value : ''
-  };
-
-  if (index === -1) {
-    if(!currentTrip.itinerary) currentTrip.itinerary = [];
-    currentTrip.itinerary.push(activity);
-    activeSubTab = activity.type === 'lingo' ? 'lingo' : (activity.date ? 'itinerary' : 'ideas'); 
-  } else {
-    currentTrip.itinerary[index] = activity;
-    activeSubTab = activity.type === 'lingo' ? 'lingo' : (activity.date ? 'itinerary' : 'ideas');
-  }
-
-  const masterIdx = DATA.trips.findIndex(t => t.id === currentTrip.id);
-  DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
-  DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
-
-  localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
-  render();
-  openTripSheet(currentTrip.id);
-  triggerGitHubAutoSync();
+  if (existingType === 'accommodation') { openAccommodationForm(index, isNew); return; }
+  if (existingType === 'activity') { openTripActivityForm(index, isNew); return; }
+  if (existingType === 'lingo') { openLingoForm(index, isNew); return; }
+  openNoteForm(index, isNew);
 }
 
 function deleteActivityRaw(index) {
@@ -1998,7 +2785,7 @@ function deleteActivityRaw(index) {
     DATA.trips[masterIdx].itinerary = currentTrip.itinerary;
     DATA.trips[masterIdx].status = deriveTripStatus(currentTrip.endDate, currentTrip.itinerary);
     
-    localStorage.setItem('wanderer_trips', JSON.stringify(realTrips()));
+    persistLocal();
     render();
     openTripSheet(currentTrip.id);
     triggerGitHubAutoSync();
@@ -2045,7 +2832,7 @@ async function triggerGitHubAutoSync() {
       throw new Error("Could not check file identity tracking.");
     }
 
-    const outputJSON = { meta: DATA.meta || {}, trips: realTrips() };
+    const outputJSON = { meta: DATA.meta || {}, trips: realTrips(), ideaBank: DATA.ideaBank || [], lingoLibrary: DATA.lingoLibrary || {} };
     const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(outputJSON, null, 2))));
     
     const payload = {
@@ -2079,7 +2866,7 @@ async function triggerGitHubAutoSync() {
 }
 
 function exportJSON() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ meta: DATA.meta, trips: realTrips() }, null, 2));
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ meta: DATA.meta, trips: realTrips(), ideaBank: DATA.ideaBank || [], lingoLibrary: DATA.lingoLibrary || {} }, null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
   downloadAnchor.setAttribute("download", `wanderer_local_backup_${currentYear}.json`);
