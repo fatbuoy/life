@@ -6,6 +6,7 @@
 <title>Ⓕuel Plan</title>
 <link rel="icon" href="../../images/icons/fuel.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../shared/base.css">
+<script src="../../shared/utils.js"></script>
 <style>
 /* ── Calories / Fuel Plan app theme: deep teal ── */
 :root {
@@ -153,6 +154,7 @@
       </div>
       <div class="header-right">
         <span class="header-badge" id="headerBadge"></span>
+        <button class="header-btn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
         <div id="headerWeekNav" style="display:flex;align-items:center;gap:4px"></div>
       </div>
     </div>
@@ -174,9 +176,16 @@
 
 <script>
 // ═══════════════════════════════════════════════════════
-// DATA — loaded from fuel_plan_data.json
-// Edit schedule.csv / phases.csv, run csv_to_json.py to update.
+// DATA — loaded from GitHub (fatbuoy/app-data)
+// Edit calories.json in the repo directly to update.
 // ═══════════════════════════════════════════════════════
+
+const GITHUB_CONFIG = {
+  owner:  "fatbuoy",
+  repo:   "app-data",
+  path:   "data/calories.json",
+  branch: "main"
+};
 
 // Activity type → bar colour
 const BAR_COL={walk:'#888780',run:'#185fa5',hike:'#ef9f27',cycle:'#3b6d11',longrun:'#7f77dd',rest:'#c8c4bc',marathon:'#4020a0',taper:'#d08030',recovery:'#20a080'};
@@ -231,35 +240,12 @@ function _buildScheduleFromJSON(data) {
   });
 }
 
-function _showLoadError(msg) {
-  document.body.innerHTML = `<div style="font-family:sans-serif;padding:40px;max-width:600px;margin:0 auto">
-    <h2 style="color:#c00;margin-bottom:12px">Could not load plan data</h2>
-    <p style="color:#444;line-height:1.6">${msg}</p>
-    <p style="margin-top:16px;color:#666;font-size:13px">
-      <strong>To run locally:</strong> open a terminal in this folder and run:<br>
-      <code style="background:#f0f0f0;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px">python3 -m http.server 8080</code><br>
-      Then visit <a href="http://localhost:8080/fatboys-fuel-plan.html">http://localhost:8080/fatboys-fuel-plan.html</a>
-    </p>
-  </div>`;
-}
-
 async function _loadData() {
-  try {
-    const resp = await fetch('../../data/calories.json');
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-    _buildScheduleFromJSON(data);
-    _dataLoaded = true;
-    _init();
-  } catch(e) {
-    // Friendly error with instructions
-    _showLoadError(
-      `<strong>calories.json</strong> could not be fetched: <em>${e.message}</em><br><br>
-       Make sure <code>calories.json</code> is in the same folder as the HTML file.
-       Browsers block local file reads for security — you need a local web server.`
-    );
-  }
-
+  const data = await fetchFromGitHub(GITHUB_CONFIG, 'todayCard');
+  if (!data) return;
+  _buildScheduleFromJSON(data);
+  _dataLoaded = true;
+  _init();
 }
 
 // ── DATE UTILS ─────────────────────────────────────────

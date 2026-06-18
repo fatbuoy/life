@@ -53,6 +53,69 @@ async function fetchData(path, errorContainerId = 'app') {
 }
 
 
+/**
+ * Fetch a JSON data file from a private GitHub repository.
+ * Uses the PAT stored under 'gh_pat_token' in localStorage (same key as
+ * syncToGitHub / promptForGitToken). Falls back to a friendly in-page
+ * error when the token is absent or the fetch fails.
+ *
+ * Typical usage (read-only apps):
+ *   const raw = await fetchFromGitHub(GITHUB_CONFIG);
+ *   if (!raw) return;          // error already rendered
+ *
+ * @param {{owner:string, repo:string, path:string, branch:string}} config
+ * @param {string} [errorContainerId='app']
+ * @returns {Promise<object|null>}
+ */
+async function fetchFromGitHub(config, errorContainerId = 'app') {
+  const token = localStorage.getItem('gh_pat_token');
+
+  function _renderError(html) {
+    const el = document.getElementById(errorContainerId);
+    if (el) el.innerHTML = html;
+    console.error('fetchFromGitHub:', html.replace(/<[^>]+>/g, ' '));
+  }
+
+  if (!token) {
+    _renderError(`
+      <div style="margin:40px auto;max-width:500px;background:#fff;border:1px solid #e0ddd7;border-radius:13px;padding:24px">
+        <div style="font-size:15px;font-weight:600;color:#0c2340;margin-bottom:8px">🔑 GitHub token required</div>
+        <div style="font-size:12px;color:#666;line-height:1.7">
+          This app loads its data from a private GitHub repository.<br><br>
+          Tap the <strong>🔑</strong> button in the header to enter your Personal Access Token.
+          The token is stored locally on this device only and never leaves it.
+        </div>
+      </div>`);
+    return null;
+  }
+
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    if (!res.ok) throw new Error(`GitHub API returned HTTP ${res.status}`);
+    const meta = await res.json();
+    return JSON.parse(atob(meta.content.replace(/\n/g, '')));
+  } catch (e) {
+    _renderError(`
+      <div style="margin:40px auto;max-width:500px;background:#fff;border:1px solid #e0ddd7;border-radius:13px;padding:24px">
+        <div style="font-size:15px;font-weight:600;color:#0c2340;margin-bottom:8px">⚠️ Cannot load data from GitHub</div>
+        <div style="font-size:12px;color:#666;line-height:1.7">
+          Failed to fetch <code>${config.path}</code> from
+          <strong>${config.owner}/${config.repo}</strong>.<br><br>
+          Error: ${e.message}<br><br>
+          Check your GitHub token (🔑 in the header) or verify the file exists in the repo.
+        </div>
+      </div>`);
+    return null;
+  }
+}
+
+
 /* ─── NUMBER FORMATTING ─────────────────────────────────────────────── */
 
 /**

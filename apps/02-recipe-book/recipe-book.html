@@ -6,6 +6,7 @@
 <link rel="icon" href="../../images/icons/kitchen.svg" type="image/svg+xml">
 <title>Ⓚitchen</title>
 <link rel="stylesheet" href="../../shared/base.css">
+<script src="../../shared/utils.js"></script>
 <style>
 /* ── Recipe Book app theme: deep burgundy ── */
 :root {
@@ -113,13 +114,14 @@
         <span class="header-title">FatBoy's Kitchen</span>
       </div>
       <div class="header-right">
+        <button class="header-btn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
         <span class="header-badge" id="recipeCountBadge"></span>
       </div>
     </div>
   </div>
 </header>
 
-<div class="container">
+<div class="container" id="app">
 
   <div class="sec-lbl">Browse recipes</div>
 
@@ -155,9 +157,16 @@
 </div>
 
 <script>
+const GITHUB_CONFIG = {
+  owner:  "fatbuoy",
+  repo:   "app-data",
+  path:   "data/recipes.json",
+  branch: "main"
+};
+
 const PLACEHOLDER = 'https://www.myfitnesspal.com/images/recipe_image_placeholder.png';
 
-// ─── DATA — loaded from data.json ──────────────────────────────────────────
+// ─── DATA — loaded from GitHub (fatbuoy/app-data) ──────────────────────────
 let recipes = [];      // flat array, same shape as before
 let ingredients = {};  // {id: [{cat, qty, name}]}
 
@@ -201,30 +210,23 @@ const searchInput   = document.getElementById('searchInput');
 const recipeGrid    = document.getElementById('recipeGrid');
 const resultsInfo   = document.getElementById('resultsInfo');
 
-// ─── INIT — fetch recipes.json then wire everything up ───────────────────────
+// ─── INIT — fetch from GitHub then wire everything up ────────────────────────
 async function init() {
-  try {
-    const response = await fetch('../../data/recipes.json');
-    if (!response.ok) throw new Error(`HTTP ${response.status} — check the file path`);
-    const raw = await response.json();
+  const raw = await fetchFromGitHub(GITHUB_CONFIG, 'recipeGrid');
+  if (!raw) return;
 
-    adaptRecipes(raw);
+  adaptRecipes(raw);
 
-    // Populate dropdowns from loaded data
-    const cuisines = [...new Set(recipes.map(r => r.cuisine))].sort();
-    const subCats  = [...new Set(recipes.map(r => r.sub).filter(Boolean))].sort();
+  // Populate dropdowns from loaded data
+  const cuisines = [...new Set(recipes.map(r => r.cuisine))].sort();
+  const subCats  = [...new Set(recipes.map(r => r.sub).filter(Boolean))].sort();
 
-    cuisineFilter.innerHTML = '<option value="">All cuisines</option>' +
-      cuisines.map(c => `<option value="${c}">${c}</option>`).join('');
-    subCatFilter.innerHTML  = '<option value="">All categories</option>' +
-      subCats.map(s => `<option value="${s}">${s}</option>`).join('');
+  cuisineFilter.innerHTML = '<option value="">All cuisines</option>' +
+    cuisines.map(c => `<option value="${c}">${c}</option>`).join('');
+  subCatFilter.innerHTML  = '<option value="">All categories</option>' +
+    subCats.map(s => `<option value="${s}">${s}</option>`).join('');
 
-    renderCards(recipes);
-  } catch (err) {
-    console.error('Recipe load failed:', err);
-    document.getElementById('recipeGrid').innerHTML =
-      `<div class="no-results">⚠ Could not load recipes.json — ${err.message}.<br>Make sure you are running via Live Server (not file://), and that <code>data/recipes.json</code> exists.</div>`;
-  }
+  renderCards(recipes);
 }
 
 // ─── TAG CLASSES ─────────────────────────────────────────────────────────────
