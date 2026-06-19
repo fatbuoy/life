@@ -730,6 +730,24 @@ function _syncToast(message, type = 'info', detail = '') {
   setTimeout(() => el.remove(), delay + 320);
 }
 
+/**
+ * Prompt for / clear the GitHub Personal Access Token used by syncToGitHub.
+ * Reloads data afterwards via the app's own loadData(), if one is defined.
+ */
+function promptForGitToken() {
+  const current = localStorage.getItem('gh_pat_token') || '';
+  const token = prompt('Enter your GitHub Personal Access Token:', current);
+  if (token !== null) {
+    if (token.trim() === '') {
+      localStorage.removeItem('gh_pat_token');
+      alert('Token removed.');
+    } else {
+      localStorage.setItem('gh_pat_token', token.trim());
+      alert('Token saved to this device.');
+      if (typeof loadData === 'function') loadData();
+    }
+  }
+}
 
 /* ─── CROSS-APP DATA HELPERS (for integration) ──────────────────────── */
 
