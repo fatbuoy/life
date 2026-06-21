@@ -179,7 +179,7 @@
                     <span class="header-title">Via Alpina Packing Tracker</span>
                 </div>
                 <div class="header-right">
-                    <span class="header-badge">v1.3</span>
+                    <span class="header-badge">v1.4</span>
                 </div>
             </div>
         </div>
@@ -243,7 +243,10 @@
                     <button class="btn btn-secondary" onclick="document.getElementById('importFileInput').click()" style="padding: 6px 10px;"><i class="fa-solid fa-upload"></i> Import</button>
                     <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importState(event)">
                 </div>
-                <button class="btn btn-primary" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                <div class="flex gap-2">
+                    <button class="btn btn-danger" onclick="resetToDefaults()" style="padding: 6px 10px;"><i class="fa-solid fa-trash-can"></i> Reset Cache</button>
+                    <button class="btn btn-primary" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
+                </div>
             </div>
         </div>
 
@@ -431,6 +434,17 @@
             });
             localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
             renderList();
+        }
+
+        // Dedicated emergency routine to manually force-clear local storage profiles 
+        function resetToDefaults() {
+            if (confirm("This will completely flush your phone's tracking data cache and reset to default categories. Any custom entries will be lost. Proceed?")) {
+                localStorage.removeItem('sahani_via_alpina_v3_data');
+                localStorage.removeItem('sahani_via_alpina_v2_data');
+                localStorage.removeItem('sahani_via_alpina_dual_data');
+                localStorage.removeItem('sahani_collapsed_cats_v3');
+                window.location.reload();
+            }
         }
 
         function addItem() {
