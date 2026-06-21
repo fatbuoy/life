@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Via Alpina Packing Tracker — Sahani Suite</title>
+    <!-- Linked to the base design system -->
     <link rel="stylesheet" href="../../shared/base.css">
+    <!-- Font Awesome CDN for clean vector icons (No Emojis) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* Theme Overrides for this tracking app */
@@ -16,6 +19,18 @@
             --app-on-primary:    #ffffff;
             --app-on-primary2:   #a8cfed;
             --app-on-primary3:   #7fa8cc;
+        }
+
+        /* Responsive grid adjustment for mobile screens */
+        .responsive-form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        @media(min-width: 600px) {
+            .responsive-form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         /* Custom structural alignments for form layout elements */
@@ -37,10 +52,11 @@
 
         /* Custom styled checkboxes matching the design language */
         .item-checkbox {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             accent-color: var(--app-accent);
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         /* Inline button components leveraging base tokens */
@@ -55,7 +71,8 @@
             border: none;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            white-space: nowrap;
         }
         .btn-primary { background: var(--app-accent); color: white; }
         .btn-primary:hover { opacity: 0.9; }
@@ -74,28 +91,103 @@
             font-size: var(--t-lg);
             font-weight: 700;
             color: var(--text);
-            text-transform: capitalize;
+        }
+
+        /* Category Header Container Design styling elements */
+        .category-section {
+            margin-bottom: 16px;
+        }
+        .category-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .category-header:hover {
+            background: #f1f5f9;
+        }
+        .category-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .category-title {
+            font-size: var(--t-base);
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-icon-width {
+            width: 14px;
+            text-align: center;
+            color: var(--muted);
+        }
+        
+        /* Dynamic category-level track progress indicator status meter */
+        .category-progress-container {
+            width: 100%;
+            background: var(--border2);
+            border-radius: var(--r-sm);
+            height: 6px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .category-progress-bar {
+            background: var(--app-accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Mobile layout adaptations for row structure elements */
+        .ri-header-mobile {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+        .ri-left-mobile {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            flex: 1;
+        }
+        .ri-name-mobile {
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            line-height: 1.4;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header Pattern (§5) -->
     <header class="header">
         <div class="container">
             <div class="header-row">
                 <div class="header-left">
-                    <a class="header-home" href="#">⌂</a>
-                    <span class="header-title">Via Alpina Packing Tracker (22 Days)</span>
+                    <a class="header-home" href="#"><i class="fa-solid fa-house"></i></a>
+                    <span class="header-title">Via Alpina Packing Tracker</span>
                 </div>
                 <div class="header-right">
-                    <span class="header-badge">v1.1</span>
+                    <span class="header-badge">v1.3</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" style="padding-left: 12px; padding-right: 12px;">
         
+        <!-- App Profile Selection Control Panel — Built using Period/Year Strip Pattern (§14) -->
         <div class="mb-3">
             <div class="sec-lbl">Active Hiker Profile</div>
             <div class="period-strip">
@@ -104,125 +196,192 @@
             </div>
         </div>
 
+        <!-- Filter Controls Panel — Built using Filter Pill Bar Pattern (§22) -->
         <div class="mb-3">
             <div class="sec-lbl">Filter Packing Status</div>
-            <div class="filter-pill-bar">
+            <div class="filter-pill-bar" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px;">
                 <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')">All Items</button>
-                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')">✅ Ready / Packed</button>
-                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')">🛒 To Buy</button>
+                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')"><i class="fa-solid fa-circle-check"></i> Ready</button>
+                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
             </div>
         </div>
 
-        <div class="card">
+        <!-- Add Item Entry Module — Built using Card Pattern (§6) -->
+        <div class="card mb-3">
             <div class="sec-lbl" style="margin-bottom: 8px;">Add New Item to Active Profile</div>
-            <div class="grid-2">
-                <input type="text" id="newItemName" class="input-field" placeholder="Item name (e.g., Salomon X Ultra Boots)">
+            
+            <div class="responsive-form-grid">
+                <div>
+                    <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Item Name</label>
+                    <input type="text" id="newItemName" class="input-field" placeholder="e.g., Salomon X Ultra Boots">
+                </div>
+                <div>
+                    <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Category Selection</label>
+                    <select id="newItemCategory" class="input-field" style="height: 37px; -webkit-appearance: menulist;">
+                        <option value="Footwear">Footwear</option>
+                        <option value="Lower Body Clothing">Lower Body Clothing</option>
+                        <option value="Upper Body & Insulation">Upper Body & Insulation</option>
+                        <option value="Head, Hands, Accessories">Head, Hands, Accessories</option>
+                        <option value="Sleep System">Sleep System</option>
+                        <option value="Pack & Hydration">Pack & Hydration</option>
+                        <option value="Navigation & Electronics">Navigation & Electronics</option>
+                        <option value="Health & Hygiene">Health & Hygiene</option>
+                        <option value="Repair & Misc">Repair & Misc</option>
+                        <option value="Documents & Money">Documents & Money</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px;">
+                <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Notes or Links</label>
                 <input type="text" id="newItemNotes" class="input-field" placeholder="Notes or links (https://...)">
             </div>
-            <div class="flex-between mt-3">
-                <button class="btn btn-secondary" onclick="exportState()">📤 Export JSON Backup</button>
-                <button class="btn btn-primary" onclick="addItem()">➕ Add Item</button>
+
+            <div class="flex-between mt-3" style="gap: 8px; flex-wrap: wrap;">
+                <div class="flex gap-2">
+                    <button class="btn btn-secondary" onclick="exportState()" style="padding: 6px 10px;"><i class="fa-solid fa-download"></i> Export</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFileInput').click()" style="padding: 6px 10px;"><i class="fa-solid fa-upload"></i> Import</button>
+                    <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importState(event)">
+                </div>
+                <button class="btn btn-primary" onclick="addItem()"><i class="fa-solid fa-plus"></i> Add Item</button>
             </div>
         </div>
 
-        <div class="flex-between mb-2">
-            <span class="profile-title" id="activeProfileLabel">Me's Packing List</span>
-            <span class="badge badge-neutral" id="listCounter">0 / 0 Packed</span>
+        <!-- Master Packing List Toolbar Status and Bulk Actions Row -->
+        <div class="flex-between mb-2" style="gap: 8px; flex-wrap: wrap; align-items: center;">
+            <div>
+                <span class="profile-title" id="activeProfileLabel">Rishi's Packing List</span>
+                <span class="badge badge-neutral" id="listCounter" style="margin-left: 4px;">0 / 0 Packed</span>
+            </div>
+            <div class="flex gap-2">
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="setAllCollapseState(false)"><i class="fa-solid fa-folder-open"></i> Expand All</button>
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="setAllCollapseState(true)"><i class="fa-solid fa-folder"></i> Collapse All</button>
+            </div>
         </div>
 
+        <!-- Container target for JavaScript DOM injection -->
         <div id="itemsContainer"></div>
 
     </main>
 
     <script>
-        // Default initial items baseline completely imported from your markdown file specifications
+        // Core baseline data matrix pre-populated comprehensively with category divisions[cite: 3]
         const initialDefaultItems = [
-            // Footwear
-            { id: 101, name: "Footwear: Trekking boots, lightweight mid-cut (1 pair)", notes: "🛒 [Need to Buy] Salomon X Ultra 5 Mid GTX or La Sportiva Ultra Raptor 3 Mid — buy now, needs break-in miles before late July", checked: false },
-            { id: 102, name: "Footwear: Hut/town shoes (1 pair)", notes: "🛒 [Need to Buy] Lightweight packable sandals or foam slip-ons (~150–200g) — most huts require swapping out of boots", checked: false },
-            { id: 103, name: "Footwear: Trail running shoes (1 pair)", notes: "🛒 [Need to Buy] Saucony Peregrine 16 (versatile all-rounder, Vibram Megagrip, reasonably light) or Altra Lone Peak 9 (wider toe box, zero-drop, very popular with hikers too) — both pack down far smaller than the NovaBlast 5/Endorphin Pro and double as your go-to for future light day hikes", checked: false },
-            { id: 104, name: "Footwear: Hiking socks", notes: "✅+🛒 [Own + Buy] You have 2 pairs Mountain Hardwear (synthetic); add 1–2 more — ideally merino, for odor/moisture control over 22 days — for a safe 3–4 pair rotation", checked: false },
+            // Footwear[cite: 3]
+            { id: 101, category: "Footwear", name: "Trekking boots, lightweight mid-cut (1 pair)", notes: "[Need to Buy] Salomon X Ultra 5 Mid GTX or La Sportiva Ultra Raptor 3 Mid — buy now, needs break-in miles before late July", checked: false },
+            { id: 102, category: "Footwear", name: "Hut/town shoes (1 pair)", notes: "[Need to Buy] Lightweight packable sandals or foam slip-ons (~150–200g) — most huts require swapping out of boots", checked: false },
+            { id: 103, category: "Footwear", name: "Trail running shoes (1 pair)", notes: "[Need to Buy] Saucony Peregrine 16 (versatile all-rounder, Vibram Megagrip, reasonably light) or Altra Lone Peak 9 (wider toe box, zero-drop, very popular with hikers too) — both pack down far smaller than the NovaBlast 5/Endorphin Pro and double as your go-to for future light day hikes", checked: false },
+            { id: 104, category: "Footwear", name: "Hiking socks", notes: "[Own + Buy] You have 2 pairs Mountain Hardwear (synthetic); add 1–2 more — ideally merino, for odor/moisture control over 22 days — for a safe 3–4 pair rotation", checked: false },
             
-            // Lower Body Clothing
-            { id: 201, name: "Lower Body: Hiking shorts (Northface Speedlight) (1)", notes: "✅ [Own] Primary daytime bottom", checked: true },
-            { id: 202, name: "Lower Body: Hiking pants (Arc'teryx Konseal) (1)", notes: "✅ [Own] Cold/wind days, evenings, bug protection", checked: true },
-            { id: 203, name: "Lower Body: Rain pants (North Face Hyvent 2.5L) (1)", notes: "✅ [Own] Already covered", checked: true },
-            { id: 204, name: "Lower Body: Underwear (Jockey sport/quick-dry) (4)", notes: "✅ [Own] Confirmed sufficient with periodic laundry", checked: true },
-            { id: 205, name: "Lower Body: Gaiters (lightweight) (1 pair)", notes: "⚠️ [Decision Needed] Conditional — only if Stage 13 Blüemlisalphütte high route or late-season snow patches are in play", checked: false },
+            // Lower Body Clothing[cite: 3]
+            { id: 201, category: "Lower Body Clothing", name: "Hiking shorts (Northface Speedlight) (1)", notes: "[Own] Primary daytime bottom", checked: true },
+            { id: 202, category: "Lower Body Clothing", name: "Hiking pants (Arc'teryx Konseal) (1)", notes: "[Own] Cold/wind days, evenings, bug protection", checked: true },
+            { id: 203, category: "Lower Body Clothing", name: "Rain pants (North Face Hyvent 2.5L) (1)", notes: "[Own] Already covered", checked: true },
+            { id: 204, category: "Lower Body Clothing", name: "Underwear (Jockey sport/quick-dry) (4)", notes: "[Own] Confirmed sufficient with periodic laundry", checked: true },
+            { id: 205, category: "Lower Body Clothing", name: "Gaiters (lightweight) (1 pair)", notes: "[Decision Needed] Conditional — only if Stage 13 Blüemlisalphütte high route or late-season snow patches are in play", checked: false },
             
-            // Upper Body & Insulation
-            { id: 301, name: "Upper Body: Hiking t-shirt / long-sleeve technical shirts (On, Hoka) (2–3 total)", notes: "✅ [Own] Rotate: 1 worn, 1 drying, 1 spare", checked: true },
-            { id: 302, name: "Upper Body: Columbia long-sleeve hiking shirt (1)", notes: "✅ [Own] Sun protection / cooler days", checked: true },
-            { id: 303, name: "Upper Body: Midweight fleece or merino layer (1)", notes: "🛒 [Need to Buy] Gap layer between base layers and the down jacket — needed for cold, windy pass crossings", checked: false },
-            { id: 304, name: "Upper Body: Uniqlo ultralight down jacket (1)", notes: "✅ [Own] Static/evening insulation", checked: true },
-            { id: 305, name: "Upper Body: Rain shell — Mammut Dry Tech Premium (1)", notes: "✅ [Own] Recommended primary over the Norvan SL: pit zips matter on long sustained climbs, and Gore-Tex Shakedry fabric is well known for abrading/delaminating against loaded pack straps over multi-week use — a real risk with a packed Salomon Peak 30L worn daily for 22 days. Leave the Norvan SL home, or bring it only as a featherweight spare if there's room", checked: true },
-            { id: 306, name: "Upper Body: Evening/sleep top (optional) (0–1)", notes: "A spare shirt can double as sleepwear; skip a dedicated piece", checked: false },
+            // Upper Body & Insulation[cite: 3]
+            { id: 301, category: "Upper Body & Insulation", name: "Hiking t-shirt / long-sleeve technical shirts (On, Hoka) (2–3 total)", notes: "[Own] Rotate: 1 worn, 1 drying, 1 spare", checked: true },
+            { id: 302, category: "Upper Body & Insulation", name: "Columbia long-sleeve hiking shirt (1)", notes: "[Own] Sun protection / cooler days", checked: true },
+            { id: 303, category: "Upper Body & Insulation", name: "Midweight fleece or merino layer (1)", notes: "[Need to Buy] Gap layer between base layers and the down jacket — needed for cold, windy pass crossings", checked: false },
+            { id: 304, category: "Upper Body & Insulation", name: "Uniqlo ultralight down jacket (1)", notes: "[Own] Static/evening insulation", checked: true },
+            { id: 305, category: "Upper Body & Insulation", name: "Rain shell — Mammut Dry Tech Premium (1)", notes: "[Own] Recommended primary over the Norvan SL: pit zips matter on long sustained climbs, and Gore-Tex Shakedry fabric is well known for abrading/delaminating against loaded pack straps over multi-week use — a real risk with a packed Salomon Peak 30L worn daily for 22 days. Leave the Norvan SL home, or bring it only as a featherweight spare if there's room", checked: true },
+            { id: 306, category: "Upper Body & Insulation", name: "Evening/sleep top (optional) (0–1)", notes: "A spare shirt can double as sleepwear; skip a dedicated piece", checked: false },
             
-            // Head, Hands, Accessories
-            { id: 401, name: "Accessories: Buff (1)", notes: "✅ [Own]", checked: true },
-            { id: 402, name: "Accessories: Sunglasses (1)", notes: "✅ [Own]", checked: true },
-            { id: 403, name: "Accessories: Lightweight gloves (1 pair)", notes: "✅ [Own]", checked: true },
-            { id: 404, name: "Accessories: Warm hat/beanie (1)", notes: "✅ [Own] Your wool hats are fine — no need for a dedicated 'technical' one", checked: true },
-            { id: 405, name: "Accessories: Sun hat with brim (1)", notes: "🛒 [Need to Buy] Adds face/ear/neck shade — pairs with long sleeves and buff to cut down sunscreen needs", checked: false },
+            // Head, Hands, Accessories[cite: 3]
+            { id: 401, category: "Head, Hands, Accessories", name: "Buff (1)", notes: "[Own]", checked: true },
+            { id: 402, category: "Head, Hands, Accessories", name: "Sunglasses (1)", notes: "[Own]", checked: true },
+            { id: 403, category: "Head, Hands, Accessories", name: "Lightweight gloves (1 pair)", notes: "[Own]", checked: true },
+            { id: 404, category: "Head, Hands, Accessories", name: "Warm hat/beanie (1)", notes: "[Own] Your wool hats are fine — no need for a dedicated 'technical' one", checked: true },
+            { id: 405, category: "Head, Hands, Accessories", name: "Sun hat with brim (1)", notes: "[Need to Buy] Adds face/ear/neck shade — pairs with long sleeves and buff to cut down sunscreen needs", checked: false },
             
-            // Sleep System
-            { id: 501, name: "Sleep System: Silk sleeping bag liner (1)", notes: "🛒 [Need to Buy] Required or strongly preferred at most huts even with bedding provided (~150g)", checked: false },
-            { id: 502, name: "Sleep System: Earplugs", notes: "✅ [Own] Dorm-style huts get loud", checked: true },
-            { id: 503, name: "Sleep System: Eye mask", notes: "✅ [Own]", checked: true },
+            // Sleep System[cite: 3]
+            { id: 501, category: "Sleep System", name: "Silk sleeping bag liner (1)", notes: "[Need to Buy] Required or strongly preferred at most huts even with bedding provided (~150g)", checked: false },
+            { id: 502, category: "Sleep System", name: "Earplugs", notes: "[Own] Dorm-style huts get loud", checked: true },
+            { id: 503, category: "Sleep System", name: "Eye mask", notes: "[Own]", checked: true },
             
-            // Pack & Hydration
-            { id: 601, name: "Pack/Hydration: Salomon Peak 30L (1)", notes: "✅ [Own]", checked: true },
-            { id: 602, name: "Pack/Hydration: Pack liner / dry bags (1–2)", notes: "🛒 [Need to Buy] Waterproofs contents without relying on a separate rain cover", checked: false },
-            { id: 603, name: "Pack/Hydration: Sigg aluminium bottles (2)", notes: "✅ [Own] (verify) Confirm combined capacity ≥1.5L", checked: true },
-            { id: 604, name: "Pack/Hydration: Water purification tablets (1 pack)", notes: "🛒 [Need to Buy] For stream refills between huts/hotels", checked: false },
+            // Pack & Hydration[cite: 3]
+            { id: 601, category: "Pack & Hydration", name: "Salomon Peak 30L (1)", notes: "[Own]", checked: true },
+            { id: 602, category: "Pack & Hydration", name: "Pack liner / dry bags (1–2)", notes: "[Need to Buy] Waterproofs contents without relying on a separate rain cover", checked: false },
+            { id: 603, category: "Pack & Hydration", name: "Sigg aluminium bottles (2)", notes: "[Own] (verify) Confirm combined capacity ≥1.5L", checked: true },
+            { id: 604, category: "Pack & Hydration", name: "Water purification tablets (1 pack)", notes: "[Need to Buy] For stream refills between huts/hotels", checked: false },
             
-            // Navigation & Electronics
-            { id: 701, name: "Electronics: Headlamp + spare batteries (1)", notes: "🛒 [Need to Buy] Pre-dawn starts, hut common areas after lights-out", checked: false },
-            { id: 702, name: "Electronics: Power bank (1)", notes: "🛒 [Need to Buy] Small (5,000–10,000mAh) — huts rarely have ample outlets", checked: false },
-            { id: 703, name: "Electronics: Charging cables", notes: "🛒 [Need to Buy] as needed", checked: false },
-            { id: 704, name: "Electronics: Phone with offline maps (SwitzerlandMobility)", notes: "✅ [Own] Already part of your planning workflow", checked: true },
+            // Navigation & Electronics[cite: 3]
+            { id: 701, category: "Navigation & Electronics", name: "Headlamp + spare batteries (1)", notes: "[Need to Buy] Pre-dawn starts, hut common areas after lights-out", checked: false },
+            { id: 702, category: "Navigation & Electronics", name: "Power bank (1)", notes: "[Need to Buy] Small (5,000–10,000mAh) — huts rarely have ample outlets", checked: false },
+            { id: 703, category: "Navigation & Electronics", name: "Charging cables", notes: "[Need to Buy] as needed", checked: false },
+            { id: 704, category: "Navigation & Electronics", name: "Phone with offline maps (SwitzerlandMobility)", notes: "[Own] Already part of your planning workflow", checked: true },
             
-            // Health & Hygiene
-            { id: 801, name: "Hygiene: Blister kit (Compeed) (small)", notes: "🛒 [Need to Buy] Non-negotiable for 22 consecutive days", checked: false },
-            { id: 802, name: "Hygiene: Leukotape (1 roll)", notes: "🛒 [Need to Buy] Preventative taping for hot spots", checked: false },
-            { id: 803, name: "Hygiene: Personal first aid + meds (small kit)", notes: "🛒 [Need to Buy]", checked: false },
-            { id: 804, name: "Hygiene: Sunscreen, high SPF (1 small stick ~20g)", notes: "🛒 [Need to Buy] Long sleeves + buff + brimmed hat cover most skin, but face, ears, and hands stay exposed — scale down to a small stick rather than a full tube, don't skip it entirely", checked: false },
-            { id: 805, name: "Hygiene: SPF lip balm (1)", notes: "🛒 [Need to Buy]", checked: false },
-            { id: 806, name: "Hygiene: Quick-dry travel towel (1)", notes: "✅ [Own]", checked: true },
-            { id: 807, name: "Hygiene: Travel soap/wash (1 small)", notes: "🛒 [Need to Buy] Doubles as laundry soap for sink-washing socks/underwear", checked: false },
-            { id: 808, name: "Hygiene: Toothbrush/toothpaste (travel size)", notes: "🛒 [Need to Buy]", checked: false },
+            // Health & Hygiene[cite: 3]
+            { id: 801, category: "Health & Hygiene", name: "Blister kit (Compeed) (small)", notes: "[Need to Buy] Non-negotiable for 22 consecutive days", checked: false },
+            { id: 802, category: "Health & Hygiene", name: "Leukotape (1 roll)", notes: "[Need to Buy] Preventative taping for hot spots", checked: false },
+            { id: 803, category: "Health & Hygiene", name: "Personal first aid + meds (small kit)", notes: "[Need to Buy]", checked: false },
+            { id: 804, category: "Health & Hygiene", name: "Sunscreen, high SPF (1 small stick ~20g)", notes: "[Need to Buy] Long sleeves + buff + brimmed hat cover most skin, but face, ears, and hands stay exposed — scale down to a small stick rather than a full tube, don't skip it entirely", checked: false },
+            { id: 805, category: "Health & Hygiene", name: "SPF lip balm (1)", notes: "[Need to Buy]", checked: false },
+            { id: 806, category: "Health & Hygiene", name: "Quick-dry travel towel (1)", notes: "[Own]", checked: true },
+            { id: 807, category: "Health & Hygiene", name: "Travel soap/wash (1 small)", notes: "[Need to Buy] Doubles as laundry soap for sink-washing socks/underwear", checked: false },
+            { id: 808, category: "Health & Hygiene", name: "Toothbrush/toothpaste (travel size)", notes: "[Need to Buy]", checked: false },
             
-            // Repair & Misc
-            { id: 901, name: "Repair/Misc: Gear repair tape (Tenacious Tape) (small strip)", notes: "🛒 [Need to Buy]", checked: false },
-            { id: 902, name: "Repair/Misc: Spare trekking pole tip (1)", notes: "🛒 [Need to Buy]", checked: false },
-            { id: 903, name: "Repair/Misc: Mountain Hardwear poles (1 pair)", notes: "✅ [Own]", checked: true },
-            { id: 904, name: "Repair/Misc: Small ziplock/stuff bags (a few)", notes: "🛒 [Need to Buy] Organization, keeps wet/dry separated", checked: false },
+            // Repair & Misc[cite: 3]
+            { id: 901, category: "Repair & Misc", name: "Gear repair tape (Tenacious Tape) (small strip)", notes: "[Need to Buy]", checked: false },
+            { id: 902, category: "Repair & Misc", name: "Spare trekking pole tip (1)", notes: "[Need to Buy]", checked: false },
+            { id: 903, category: "Repair & Misc", name: "Mountain Hardwear poles (1 pair)", notes: "[Own]", checked: true },
+            { id: 904, category: "Repair & Misc", name: "Small ziplock/stuff bags (a few)", notes: "[Need to Buy] Organization, keeps wet/dry separated", checked: false },
             
-            // Documents & Money
-            { id: 1001, name: "Documents: ID / passport", notes: "✅ [Own] (assumed)", checked: true },
-            { id: 1002, name: "Documents: Accommodation confirmations", notes: "✅ [Own] Already booked per your stage planner", checked: true },
-            { id: 1003, name: "Documents: Cash (CHF)", notes: "🛒 [Need to Buy] Many huts are cash-only", checked: false },
-            { id: 1004, name: "Documents: Cards", notes: "✅ [Own] (assumed)", checked: true }
+            // Documents & Money[cite: 3]
+            { id: 1001, category: "Documents & Money", name: "ID / passport", notes: "[Own] (assumed)", checked: true },
+            { id: 1002, category: "Documents & Money", name: "Accommodation confirmations", notes: "[Own] Already booked per your stage planner", checked: true },
+            { id: 1003, category: "Documents & Money", name: "Cash (CHF)", notes: "[Need to Buy] Many huts are cash-only", checked: false },
+            { id: 1004, category: "Documents & Money", name: "Cards", notes: "[Own] (assumed)", checked: true }
         ];
 
-        // Core UI Context State Definition
-        let currentUser = 'me';
+        // UI Context Core State Tracker Variables
+        let currentUser = 'rishi';
         let currentFilter = 'all';
         let editingItemId = null;
 
-        // Structured Profile Data State Root Matrix Base
-        let listData = JSON.parse(localStorage.getItem('sahani_via_alpina_dual_data')) || {
-            rishi: JSON.parse(JSON.stringify(initialDefaultItems)),
-            marion: JSON.parse(JSON.stringify(initialDefaultItems))
-        };
+        // Structured state data models storage keys
+        let listData = JSON.parse(localStorage.getItem('sahani_via_alpina_v3_data'));
+        
+        // Handle database forward migrations cleanly if older version records exist
+        if (!listData) {
+            const olderData = JSON.parse(localStorage.getItem('sahani_via_alpina_v2_data')) || JSON.parse(localStorage.getItem('sahani_via_alpina_dual_data'));
+            if (olderData) {
+                listData = {
+                    rishi: olderData.rishi || olderData.me || JSON.parse(JSON.stringify(initialDefaultItems)),
+                    marion: olderData.marion || olderData.wife || JSON.parse(JSON.stringify(initialDefaultItems))
+                };
+            } else {
+                listData = {
+                    rishi: JSON.parse(JSON.stringify(initialDefaultItems)),
+                    marion: JSON.parse(JSON.stringify(initialDefaultItems))
+                };
+            }
+            localStorage.setItem('sahani_via_alpina_v3_data', JSON.stringify(listData));
+        }
 
-        // Persist local state mutations cleanly to client local storage data tracks
+        // Available application category block definition map
+        const categoriesList = [
+            "Footwear", "Lower Body Clothing", "Upper Body & Insulation", 
+            "Head, Hands, Accessories", "Sleep System", "Pack & Hydration", 
+            "Navigation & Electronics", "Health & Hygiene", "Repair & Misc", "Documents & Money"
+        ];
+
+        // Collapsible configuration track index — DEFAULT: All collapsed on load layout
+        let collapsedCategories = JSON.parse(localStorage.getItem('sahani_collapsed_cats_v3'));
+        if (!collapsedCategories) {
+            collapsedCategories = {};
+            categoriesList.forEach(cat => {
+                collapsedCategories[cat] = true; // Set default execution context parameters to True
+            });
+            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
+        }
+
         function saveToStorage() {
-            localStorage.setItem('sahani_via_alpina_dual_data', JSON.stringify(listData));
+            localStorage.setItem('sahani_via_alpina_v3_data', JSON.stringify(listData));
             updateCounter();
         }
 
-        // Auto-link scanning filter targeting explicit absolute web addresses
         function linkifyText(text) {
             if (!text) return "";
             const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -231,7 +390,6 @@
             });
         }
 
-        // Update list analytics badge counter indicators dynamically based on active dataset
         function updateCounter() {
             const activeItems = listData[currentUser];
             const completed = activeItems.filter(i => i.checked).length;
@@ -239,12 +397,10 @@
             document.getElementById('activeProfileLabel').textContent = `${currentUser === 'rishi' ? "Rishi's" : "Marion's"} Packing List`;
         }
 
-        // Switch profile user logic track
         function switchUser(user) {
             currentUser = user;
-            editingItemId = null; // Close active edit row fields context
+            editingItemId = null;
             
-            // Update profile tabs DOM status classes
             document.getElementById('prof-rishi').classList.toggle('active', user === 'rishi');
             document.getElementById('prof-marion').classList.toggle('active', user === 'marion');
             
@@ -252,11 +408,9 @@
             renderList();
         }
 
-        // Filter manipulation controls track logic
         function switchFilter(filter) {
             currentFilter = filter;
             
-            // Update filter tabs active layout configurations
             document.getElementById('filter-all').classList.toggle('active', filter === 'all');
             document.getElementById('filter-ready').classList.toggle('active', filter === 'ready');
             document.getElementById('filter-tobuy').classList.toggle('active', filter === 'tobuy');
@@ -264,15 +418,31 @@
             renderList();
         }
 
-        // Append explicit item node array extensions targeting only the active profile track
+        function toggleCategoryCollapse(catName) {
+            collapsedCategories[catName] = !collapsedCategories[catName];
+            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
+            renderList();
+        }
+
+        // Global master routine mapping structural visibility tracks simultaneously
+        function setAllCollapseState(collapseBool) {
+            categoriesList.forEach(cat => {
+                collapsedCategories[cat] = collapseBool;
+            });
+            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
+            renderList();
+        }
+
         function addItem() {
             const nameInput = document.getElementById('newItemName');
+            const catSelect = document.getElementById('newItemCategory');
             const notesInput = document.getElementById('newItemNotes');
 
             if (!nameInput.value.trim()) return alert("Please enter an item name.");
 
             const newItem = {
                 id: Date.now(),
+                category: catSelect.value,
                 name: nameInput.value.trim(),
                 notes: notesInput.value.trim(),
                 checked: false
@@ -286,7 +456,6 @@
             renderList();
         }
 
-        // Checkbox Boolean State Mutation Trigger
         function toggleItemCheck(id) {
             listData[currentUser] = listData[currentUser].map(item => {
                 if (item.id === id) {
@@ -298,21 +467,18 @@
             renderList();
         }
 
-        // Initialize active inline editing track row mode layout context updates
         function startInlineEdit(id, event) {
             event.stopPropagation();
             editingItemId = id;
             renderList();
         }
 
-        // Cancel editing configuration snap action
         function cancelEdit(event) {
             event.stopPropagation();
             editingItemId = null; 
             renderList();
         }
 
-        // Save layout modifications made during tracking row inline edit views
         function saveInlineEdit(id, event) {
             event.stopPropagation();
             const editName = document.getElementById(`editName-${id}`).value.trim();
@@ -332,7 +498,6 @@
             renderList();
         }
 
-        // Structural node context removals
         function deleteItem(id, event) {
             event.stopPropagation();
             if (confirm("Are you sure you want to delete this item?")) {
@@ -343,7 +508,6 @@
             }
         }
 
-        // Quick JSON state dump execution context fallback routine
         function exportState() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(listData, null, 2));
             const downloadAnchor = document.createElement('a');
@@ -354,80 +518,151 @@
             downloadAnchor.remove();
         }
 
-        // Render Master Control UI Matrix System
+        function importState(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    let importedData = {};
+                    
+                    if (parsed.rishi || parsed.marion) {
+                        importedData.rishi = parsed.rishi || JSON.parse(JSON.stringify(initialDefaultItems));
+                        importedData.marion = parsed.marion || JSON.parse(JSON.stringify(initialDefaultItems));
+                    } else if (parsed.me || parsed.wife) {
+                        importedData.rishi = parsed.me || JSON.parse(JSON.stringify(initialDefaultItems));
+                        importedData.marion = parsed.wife || JSON.parse(JSON.stringify(initialDefaultItems));
+                    } else {
+                        throw new Error("Invalid structure data properties mapping paths.");
+                    }
+
+                    listData = importedData;
+                    saveToStorage();
+                    renderList();
+                    updateCounter();
+                    alert("Import successful! Data synchronized successfully.");
+                } catch (err) {
+                    alert("Failed to parse file. Make sure it's a valid backup tracking JSON.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
         function renderList() {
             const container = document.getElementById('itemsContainer');
             container.innerHTML = "";
 
-            // Filter active profile dataset context
-            const filteredItems = listData[currentUser].filter(item => {
-                if (currentFilter === 'ready') return item.checked;
-                if (currentFilter === 'tobuy') return !item.checked;
-                return true;
+            const activeItems = listData[currentUser];
+
+            categoriesList.forEach(catName => {
+                const allCatItems = activeItems.filter(item => (item.category || "Footwear") === catName);
+                if (allCatItems.length === 0) return; 
+
+                const readyCount = allCatItems.filter(i => i.checked).length;
+                const totalCount = allCatItems.length;
+                const progressPercent = totalCount > 0 ? (readyCount / totalCount) * 100 : 0;
+
+                const filteredCatItems = allCatItems.filter(item => {
+                    if (currentFilter === 'ready') return item.checked;
+                    if (currentFilter === 'tobuy') return !item.checked;
+                    return true;
+                });
+
+                if (filteredCatItems.length === 0) return;
+
+                const isCollapsed = !!collapsedCategories[catName];
+
+                const catSection = document.createElement('div');
+                catSection.className = "category-section";
+
+                catSection.innerHTML = `
+                    <div class="category-header" onclick="toggleCategoryCollapse('${catName}')">
+                        <div class="category-header-top">
+                            <span class="category-title">
+                                <span class="category-icon-width">
+                                    <i class="fa-solid ${isCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'}"></i>
+                                </span> 
+                                ${catName}
+                            </span>
+                            <span class="badge badge-neutral" style="font-size: 11px;">
+                                ${readyCount} / ${totalCount} Ready
+                            </span>
+                        </div>
+                        <div class="category-progress-container">
+                            <div class="category-progress-bar" style="width: ${progressPercent}%;"></div>
+                        </div>
+                    </div>
+                    <div class="category-items-container" style="display: ${isCollapsed ? 'none' : 'block'}; margin-top: 8px; padding-left: 4px;">
+                    </div>
+                `;
+
+                const itemsTarget = catSection.querySelector('.category-items-container');
+
+                filteredCatItems.forEach(item => {
+                    if (item.id === editingItemId) {
+                        // ── EDIT MODE ROW LAYOUT STRUCTURE ──
+                        const editCard = document.createElement('div');
+                        editCard.className = "card";
+                        editCard.style.marginBottom = "8px";
+                        editCard.innerHTML = `
+                            <div class="sec-lbl" style="color: var(--app-accent); font-size: 11px;">Editing Item Details</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div>
+                                    <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Item Name</label>
+                                    <input type="text" id="editName-${item.id}" class="input-field" value="${item.name}">
+                                </div>
+                                <div style="margin-bottom: var(--sp-2);">
+                                    <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Notes & Links</label>
+                                    <textarea id="editNotes-${item.id}" class="input-field" style="resize: vertical; min-height: 60px;">${item.notes || ''}</textarea>
+                                </div>
+                            </div>
+                            <div class="flex-between" style="gap: 8px;">
+                                <button onclick="deleteItem(${item.id}, event)" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Delete</button>
+                                <div class="flex gap-2">
+                                    <button onclick="cancelEdit(event)" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                                    <button onclick="saveInlineEdit(${item.id}, event)" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                                </div>
+                            </div>
+                        `;
+                        itemsTarget.appendChild(editCard);
+                    } else {
+                        // ── VIEW MODE MOBILE OPTIMIZED ROW LAYOUT ──
+                        const itemWrap = document.createElement('div');
+                        itemWrap.className = "row-item card";
+                        itemWrap.style.padding = "10px 12px";
+                        itemWrap.style.marginBottom = "6px";
+
+                        itemWrap.innerHTML = `
+                            <div class="ri-header-mobile">
+                                <div class="ri-left-mobile">
+                                    <input type="checkbox" class="item-checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck(${item.id})">
+                                    <span class="ri-name-mobile ${item.checked ? 'item-checked-text' : ''}" style="font-size: var(--t-base);">
+                                        ${item.name}
+                                    </span>
+                                </div>
+                                <button onclick="startInlineEdit(${item.id}, event)" class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; margin-top: -2px;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                            </div>
+                            ${item.notes ? `
+                                <div class="db-body" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border2); color: var(--muted); font-size: 13px; word-break: break-word; overflow-wrap: anywhere; line-height: 1.4;">
+                                    ${linkifyText(item.notes)}
+                                </div>
+                            ` : ''}
+                        `;
+                        itemsTarget.appendChild(itemWrap);
+                    }
+                });
+
+                container.appendChild(catSection);
             });
 
-            if (filteredItems.length === 0) {
-                container.innerHTML = `<div class="notice notice-info"><div class="notice-body">No items match the selected criteria for this tracker list view.</div></div>`;
-                return;
+            if (container.children.length === 0) {
+                container.innerHTML = `<div class="notice notice-info"><div class="notice-body">No packing tracker items found matching the selected filters.</div></div>`;
             }
-
-            filteredItems.forEach(item => {
-                if (item.id === editingItemId) {
-                    // ── EDIT MODE ROW LAYOUT STRUCTURE ──
-                    const editCard = document.createElement('div');
-                    editCard.className = "card";
-                    editCard.innerHTML = `
-                        <div class="sec-lbl" style="color: var(--app-accent);">Editing Item Details</div>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div>
-                                <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Item Name</label>
-                                <input type="text" id="editName-${item.id}" class="input-field" value="${item.name}">
-                            </div>
-                            <div style="margin-bottom: var(--sp-3);">
-                                <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Notes & Links (URLs will auto-link)</label>
-                                <textarea id="editNotes-${item.id}" class="input-field" style="resize: vertical; min-height: 60px;">${item.notes}</textarea>
-                            </div>
-                        </div>
-                        <div class="flex-between">
-                            <button onclick="deleteItem(${item.id}, event)" class="btn btn-danger">🗑️ Delete</button>
-                            <div class="flex gap-2">
-                                <button onclick="cancelEdit(event)" class="btn btn-secondary">❌ Cancel</button>
-                                <button onclick="saveInlineEdit(${item.id}, event)" class="btn btn-primary">💾 Save</button>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(editCard);
-                } else {
-                    // ── VIEW MODE ROW LAYOUT STRUCTURE (§13 Row-Item Pattern) ──
-                    const itemWrap = document.createElement('div');
-                    itemWrap.className = "row-item card";
-                    itemWrap.style.padding = "10px 14px";
-                    itemWrap.style.marginBottom = "8px";
-
-                    itemWrap.innerHTML = `
-                        <div class="ri-header">
-                            <div class="ri-left">
-                                <input type="checkbox" class="item-checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck(${item.id})">
-                                <span class="ri-name ${item.checked ? 'item-checked-text' : ''}" style="font-size: var(--t-md); white-space: normal;">
-                                    ${item.name}
-                                </span>
-                            </div>
-                            <div class="ri-right">
-                                <button onclick="startInlineEdit(${item.id}, event)" class="btn btn-secondary" style="padding: 3px 8px; font-size: 11px;">✏️ Edit</button>
-                            </div>
-                        </div>
-                        ${item.notes ? `
-                            <div class="db-body" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border2); color: var(--muted);">
-                                ${linkifyText(item.notes)}
-                            </div>
-                        ` : ''}
-                    `;
-                    container.appendChild(itemWrap);
-                }
-            });
         }
 
-        // Initialize patterns on document parse sequence completion
         document.addEventListener("DOMContentLoaded", () => {
             updateCounter();
             renderList();
