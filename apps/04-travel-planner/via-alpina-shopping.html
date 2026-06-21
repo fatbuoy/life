@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Via Alpina — Shopping List</title>
+<link rel="stylesheet" href="../../shared/base.css">
+<style>
+  :root {
+    --app-primary:    #1a3a2e;
+    --app-primary2:   #2a5a47;
+    --app-primary3:   #3a7a5e;
+    --app-accent:     #2d8a5e;
+    --app-on-primary:    #ffffff;
+    --app-on-primary2:   #a8d4c0;
+    --app-on-primary3:   #7fb89a;
+  }
+
+  /* ── Status pill — tap to cycle have / to-buy / purchased ── */
+  .status-tap {
+    border: none; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+    padding: 3px 9px; border-radius: var(--r-pill);
+    -webkit-tap-highlight-color: transparent;
+    transition: filter .12s;
+    flex-shrink: 0;
+  }
+  .status-tap:hover { filter: brightness(0.96) }
+  .status-tap:active { filter: brightness(0.92) }
+  .status-have      { background: var(--bg-success); color: var(--c-success) }
+  .status-to-buy    { background: var(--bg-warning); color: #633806 }
+  .status-purchased { background: var(--bg-info);    color: #0c447c }
+
+  /* ── Item row ── */
+  .item-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border2);
+  }
+  .item-row:last-child { border-bottom: none }
+  .item-main { flex: 1; min-width: 0 }
+  .item-name { font-size: var(--t-sm); font-weight: 600; color: var(--text); line-height: 1.4 }
+  .item-meta { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.4 }
+  .item-qty  { color: var(--faint); font-weight: 500 }
+  .item-note-input {
+    width: 100%; margin-top: 6px;
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    background: var(--surface); color: var(--text);
+    font-family: inherit; font-size: 11px; padding: 5px 8px;
+    outline: none; transition: border-color .15s;
+  }
+  .item-note-input:focus { border-color: var(--app-accent); background: var(--white) }
+  .item-note-input::placeholder { color: var(--faint) }
+  .item-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px }
+
+  /* ── Category card ── */
+  .cat-card { margin-bottom: 14px }
+  .cat-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2px;
+  }
+  .cat-title { font-size: var(--t-md); font-weight: 700; color: var(--text) }
+  .cat-progress { font-size: 10px; color: var(--muted); font-weight: 600 }
+
+  /* ── Summary strip in hero ── */
+  .sum-row { display: flex; gap: 18px; flex-wrap: wrap }
+  .sum-item { text-align: left }
+  .sum-num  { font-size: var(--t-xl); font-weight: 700; color: var(--app-on-primary); line-height: 1 }
+  .sum-lbl  { font-size: 9px; color: var(--app-on-primary3); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px }
+
+  .sync-dot {
+    display: none; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--app-on-primary2); flex-shrink: 0;
+    animation: pulseDot 1s ease-in-out infinite;
+  }
+  @keyframes pulseDot { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
+
+  .open-decisions { font-size: 11px; line-height: 1.6; color: #555 }
+  .open-decisions li { margin-bottom: 4px }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="header-row">
+      <div class="header-left">
+        <a class="header-home" href="../../index.html">⌂</a>
+        <span class="header-title">Via Alpina Shopping</span>
+      </div>
+      <div class="header-right">
+        <span class="sync-dot" id="syncIndicator"></span>
+        <button class="header-btn" id="tokenBtn" onclick="promptForGitToken()">🔑</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card-hero">
+    <div class="hero-strip">
+      <div>
+        <div class="hs-title">Gaflei → Montreux</div>
+        <div class="hs-sub">22-day hut-to-hut trek · packing list</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="sum-row">
+        <div class="sum-item"><div class="sum-num" id="sumHave">–</div><div class="sum-lbl">Have</div></div>
+        <div class="sum-item"><div class="sum-num" id="sumToBuy">–</div><div class="sum-lbl">To buy</div></div>
+        <div class="sum-item"><div class="sum-num" id="sumPurchased">–</div><div class="sum-lbl">Purchased</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-pill-bar" id="filterBar">
+    <button class="filter-pill active" data-filter="all">All</button>
+    <button class="filter-pill" data-filter="to-buy">To buy</button>
+    <button class="filter-pill" data-filter="have">Have</button>
+    <button class="filter-pill" data-filter="purchased">Purchased</button>
+  </div>
+
+  <div id="listRoot"><!-- category cards injected here --></div>
+
+  <div class="card">
+    <div class="sec-lbl">Open decisions</div>
+    <ul class="open-decisions">
+      <li><strong>Gaiters</strong> — conditional on whether Stage 13 (Blüemlisalphütte) or other passes carry meaningful snow risk for your dates.</li>
+      <li><strong>Spare hiking socks</strong> — pick up 1–2 more pairs (merino recommended) to round out 2 Mountain Hardwear pairs into a 3–4 pair rotation.</li>
+    </ul>
+  </div>
+
+</div>
+
+<div id="chartTooltip"></div>
+
+<script src="../../shared/utils.js"></script>
+<script>
+'use strict';
+
+/* ─── CONFIG ─────────────────────────────────────────────────────── */
+const GITHUB_CONFIG = {
+  owner:  'fatbuoy',
+  repo:   'app-data',
+  path:   'shopping/via-alpina.json',
+  branch: 'main'
+};
+
+/* ─── SEED DATA (used only if no saved file exists yet) ─────────── */
+// id pattern: <2-letter category code>-<index>, stable across edits.
+const SEED_ITEMS = [
+  // Footwear
+  { id:'fw-1', cat:'Footwear', name:'Trekking boots, lightweight mid-cut', qty:'1 pair', status:'to-buy', note:'Salomon X Ultra 5 Mid GTX or La Sportiva Ultra Raptor 3 Mid — buy now, needs break-in miles before late July' },
+  { id:'fw-2', cat:'Footwear', name:'Hut/town shoes', qty:'1 pair', status:'to-buy', note:'Lightweight packable sandals or foam slip-ons (~150–200g) — most huts require swapping out of boots' },
+  { id:'fw-3', cat:'Footwear', name:'Trail running shoes', qty:'1 pair', status:'to-buy', note:'Saucony Peregrine 16 or Altra Lone Peak 9 — pack down smaller than NovaBlast/Endorphin Pro, doubles as future day-hike shoe' },
+  { id:'fw-4', cat:'Footwear', name:'Hiking socks', qty:'2 owned + buy 1–2 more', status:'to-buy', note:'2 pairs Mountain Hardwear (synthetic) owned; add 1–2 more, ideally merino, for a 3–4 pair rotation' },
+
+  // Lower Body Clothing
+  { id:'lb-1', cat:'Lower Body Clothing', name:'Hiking shorts (Northface Speedlight)', qty:'1', status:'have', note:'Primary daytime bottom' },
+  { id:'lb-2', cat:'Lower Body Clothing', name:"Hiking pants (Arc'teryx Konseal)", qty:'1', status:'have', note:'Cold/wind days, evenings, bug protection' },
+  { id:'lb-3', cat:'Lower Body Clothing', name:'Rain pants (North Face Hyvent 2.5L)', qty:'1', status:'have', note:'' },
+  { id:'lb-4', cat:'Lower Body Clothing', name:'Underwear (Jockey sport/quick-dry)', qty:'4', status:'have', note:'Confirmed sufficient with periodic laundry' },
+  { id:'lb-5', cat:'Lower Body Clothing', name:'Gaiters (lightweight)', qty:'1 pair', status:'to-buy', note:'⚠ Conditional — only if Stage 13 Blüemlisalphütte high route or late-season snow patches are in play' },
+
+  // Upper Body & Insulation
+  { id:'ub-1', cat:'Upper Body & Insulation', name:'Hiking t-shirt / long-sleeve technical shirts (On, Hoka)', qty:'2–3 total', status:'have', note:'Rotate: 1 worn, 1 drying, 1 spare' },
+  { id:'ub-2', cat:'Upper Body & Insulation', name:'Columbia long-sleeve hiking shirt', qty:'1', status:'have', note:'Sun protection / cooler days' },
+  { id:'ub-3', cat:'Upper Body & Insulation', name:'Midweight fleece or merino layer', qty:'1', status:'to-buy', note:'Gap layer between base layers and down jacket — needed for cold, windy pass crossings' },
+  { id:'ub-4', cat:'Upper Body & Insulation', name:'Uniqlo ultralight down jacket', qty:'1', status:'have', note:'Static/evening insulation' },
+  { id:'ub-5', cat:'Upper Body & Insulation', name:'Rain shell — Mammut Dry Tech Premium', qty:'1', status:'have', note:'Use this over the Norvan SL: pit zips matter on long climbs, and Shakedry fabric is prone to abrading against loaded pack straps over multi-week daily use. Leave Norvan SL home, or bring only as a featherweight spare.' },
+  { id:'ub-6', cat:'Upper Body & Insulation', name:'Evening/sleep top', qty:'0–1', status:'have', note:'Optional — a spare shirt can double as sleepwear' },
+
+  // Head, Hands, Accessories
+  { id:'ha-1', cat:'Head, Hands, Accessories', name:'Buff', qty:'1', status:'have', note:'' },
+  { id:'ha-2', cat:'Head, Hands, Accessories', name:'Sunglasses', qty:'1', status:'have', note:'' },
+  { id:'ha-3', cat:'Head, Hands, Accessories', name:'Lightweight gloves', qty:'1 pair', status:'have', note:'' },
+  { id:'ha-4', cat:'Head, Hands, Accessories', name:'Warm hat/beanie', qty:'1', status:'have', note:'Wool hats are fine — no need for a dedicated technical one' },
+  { id:'ha-5', cat:'Head, Hands, Accessories', name:'Sun hat with brim', qty:'1', status:'to-buy', note:'Adds face/ear/neck shade — pairs with long sleeves and buff to cut down sunscreen needs' },
+
+  // Sleep System
+  { id:'sl-1', cat:'Sleep System', name:'Silk sleeping bag liner', qty:'1', status:'to-buy', note:'Required or strongly preferred at most huts even with bedding provided (~150g)' },
+  { id:'sl-2', cat:'Sleep System', name:'Earplugs', qty:'–', status:'have', note:'Dorm-style huts get loud' },
+  { id:'sl-3', cat:'Sleep System', name:'Eye mask', qty:'–', status:'have', note:'' },
+
+  // Pack & Hydration
+  { id:'ph-1', cat:'Pack & Hydration', name:'Salomon Peak 30L', qty:'1', status:'have', note:'' },
+  { id:'ph-2', cat:'Pack & Hydration', name:'Pack liner / dry bags', qty:'1–2', status:'to-buy', note:'Waterproofs contents without relying on a separate rain cover' },
+  { id:'ph-3', cat:'Pack & Hydration', name:'Sigg aluminium bottles', qty:'2', status:'have', note:'Verify combined capacity ≥1.5L' },
+  { id:'ph-4', cat:'Pack & Hydration', name:'Water purification tablets', qty:'1 pack', status:'to-buy', note:'For stream refills between huts/hotels' },
+
+  // Navigation & Electronics
+  { id:'ne-1', cat:'Navigation & Electronics', name:'Headlamp + spare batteries', qty:'1', status:'to-buy', note:'Pre-dawn starts, hut common areas after lights-out' },
+  { id:'ne-2', cat:'Navigation & Electronics', name:'Power bank', qty:'1', status:'to-buy', note:'Small (5,000–10,000mAh) — huts rarely have ample outlets' },
+  { id:'ne-3', cat:'Navigation & Electronics', name:'Charging cables', qty:'as needed', status:'to-buy', note:'' },
+  { id:'ne-4', cat:'Navigation & Electronics', name:'Phone with offline maps (SwitzerlandMobility)', qty:'–', status:'have', note:'Already part of the planning workflow' },
+
+  // Health & Hygiene
+  { id:'hh-1', cat:'Health & Hygiene', name:'Blister kit (Compeed)', qty:'small', status:'to-buy', note:'Non-negotiable for 22 consecutive days' },
+  { id:'hh-2', cat:'Health & Hygiene', name:'Leukotape', qty:'1 roll', status:'to-buy', note:'Preventative taping for hot spots' },
+  { id:'hh-3', cat:'Health & Hygiene', name:'Personal first aid + meds', qty:'small kit', status:'to-buy', note:'' },
+  { id:'hh-4', cat:'Health & Hygiene', name:'Sunscreen, high SPF', qty:'1 small stick (~20g)', status:'to-buy', note:'Long sleeves + buff + brimmed hat cover most skin; scale down to a small stick rather than a full tube' },
+  { id:'hh-5', cat:'Health & Hygiene', name:'SPF lip balm', qty:'1', status:'to-buy', note:'' },
+  { id:'hh-6', cat:'Health & Hygiene', name:'Quick-dry travel towel', qty:'1', status:'have', note:'' },
+  { id:'hh-7', cat:'Health & Hygiene', name:'Travel soap/wash', qty:'1 small', status:'to-buy', note:'Doubles as laundry soap for sink-washing socks/underwear' },
+  { id:'hh-8', cat:'Health & Hygiene', name:'Toothbrush/toothpaste', qty:'travel size', status:'to-buy', note:'' },
+
+  // Repair & Misc
+  { id:'rm-1', cat:'Repair & Misc', name:'Gear repair tape (Tenacious Tape)', qty:'small strip', status:'to-buy', note:'' },
+  { id:'rm-2', cat:'Repair & Misc', name:'Spare trekking pole tip', qty:'1', status:'to-buy', note:'' },
+  { id:'rm-3', cat:'Repair & Misc', name:'Mountain Hardwear poles', qty:'1 pair', status:'have', note:'' },
+  { id:'rm-4', cat:'Repair & Misc', name:'Small ziplock/stuff bags', qty:'a few', status:'to-buy', note:'Organization, keeps wet/dry separated' },
+
+  // Documents & Money
+  { id:'dm-1', cat:'Documents & Money', name:'ID / passport', qty:'–', status:'have', note:'' },
+  { id:'dm-2', cat:'Documents & Money', name:'Accommodation confirmations', qty:'–', status:'have', note:'Already booked per the stage planner' },
+  { id:'dm-3', cat:'Documents & Money', name:'Cash (CHF)', qty:'–', status:'to-buy', note:'Many huts are cash-only' },
+  { id:'dm-4', cat:'Documents & Money', name:'Cards', qty:'–', status:'have', note:'' },
+];
+
+const CATEGORY_ORDER = [
+  'Footwear', 'Lower Body Clothing', 'Upper Body & Insulation',
+  'Head, Hands, Accessories', 'Sleep System', 'Pack & Hydration',
+  'Navigation & Electronics', 'Health & Hygiene', 'Repair & Misc',
+  'Documents & Money'
+];
+
+const STATUS_CYCLE = ['have', 'to-buy', 'purchased'];
+const STATUS_LABEL = { have: '✓ Have', 'to-buy': '🛒 To buy', purchased: '✓ Purchased' };
+const STATUS_CLASS = { have: 'status-have', 'to-buy': 'status-to-buy', purchased: 'status-purchased' };
+
+let items = [];
+let activeFilter = 'all';
+let _debounceTimer = null;
+
+/* ─── LOAD ───────────────────────────────────────────────────────── */
+/* The shared fetchFromGitHub() renders a visible error block when the
+   file is missing or the token isn't set yet — too alarming on a brand
+   new list (the file won't exist in the repo until the first sync).
+   This quiet variant fetches the same way but fails silently, falling
+   back to SEED_ITEMS so the page still renders something useful. */
+async function fetchFromGitHubQuiet(config) {
+  const token = localStorage.getItem('gh_pat_token');
+  if (!token) return null;
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
+  try {
+    const res = await fetch(url, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) return null;
+    const meta = await res.json();
+    return JSON.parse(atob(meta.content.replace(/\n/g, '')));
+  } catch (e) {
+    console.error('fetchFromGitHubQuiet:', e);
+    return null;
+  }
+}
+
+/* ─── RENDER ─────────────────────────────────────────────────────── */
+function render() {
+  const root = document.getElementById('listRoot');
+  const grouped = {};
+  items.forEach(it => { (grouped[it.cat] = grouped[it.cat] || []).push(it); });
+
+  const cats = CATEGORY_ORDER.filter(c => grouped[c]);
+  root.innerHTML = cats.map(cat => {
+    const catItems = grouped[cat].filter(it => activeFilter === 'all' || it.status === activeFilter);
+    if (!catItems.length) return '';
+    const total = grouped[cat].length;
+    const done = grouped[cat].filter(it => it.status !== 'to-buy').length;
+    return `
+      <div class="cat-card card">
+        <div class="cat-header">
+          <div class="cat-title">${cat}</div>
+          <div class="cat-progress">${done}/${total}</div>
+        </div>
+        ${catItems.map(rowHtml).join('')}
+      </div>`;
+  }).join('');
+
+  updateSummary();
+}
+
+function rowHtml(it) {
+  return `
+    <div class="item-row">
+      <div class="item-main">
+        <div class="item-name">${escapeHtml(it.name)}</div>
+        ${it.qty && it.qty !== '–' ? `<div class="item-meta"><span class="item-qty">${escapeHtml(it.qty)}</span></div>` : ''}
+        <input type="text" class="item-note-input" placeholder="Add a note (pricing, where to buy…)"
+          value="${escapeAttr(it.note || '')}"
+          oninput="onNoteInput('${it.id}', this.value)">
+      </div>
+      <div class="item-right">
+        <button class="status-tap ${STATUS_CLASS[it.status]}" onclick="cycleStatus('${it.id}')">${STATUS_LABEL[it.status]}</button>
+      </div>
+    </div>`;
+}
+
+function updateSummary() {
+  const have = items.filter(i => i.status === 'have').length;
+  const toBuy = items.filter(i => i.status === 'to-buy').length;
+  const purchased = items.filter(i => i.status === 'purchased').length;
+  document.getElementById('sumHave').textContent = have;
+  document.getElementById('sumToBuy').textContent = toBuy;
+  document.getElementById('sumPurchased').textContent = purchased;
+}
+
+/* ─── INTERACTIONS ───────────────────────────────────────────────── */
+function cycleStatus(id) {
+  const it = items.find(i => i.id === id);
+  if (!it) return;
+  const idx = STATUS_CYCLE.indexOf(it.status);
+  it.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  render();
+  scheduleSync();
+}
+
+function onNoteInput(id, value) {
+  const it = items.find(i => i.id === id);
+  if (!it) return;
+  it.note = value;
+  scheduleSync();
+}
+
+document.getElementById('filterBar').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-pill');
+  if (!btn) return;
+  activeFilter = btn.dataset.filter;
+  document.querySelectorAll('#filterBar .filter-pill').forEach(b => b.classList.toggle('active', b === btn));
+  render();
+});
+
+/* ─── DEBOUNCED SYNC ─────────────────────────────────────────────── */
+function scheduleSync() {
+  const dot = document.getElementById('syncIndicator');
+  if (dot) dot.style.display = 'inline-block';
+  clearTimeout(_debounceTimer);
+  _debounceTimer = setTimeout(() => {
+    syncToGitHub(GITHUB_CONFIG, buildPayload, 'syncIndicator');
+  }, 2000);
+}
+
+function buildPayload() {
+  return { trip: 'Via Alpina — Gaflei to Montreux', updated: new Date().toISOString(), items };
+}
+
+/* ─── HELPERS ────────────────────────────────────────────────────── */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+async function init() {
+  const remote = await fetchFromGitHubQuiet(GITHUB_CONFIG);
+  if (remote && Array.isArray(remote.items) && remote.items.length) {
+    items = remote.items;
+  } else {
+    items = SEED_ITEMS;
+  }
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
