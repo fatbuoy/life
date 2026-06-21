@@ -529,205 +529,69 @@ window.addEventListener('resize', () => {
 
 /* ─── GITHUB AUTO-SYNC ──────────────────────────────────────────────── */
 
-// ── In-flight guard + pending queue ─────────────────────────────────
-// Prevents concurrent syncs from the same tab racing on the same SHA.
-// If a sync is already running, the latest call is held as _syncPending
-// (superseding any earlier queued call). When the in-flight sync
-// finishes, the pending one is dispatched automatically.
-let _syncInFlight = false;
-let _syncPending  = null;
-
 /**
- * Generic GitHub auto-sync: PUTs a JSON payload to a file in a GitHub repo.
- * Improvements over v1:
- *   • In-flight guard + pending queue (prevents same-tab SHA races)
- *   • Cache-busted SHA fetch (fixes desktop browser caching staleness)
- *   • Automatic one-shot retry on 409/422 conflict (cross-device contention)
- *   • Classified error messages (bad token / conflict / rate-limit / network)
- *   • Non-blocking toast instead of alert()
- *
- * Public API is unchanged — no call-sites need updating.
- *
+ * Generic GitHub auto-sync: PUTs a JSON payload to a file in a GitHub repo
+ * using a Personal Access Token stored in localStorage under 'gh_pat_token'.
+ * Each app calls this with its own {owner, repo, path, branch} config and a
+ * function that builds its payload object, e.g.:
+ *   function triggerGitHubAutoSync() { return syncToGitHub(GITHUB_CONFIG, buildExportPayload); }
+ * Failures fall back silently to local-only — the data is already in
+ * localStorage via the app's own persistLocal(), this just mirrors it to git.
  * @param {{owner:string, repo:string, path:string, branch:string}} config
- * @param {() => object} buildPayload  Called at sync time; returns JSON-serialisable object
- * @param {string} [indicatorId='syncIndicator']
+ * @param {() => object} buildPayload  Returns the JSON-serialisable object to write
+ * @param {string} [indicatorId='syncIndicator']  Element id to show/hide while syncing
  */
 async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator') {
   const token = localStorage.getItem('gh_pat_token');
   if (!token) {
-    console.log('syncToGitHub: no token — saved locally only.');
+    console.log('GitHub token missing. Saved locally only.');
     return;
   }
 
-  if (_syncInFlight) {
-    // Hold the latest request; discard any earlier pending one.
-    _syncPending = { config, buildPayload, indicatorId };
-    console.log('syncToGitHub: queued (sync already in flight).');
-    return;
-  }
-
-  _syncInFlight = true;
-  try {
-    await _doGitHubSync(config, buildPayload, indicatorId, token);
-  } finally {
-    _syncInFlight = false;
-    if (_syncPending) {
-      const next   = _syncPending;
-      _syncPending = null;
-      // Kick off the queued sync in the next microtask so the call stack unwinds.
-      Promise.resolve().then(() =>
-        syncToGitHub(next.config, next.buildPayload, next.indicatorId)
-      );
-    }
-  }
-}
-
-/** Internal: runs a single sync attempt with one retry on SHA conflict. */
-async function _doGitHubSync(config, buildPayload, indicatorId, token) {
   const ind = document.getElementById(indicatorId);
   if (ind) ind.style.display = 'inline-block';
 
   const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}`;
-  const authHeaders = {
-    'Authorization': `token ${token}`,
-    'Accept':        'application/vnd.github.v3+json',
-    'Content-Type':  'application/json',
-  };
 
   try {
-    const sha = await _ghFetchSha(url, authHeaders);
-    await _ghPut(url, authHeaders, config.branch, buildPayload, sha);
-    console.log('syncToGitHub: success.');
-    _syncToast('✓ Saved to GitHub', 'success');
+    const metaRes = await fetch(url, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
 
-  } catch (err) {
-    // ── Conflict: another write landed between our GET and PUT.
-    // Re-fetch the now-current SHA and retry once.
-    if (err.ghStatus === 409 || err.ghStatus === 422) {
-      console.warn('syncToGitHub: SHA conflict — retrying with fresh SHA…');
-      try {
-        const freshSha = await _ghFetchSha(url, authHeaders);
-        await _ghPut(url, authHeaders, config.branch, buildPayload, freshSha);
-        console.log('syncToGitHub: success after conflict retry.');
-        _syncToast('✓ Saved to GitHub', 'success');
-        return;
-      } catch (retryErr) {
-        _syncHandleError(retryErr, /*afterRetry=*/true);
-        return;
-      }
+    let sha = '';
+    if (metaRes.ok) {
+      sha = (await metaRes.json()).sha;
+    } else if (metaRes.status !== 404) {
+      throw new Error('Could not check file identity tracking.');
     }
-    _syncHandleError(err, false);
 
+    const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(), null, 2))));
+
+    const payload = {
+      message: `Sync updates from application mobile interface [Automated]`,
+      content: base64Content,
+      branch: config.branch
+    };
+    if (sha) payload.sha = sha;
+
+    const pushRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!pushRes.ok) {
+      const errPayload = await pushRes.json();
+      throw new Error(errPayload.message || 'Unknown write error occurred.');
+    }
+
+    console.log('GitHub sync successful.');
+  } catch (err) {
+    console.error(err);
+    alert(`Auto-Sync Warning: Locally saved, but failed pushing directly to GitHub.\nReason: ${err.message}`);
   } finally {
     if (ind) ind.style.display = 'none';
   }
-}
-
-/**
- * Fetch the current SHA of the file (needed for PUT).
- * Cache-busted with ?t= so desktop browsers never serve a stale ETag.
- * Returns '' for a brand-new file (404).
- */
-async function _ghFetchSha(url, headers) {
-  const res = await fetch(`${url}?t=${Date.now()}`, {
-    headers: { ...headers, 'Cache-Control': 'no-cache' },
-  });
-  if (res.ok)              return (await res.json()).sha;
-  if (res.status === 404)  return '';          // file doesn't exist yet — that's fine
-
-  const err = new Error(`SHA fetch: HTTP ${res.status}`);
-  err.ghStatus = res.status;
-  throw err;
-}
-
-/** PUT the payload. Throws a classified error on non-2xx. */
-async function _ghPut(url, headers, branch, buildPayload, sha) {
-  const body = {
-    message: 'Sync updates from app [Automated]',
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(buildPayload(), null, 2)))),
-    branch,
-  };
-  if (sha) body.sha = sha;
-
-  const res = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(body) });
-  if (res.ok) return;
-
-  const json = await res.json().catch(() => ({}));
-  const err  = new Error(json.message || `HTTP ${res.status}`);
-  err.ghStatus = res.status;
-  throw err;
-}
-
-/** Map HTTP status → human message, then show a toast. */
-function _syncHandleError(err, afterRetry) {
-  const tag = afterRetry ? ' (after retry)' : '';
-  let title, detail;
-
-  switch (err.ghStatus) {
-    case 401:
-      title  = '⚠ GitHub token rejected';
-      detail = 'Your Personal Access Token may have expired or been revoked. Tap 🔑 in the header to update it.';
-      break;
-    case 403:
-      title  = '⚠ GitHub access denied';
-      detail = 'Check that your token has repo write access, or you may have hit the API rate limit — wait a minute and try again.';
-      break;
-    case 409:
-    case 422:
-      title  = '⚠ Save conflict' + tag;
-      detail = 'Another device saved at the same time and the retry also failed. Refresh the page to get the latest data, then re-apply your change.';
-      break;
-    default:
-      title  = `⚠ Sync failed${tag}`;
-      detail = `Your data is saved locally. Check your connection and try again. (${err.message})`;
-  }
-
-  console.error('syncToGitHub' + tag + ':', err);
-  _syncToast(title, 'error', detail);
-}
-
-/**
- * Non-blocking status toast — replaces the old alert().
- * Auto-dismisses after 3 s (success) or 10 s (error).
- */
-function _syncToast(message, type = 'info', detail = '') {
-  document.getElementById('_syncToast')?.remove();
-
-  // Inject keyframe once
-  if (!document.getElementById('_syncToastStyle')) {
-    const s = document.createElement('style');
-    s.id = '_syncToastStyle';
-    s.textContent = `
-      @keyframes _syncToastIn  { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:translateY(0) } }
-      @keyframes _syncToastOut { from { opacity:1 } to { opacity:0 } }
-    `;
-    document.head.appendChild(s);
-  }
-
-  const colours = {
-    success: { bg: '#162a16', border: '#3b6d11' },
-    error:   { bg: '#2a1616', border: '#c0392b' },
-    info:    { bg: '#0c1a2a', border: '#185fa5' },
-  };
-  const { bg, border } = colours[type] || colours.info;
-  const delay = type === 'error' ? 10000 : 3000;
-
-  const el = document.createElement('div');
-  el.id = '_syncToast';
-  el.style.cssText = `
-    position:fixed; bottom:20px; right:16px; z-index:99999;
-    background:${bg}; border:1px solid ${border}; border-radius:10px;
-    padding:10px 14px; font-size:12px; color:#fff; max-width:300px;
-    font-family:Inter,-apple-system,sans-serif; line-height:1.45;
-    box-shadow:0 4px 20px rgba(0,0,0,.45);
-    animation: _syncToastIn .2s ease forwards;
-  `;
-  el.innerHTML = `<div style="font-weight:600">${message}</div>`
-    + (detail ? `<div style="opacity:.72;margin-top:3px;font-size:11px">${detail}</div>` : '');
-
-  document.body.appendChild(el);
-  setTimeout(() => { el.style.animation = '_syncToastOut .3s ease forwards'; }, delay);
-  setTimeout(() => el.remove(), delay + 320);
 }
 
 /**
@@ -743,11 +607,12 @@ function promptForGitToken() {
       alert('Token removed.');
     } else {
       localStorage.setItem('gh_pat_token', token.trim());
-      alert('Token saved to this device.');
+      alert('Token successfully saved to this phone!');
       if (typeof loadData === 'function') loadData();
     }
   }
 }
+
 
 /* ─── CROSS-APP DATA HELPERS (for integration) ──────────────────────── */
 
