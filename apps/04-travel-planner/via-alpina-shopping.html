@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Via Alpina Packing Tracker — Sahani Suite</title>
-    <link rel="apple-touch-icon" href="../../images/icons/alpine_shopping.png">   
+    
+    <!-- Favicon & Apple Touch Icon App Suite Assets -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M10 85 L50 20 L90 85 Z' fill='%23185fa5'/%3E%3Cpath d='M35 85 L50 50 L65 85 Z' fill='%230c2340'/%3E%3C/svg%3E">
+    <link class="apple-touch-icon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%230c2340' rx='22'/%3E%3Cpath d='M20 75 L50 28 L80 75 Z' fill='%23185fa5'/%3E%3Cpath d='M42 75 L50 58 L58 75 Z' fill='%23ffffff'/%3E%3C/svg%3E">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Linked to the base design system -->
     <link rel="stylesheet" href="../../shared/base.css">
+    <!-- Font Awesome CDN for clean vector icons (No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -210,15 +218,16 @@
 </head>
 <body>
 
+    <!-- Header Pattern (§5) pointing directly to Hub -->
     <header class="header">
         <div class="container">
             <div class="header-row">
                 <div class="header-left">
-                    <a class="header-home" href="#"><i class="fa-solid fa-house"></i></a>
+                    <a class="header-home" href="../../index.html" title="Hub">⌂</a>
                     <span class="header-title">Via Alpina Packing Tracker</span>
                 </div>
                 <div class="header-right">
-                    <span class="header-badge">v1.5</span>
+                    <span class="header-badge" id="syncStatusBadge"><i class="fa-solid fa-cloud"></i> Syncing...</span>
                 </div>
             </div>
         </div>
@@ -226,6 +235,7 @@
 
     <main class="container" style="padding-left: 12px; padding-right: 12px;">
         
+        <!-- App Profile Selection Control Panel — Built using Period/Year Strip Pattern (§14) -->
         <div class="mb-3">
             <div class="sec-lbl">Active Hiker Profile</div>
             <div class="period-strip">
@@ -234,6 +244,7 @@
             </div>
         </div>
 
+        <!-- Filter Controls & Add Action Module Row Combo Panel -->
         <div class="mb-3 flex-between" style="gap: 12px; flex-wrap: wrap; align-items: flex-end;">
             <div style="flex: 1; min-width: 240px;">
                 <div class="sec-lbl">Filter Packing Status</div>
@@ -243,9 +254,10 @@
                     <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="openAddItemModal()" style="margin-bottom: 4px; height: 34px;"><i class="fa-solid fa-plus"></i> Add Item / Sync</button>
+            <button class="btn btn-primary" onclick="openAddItemModal()" style="margin-bottom: 4px; height: 34px;"><i class="fa-solid fa-plus"></i> Options & Add Item</button>
         </div>
 
+        <!-- Master Packing List Toolbar Status and Bulk Actions Row -->
         <div class="flex-between mb-2" style="gap: 8px; flex-wrap: wrap; align-items: center;">
             <div>
                 <span class="profile-title" id="activeProfileLabel">Rishi's Packing List</span>
@@ -257,10 +269,12 @@
             </div>
         </div>
 
+        <!-- Container target for JavaScript DOM injection -->
         <div id="itemsContainer"></div>
 
     </main>
 
+    <!-- Operational Config / Creation Workspace Modal Module -->
     <div id="addItemModal" class="modal-overlay" onclick="closeAddItemModalOutside(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -303,15 +317,19 @@
                     <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> Append Item Entry</button>
                 </div>
 
+                <!-- Git Repository Sync and Authentication Config Controls Panel -->
                 <div style="margin-top: 20px; border-top: 1px solid var(--border2); padding-top: 14px;">
-                    <div class="sec-lbl" style="margin-bottom: 8px;">Storage Utilities & Synchronisation</div>
+                    <div class="sec-lbl" style="margin-bottom: 4px;">Storage & Git Version Control</div>
+                    <p style="font-size: 11px; color: var(--muted); margin: 0 0 10px 0; line-height: 1.3;">
+                        Data stores securely within your private repository ecosystem. Configure your Personal Access Token below to enable automated write-backs.
+                    </p>
                     <div class="flex-between" style="gap: 8px; flex-wrap: wrap;">
-                        <div class="flex gap-2">
-                            <button class="btn btn-secondary" onclick="exportState()" style="padding: 6px 10px;"><i class="fa-solid fa-download"></i> Export</button>
-                            <button class="btn btn-secondary" onclick="document.getElementById('importFileInput').click()" style="padding: 6px 10px;"><i class="fa-solid fa-upload"></i> Import</button>
-                            <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importState(event)">
-                        </div>
-                        <button class="btn btn-danger" onclick="resetToDefaults()" style="padding: 6px 10px;"><i class="fa-solid fa-trash-can"></i> Reset Cache</button>
+                        <button class="btn btn-secondary" onclick="configureGitHubToken()" style="padding: 6px 12px;">
+                            <i class="fa-solid fa-key"></i> Set GitHub PAT
+                        </button>
+                        <button class="btn btn-secondary" onclick="fetchDataFromGitHub()" style="padding: 6px 12px;">
+                            <i class="fa-solid fa-rotate"></i> Force Pull Update
+                        </button>
                     </div>
                 </div>
             </div>
@@ -319,6 +337,17 @@
     </div>
 
     <script>
+// Core repository setup mapped exactly to your file tree structure
+        const GITHUB_CONFIG = {
+            owner: "fatbuoy", 
+            repo: "app-data",       
+            path: "data/via-alpina.json",     
+            branch: "main"
+        };
+
+        let gitSha = null; 
+        let workingAuthPrefix = 'Bearer'; // Dynamically swaps to 'token' if classic PAT alignment is discovered
+
         // Core baseline data matrix pre-populated comprehensively with category divisions
         const initialDefaultItems = [
             // Footwear
@@ -393,26 +422,7 @@
         let currentUser = 'rishi';
         let currentFilter = 'all';
         let editingItemId = null;
-
-        // Structured state data models storage keys
-        let listData = JSON.parse(localStorage.getItem('sahani_via_alpina_v3_data'));
-        
-        // Handle database forward migrations cleanly if older version records exist
-        if (!listData) {
-            const olderData = JSON.parse(localStorage.getItem('sahani_via_alpina_v2_data')) || JSON.parse(localStorage.getItem('sahani_via_alpina_dual_data'));
-            if (olderData) {
-                listData = {
-                    rishi: olderData.rishi || olderData.me || JSON.parse(JSON.stringify(initialDefaultItems)),
-                    marion: olderData.marion || olderData.wife || JSON.parse(JSON.stringify(initialDefaultItems)),
-                };
-            } else {
-                listData = {
-                    rishi: JSON.parse(JSON.stringify(initialDefaultItems)),
-                    marion: JSON.parse(JSON.stringify(initialDefaultItems)),
-                };
-            }
-            localStorage.setItem('sahani_via_alpina_v3_data', JSON.stringify(listData));
-        }
+        let listData = { rishi: [], marion: [] };
 
         // Available application category block definition map
         const categoriesList = [
@@ -422,20 +432,158 @@
         ];
 
         // Collapsible configuration track index — DEFAULT: All collapsed on load layout
-        let collapsedCategories = JSON.parse(localStorage.getItem('sahani_collapsed_cats_v3'));
-        if (!collapsedCategories) {
-            collapsedCategories = {};
-            categoriesList.forEach(cat => {
-                collapsedCategories[cat] = true; 
-            });
-            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
+        let collapsedCategories = {};
+        categoriesList.forEach(cat => { collapsedCategories[cat] = true; });
+
+        /* Remote Git Sync System Engine Controllers */
+        function getGitHubToken() {
+            return localStorage.getItem('sahani_suite_git_pat') || '';
         }
 
-        function saveToStorage() {
-            localStorage.setItem('sahani_via_alpina_v3_data', JSON.stringify(listData));
+        function configureGitHubToken() {
+            const currentToken = getGitHubToken();
+            const tokenInput = prompt("Enter your GitHub Personal Access Token (PAT):", currentToken);
+            if (tokenInput !== null) {
+                localStorage.setItem('sahani_suite_git_pat', tokenInput.trim());
+                if (tokenInput.trim()) {
+                    fetchDataFromGitHub();
+                }
+            }
+        }
+
+        function updateSyncStatus(statusText, isError = false) {
+            const badge = document.getElementById('syncStatusBadge');
+            badge.innerHTML = isError ? statusText : statusText;
+            badge.style.background = isError ? "var(--bg-danger)" : "var(--app-primary2)";
+            badge.style.color = isError ? "var(--c-danger)" : "var(--app-on-primary2)";
+        }
+
+        async function fetchDataFromGitHub() {
+            const token = getGitHubToken();
+            if (!token) {
+                updateSyncStatus("<i class='fa-solid fa-key'></i> Token Required", true);
+                listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                updateCounter();
+                renderList();
+                return;
+            }
+
+            updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Pulling...");
+            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+
+            try {
+                // Try retrieving via default 'Bearer' schema first
+                let response = await fetch(url, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+
+                // Dual-Auth Fallback Strategy: If masked as 404/401/403, retry instantly using the legacy 'token' schema prefix
+                if (!response.ok && (response.status === 401 || response.status === 403 || response.status === 404)) {
+                    const fallbackResponse = await fetch(url, {
+                        headers: {
+                            "Authorization": `token ${token}`,
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    if (fallbackResponse.ok) {
+                        response = fallbackResponse;
+                        workingAuthPrefix = 'token'; // Lock working prefix for future saves
+                    }
+                }
+
+                // If still a 404 after testing both header strategies, the path target is genuinely missing
+                if (response.status === 404) {
+                    listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                    gitSha = null;
+                    await pushDataToGitHub();
+                    return;
+                }
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const payload = await response.json();
+                gitSha = payload.sha;
+                
+                // Scrub whitespaces and convert base64 safely utilizing modern TextDecoder array mappings
+                const base64Clean = payload.content.replace(/\s/g, '');
+                const rawBinaryString = atob(base64Clean);
+                const bytes = Uint8Array.from(rawBinaryString, c => c.charCodeAt(0));
+                const rawJson = new TextDecoder("utf-8").decode(bytes);
+                
+                // Explicitly purge hidden BOM (\uFEFF) data entries introduced from web editors
+                const cleanJson = rawJson.trim().replace(/^\uFEFF/, '');
+                
+                listData = JSON.parse(cleanJson);
+                updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Synced");
+                updateCounter();
+                renderList();
+            } catch (err) {
+                console.error(err);
+                
+                // High-precision diagnostic parsing to surface true blocker root causes instantly
+                let errorDiagnostics = err.message;
+                if (err instanceof SyntaxError) errorDiagnostics = "JSON Format Error";
+                if (err instanceof TypeError) errorDiagnostics = "Network/CORS Block";
+                
+                updateSyncStatus(`<i class="fa-solid fa-circle-xmark"></i> Pull Failed (${errorDiagnostics})`, true);
+                
+                if(!listData.rishi.length) {
+                    listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                    updateCounter();
+                    renderList();
+                }
+            }
+        }
+
+        async function pushDataToGitHub() {
+            const token = getGitHubToken();
+            if (!token) return;
+
+            updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Pushing...");
+            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+            
+            try {
+                const rawJsonString = JSON.stringify(listData, null, 2);
+                const base64Payload = btoa(unescape(encodeURIComponent(rawJsonString)));
+
+                const reqBody = {
+                    message: "Update packing state tracker matrix via Sahani Suite UI",
+                    content: base64Payload,
+                    branch: GITHUB_CONFIG.branch
+                };
+
+                if (gitSha) reqBody.sha = gitSha;
+
+                const response = await fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `${workingAuthPrefix} ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    body: JSON.stringify(reqBody)
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const resData = await response.json();
+                gitSha = resData.content.sha; 
+                updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Saved");
+            } catch (err) {
+                console.error(err);
+                updateSyncStatus(`Push Failed (${err.message})`, true);
+            }
+        }
+
+        function triggerStateMutationSave() {
             updateCounter();
+            pushDataToGitHub();
         }
 
+        /* Core UI Render and Event Handling Mechanisms */
         function linkifyText(text) {
             if (!text) return "";
             const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -445,7 +593,7 @@
         }
 
         function updateCounter() {
-            const activeItems = listData[currentUser];
+            const activeItems = listData[currentUser] || [];
             const completed = activeItems.filter(i => i.checked).length;
             document.getElementById('listCounter').textContent = `${completed} / ${activeItems.length} Packed`;
             document.getElementById('activeProfileLabel').textContent = `${currentUser === 'rishi' ? "Rishi's" : "Marion's"} Packing List`;
@@ -454,190 +602,83 @@
         function switchUser(user) {
             currentUser = user;
             editingItemId = null;
-            
             document.getElementById('prof-rishi').classList.toggle('active', user === 'rishi');
             document.getElementById('prof-marion').classList.toggle('active', user === 'marion');
-            
             updateCounter();
             renderList();
         }
 
         function switchFilter(filter) {
             currentFilter = filter;
-            
             document.getElementById('filter-all').classList.toggle('active', filter === 'all');
             document.getElementById('filter-ready').classList.toggle('active', filter === 'ready');
             document.getElementById('filter-tobuy').classList.toggle('active', filter === 'tobuy');
-            
             renderList();
         }
 
         function toggleCategoryCollapse(catName) {
             collapsedCategories[catName] = !collapsedCategories[catName];
-            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
             renderList();
         }
 
         function setAllCollapseState(collapseBool) {
-            categoriesList.forEach(cat => {
-                collapsedCategories[cat] = collapseBool;
-            });
-            localStorage.setItem('sahani_collapsed_cats_v3', JSON.stringify(collapsedCategories));
+            categoriesList.forEach(cat => { collapsedCategories[cat] = collapseBool; });
             renderList();
         }
 
-        /* Modal Toggle Handlers */
+        // Operational Modals
         function openAddItemModal() {
             document.getElementById('addItemModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Lock background scrolling
+            document.body.style.overflow = 'hidden';
         }
+        function closeAddItemModal() { document.getElementById('addItemModal').style.display = 'none'; document.body.style.overflow = ''; }
+        function closeAddItemModalOutside(e) { if (e.target.id === 'addItemModal') closeAddItemModal(); }
 
-        function closeAddItemModal() {
-            document.getElementById('addItemModal').style.display = 'none';
-            document.body.style.overflow = '';
-        }
+        document.addEventListener("DOMContentLoaded", () => { fetchDataFromGitHub(); });
 
-        function closeAddItemModalOutside(event) {
-            if (event.target.id === 'addItemModal') {
-                closeAddItemModal();
-            }
-        }
-
-        function resetToDefaults() {
-            if (confirm("This will completely flush your tracker data cache and reset to baseline categories. Any custom entries will be lost. Proceed?")) {
-                localStorage.removeItem('sahani_via_alpina_v3_data');
-                localStorage.removeItem('sahani_via_alpina_v2_data');
-                localStorage.removeItem('sahani_via_alpina_dual_data');
-                localStorage.removeItem('sahani_collapsed_cats_v3');
-                window.location.reload();
-            }
-        }
-
+        // Remaining setup utilities mapping local arrays to execution bindings
         function addItem() {
             const nameInput = document.getElementById('newItemName');
             const catSelect = document.getElementById('newItemCategory');
             const notesInput = document.getElementById('newItemNotes');
-
             if (!nameInput.value.trim()) return alert("Please enter an item name.");
-
-            const newItem = {
-                id: Date.now(),
-                category: catSelect.value,
-                name: nameInput.value.trim(),
-                notes: notesInput.value.trim(),
-                checked: false,
-            };
-
+            const newItem = { id: Date.now(), category: catSelect.value, name: nameInput.value.trim(), notes: notesInput.value.trim(), checked: false };
+            if (!listData[currentUser]) listData[currentUser] = [];
             listData[currentUser].push(newItem);
-            nameInput.value = "";
-            notesInput.value = "";
-            
-            saveToStorage();
-            renderList();
-            closeAddItemModal();
+            nameInput.value = ""; notesInput.value = "";
+            renderList(); triggerStateMutationSave(); closeAddItemModal();
         }
 
         function toggleItemCheck(id) {
-            listData[currentUser] = listData[currentUser].map(item => {
-                if (item.id === id) {
-                    return { ...item, checked: !item.checked };
-                }
-                return item;
-            });
-            saveToStorage();
-            renderList();
+            listData[currentUser] = listData[currentUser].map(i => i.id === id ? { ...i, checked: !i.checked } : i);
+            renderList(); triggerStateMutationSave();
         }
 
-        function startInlineEdit(id, event) {
-            event.stopPropagation();
-            editingItemId = id;
-            renderList();
-        }
-
-        function cancelEdit(event) {
-            event.stopPropagation();
-            editingItemId = null; 
-            renderList();
-        }
+        function startInlineEdit(id, event) { event.stopPropagation(); editingItemId = id; renderList(); }
+        function cancelEdit(event) { event.stopPropagation(); editingItemId = null; renderList(); }
 
         function saveInlineEdit(id, event) {
             event.stopPropagation();
             const editName = document.getElementById(`editName-${id}`).value.trim();
             const editNotes = document.getElementById(`editNotes-${id}`).value.trim();
-
             if (!editName) return alert("Item name cannot be blank.");
-
-            listData[currentUser] = listData[currentUser].map(item => {
-                if (item.id === id) {
-                    return { ...item, name: editName, notes: editNotes };
-                }
-                return item;
-            });
-
-            editingItemId = null;
-            saveToStorage();
-            renderList();
+            listData[currentUser] = listData[currentUser].map(i => i.id === id ? { ...i, name: editName, notes: editNotes } : i);
+            editingItemId = null; renderList(); triggerStateMutationSave();
         }
 
         function deleteItem(id, event) {
             event.stopPropagation();
             if (confirm("Are you sure you want to delete this item?")) {
-                listData[currentUser] = listData[currentUser].filter(item => item.id !== id);
+                listData[currentUser] = listData[currentUser].filter(i => i.id !== id);
                 if (editingItemId === id) editingItemId = null;
-                saveToStorage();
-                renderList();
+                renderList(); triggerStateMutationSave();
             }
-        }
-
-        function exportState() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(listData, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `via-alpina-packing-backup.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importState(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    let importedData = {};
-                    
-                    if (parsed.rishi || parsed.marion) {
-                        importedData.rishi = parsed.rishi || JSON.parse(JSON.stringify(initialDefaultItems));
-                        importedData.marion = parsed.marion || JSON.parse(JSON.stringify(initialDefaultItems));
-                    } else if (parsed.me || parsed.wife) {
-                        importedData.rishi = parsed.me || JSON.parse(JSON.stringify(initialDefaultItems));
-                        importedData.marion = parsed.wife || JSON.parse(JSON.stringify(initialDefaultItems));
-                    } else {
-                        throw new Error("Invalid format matrix template paths.");
-                    }
-
-                    listData = importedData;
-                    saveToStorage();
-                    renderList();
-                    updateCounter();
-                    closeAddItemModal();
-                    alert("Import successful! Data synchronized successfully.");
-                } catch (err) {
-                    alert("Failed to parse file. Make sure it's a valid backup tracking JSON.");
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
         }
 
         function renderList() {
             const container = document.getElementById('itemsContainer');
             container.innerHTML = "";
-
-            const activeItems = listData[currentUser];
+            const activeItems = listData[currentUser] || [];
 
             categoriesList.forEach(catName => {
                 const allCatItems = activeItems.filter(item => (item.category || "Footwear") === catName);
@@ -654,9 +695,7 @@
                 });
 
                 if (filteredCatItems.length === 0) return;
-
                 const isCollapsed = !!collapsedCategories[catName];
-
                 const catSection = document.createElement('div');
                 catSection.className = "category-section";
 
@@ -685,7 +724,6 @@
 
                 filteredCatItems.forEach(item => {
                     if (item.id === editingItemId) {
-                        // Edit Layout Mode
                         const editCard = document.createElement('div');
                         editCard.className = "card";
                         editCard.style.marginBottom = "8px";
@@ -711,7 +749,6 @@
                         `;
                         itemsTarget.appendChild(editCard);
                     } else {
-                        // Standard List Row Layout
                         const itemWrap = document.createElement('div');
                         itemWrap.className = "row-item card";
                         itemWrap.style.padding = "10px 12px";
@@ -736,7 +773,6 @@
                         itemsTarget.appendChild(itemWrap);
                     }
                 });
-
                 container.appendChild(catSection);
             });
 
@@ -746,8 +782,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            updateCounter();
-            renderList();
+            fetchDataFromGitHub();
         });
     </script>
 </body>
