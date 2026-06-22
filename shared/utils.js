@@ -99,7 +99,9 @@ async function fetchFromGitHub(config, errorContainerId = 'app') {
     });
     if (!res.ok) throw new Error(`GitHub API returned HTTP ${res.status}`);
     const meta = await res.json();
-    return JSON.parse(atob(meta.content.replace(/\n/g, '')));
+    const binary = atob(meta.content.replace(/\n/g, ''));
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes));
   } catch (e) {
     _renderError(`
       <div style="margin:40px auto;max-width:500px;background:#fff;border:1px solid #e0ddd7;border-radius:13px;padding:24px">
@@ -614,6 +616,21 @@ function promptForGitToken() {
 }
 
 
+/**
+ * Convert raw URLs inside a plain-text string into clickable <a> tags.
+ * Escapes nothing else — pass already-escaped/trusted text in, since
+ * this only wraps URL substrings and leaves the rest as-is.
+ * @param {string} text
+ * @returns {string} HTML string with URLs replaced by anchor tags
+ */
+function linkifyText(text) {
+  if (!text) return '';
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, url =>
+    `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+  );
+}
+
 /* ─── CROSS-APP DATA HELPERS (for integration) ──────────────────────── */
 
 /**
@@ -723,3 +740,4 @@ function daysUntil(targetDate) {
   const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
   return diff;
 }
+

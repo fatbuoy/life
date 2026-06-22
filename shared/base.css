@@ -928,3 +928,167 @@ input:checked + .ios-slider:before { transform: translateX(20px); }
 .filter-pill-bar::-webkit-scrollbar { display: none; }
 .filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 20px; border: 1.5px solid #e5e5ea; background: #fff; color: #636366; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
 .filter-pill.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
+
+/* ─────────────────────────────────────────────────────────────────────
+   PATCH FOR base.css
+   Insert as new §23 and §24, after the existing §22 ios-* modal block
+   (i.e. after the .filter-pill / .filter-pill.active rules at the very
+   end of the file). These three patterns were built fresh by Gemini for
+   the Via Alpina shopping list; promoting them here makes them available
+   to any future app rather than re-invented per-app.
+   ───────────────────────────────────────────────────────────────────── */
+
+
+/* ── §23 GENERIC BUTTONS (.btn) ───────────────────────────────────────
+   A small button system distinct from the single-purpose buttons that
+   already exist (.header-btn, .period-btn, .pw-btn, .back-btn). Use
+   .btn for any general-purpose action button outside those contexts —
+   form submits, toolbar actions, modal actions, etc.
+
+   Usage:
+   <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+   <button class="btn btn-secondary">Cancel</button>
+   <button class="btn btn-danger">Delete</button>
+*/
+.btn {
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary   { background: var(--app-accent); color: #fff }
+.btn-primary:hover   { opacity: .9 }
+.btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted) }
+.btn-secondary:hover { border-color: #bbb; color: var(--text) }
+.btn-danger    { background: var(--bg-danger); color: var(--c-danger) }
+.btn-danger:hover    { background: #fcdad7 }
+
+
+/* ── §24 CENTERED MODAL (.modal-*) ────────────────────────────────────
+   A centered dialog box — distinct from the §22 .ios-* bottom sheet.
+   Use .ios-* for full-screen mobile-style add/edit forms; use .modal-*
+   for smaller, desktop-friendly confirms, option panels, or short forms
+   that don't need the full-screen treatment.
+
+   Usage:
+   <div class="modal-overlay" id="myModal" onclick="closeOnBackdrop(event)">
+     <div class="modal-box" onclick="event.stopPropagation()">
+       <div class="modal-header">
+         <span class="profile-title">Title</span>
+         <button class="btn btn-secondary" onclick="closeMyModal()">✕</button>
+       </div>
+       <div class="modal-body">...</div>
+     </div>
+   </div>
+   JS: el.style.display = 'flex' to open, 'none' to close (default display: none)
+*/
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(12, 35, 64, 0.5);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 2000; padding: 16px;
+}
+.modal-box {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  width: 100%; max-width: 550px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.15);
+  animation: modalSlideIn .2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.modal-header {
+  background: var(--surface);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-body { padding: 16px }
+@keyframes modalSlideIn {
+  from { transform: translateY(12px); opacity: 0 }
+  to   { transform: translateY(0); opacity: 1 }
+}
+
+
+/* ── §25 GENERIC INPUT (.input-field) ─────────────────────────────────
+   A plain text input/select/textarea style, for forms outside the
+   §22 .ios-* sheet system (which has its own .ios-input convention).
+   Use .input-field for forms inside .modal-box or standalone cards.
+
+   Usage: <input class="input-field" type="text" placeholder="...">
+*/
+.input-field {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  font-size: var(--t-base);
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+.input-field:focus { border-color: var(--app-accent) }
+
+
+/* ── §26 COLLAPSIBLE CATEGORY HEADER (.category-*) ────────────────────
+   A clickable section header with a progress meter underneath —
+   for any app that groups items into collapsible categories with a
+   completion ratio (packing lists, checklists, etc).
+
+   Usage:
+   <div class="category-section">
+     <div class="category-header" onclick="toggleCollapse('Footwear')">
+       <div class="category-header-top">
+         <span class="category-title">
+           <span class="category-icon-width"><i class="fa-solid fa-chevron-down"></i></span>
+           Footwear
+         </span>
+         <span class="badge badge-neutral">3 / 4 Ready</span>
+       </div>
+       <div class="category-progress-container">
+         <div class="category-progress-bar" style="width:75%"></div>
+       </div>
+     </div>
+     <div class="category-items-container">...rows...</div>
+   </div>
+*/
+.category-section { margin-bottom: 16px }
+.category-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  display: flex; flex-direction: column;
+  cursor: pointer; user-select: none;
+  transition: background .15s;
+}
+.category-header:hover { background: #f1f5f9 }
+.category-header-top {
+  display: flex; justify-content: space-between; align-items: center; width: 100%;
+}
+.category-title {
+  font-size: var(--t-base); font-weight: 700; color: var(--text);
+  display: flex; align-items: center; gap: 8px;
+}
+.category-icon-width { width: 14px; text-align: center; color: var(--muted) }
+.category-progress-container {
+  width: 100%; background: var(--border2); border-radius: var(--r-sm);
+  height: 6px; margin-top: 8px; overflow: hidden;
+}
+.category-progress-bar {
+  background: var(--app-accent); height: 100%; width: 0%;
+  transition: width .3s ease;
+}

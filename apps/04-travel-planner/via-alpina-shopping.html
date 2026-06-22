@@ -40,23 +40,6 @@
             }
         }
 
-        /* Custom structural alignments for form layout elements */
-        .input-field {
-            width: 100%;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
-            padding: 8px 12px;
-            font-size: var(--t-base);
-            font-family: inherit;
-            color: var(--text);
-            outline: none;
-            transition: border-color .15s;
-        }
-        .input-field:focus {
-            border-color: var(--app-accent);
-        }
-
         /* Custom styled checkboxes matching the design language */
         .item-checkbox {
             width: 18px;
@@ -65,28 +48,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        /* Inline button components leveraging base tokens */
-        .btn {
-            padding: 6px 12px;
-            border-radius: var(--r-md);
-            font-size: var(--t-sm);
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all .15s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-        .btn-primary { background: var(--app-accent); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
-        .btn-secondary:hover { border-color: #bbb; color: var(--text); }
-        .btn-danger { background: var(--bg-danger); color: var(--c-danger); }
-        .btn-danger:hover { background: #fcdad7; }
 
         /* Scannable crossed out state for completed rows */
         .item-checked-text {
@@ -98,60 +59,6 @@
             font-size: var(--t-lg);
             font-weight: 700;
             color: var(--text);
-        }
-
-        /* Category Header Container Design styling elements */
-        .category-section {
-            margin-bottom: 16px;
-        }
-        .category-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
-            padding: 10px 14px;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.15s;
-        }
-        .category-header:hover {
-            background: #f1f5f9;
-        }
-        .category-header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .category-title {
-            font-size: var(--t-base);
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .category-icon-width {
-            width: 14px;
-            text-align: center;
-            color: var(--muted);
-        }
-        
-        /* Dynamic category-level track progress indicator status meter */
-        .category-progress-container {
-            width: 100%;
-            background: var(--border2);
-            border-radius: var(--r-sm);
-            height: 6px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        .category-progress-bar {
-            background: var(--app-accent);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
         }
 
         /* Mobile layout adaptations for row structure elements */
@@ -175,41 +82,7 @@
         }
 
         /* Modal Layout System Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(12, 35, 64, 0.5); /* Primary tint backdrop overlay */
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 16px;
-        }
-        .modal-box {
-            background: var(--white);
-            border-radius: var(--r-lg);
-            border: 1px solid var(--border);
-            width: 100%;
-            max-width: 550px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            animation: modalSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-        }
-        .modal-header {
-            background: var(--surface);
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-body {
-            padding: 16px;
-        }
+
         @keyframes modalSlideIn {
             from { transform: translateY(12px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -228,6 +101,7 @@
                 </div>
                 <div class="header-right">
                     <span class="header-badge" id="syncStatusBadge"><i class="fa-solid fa-cloud"></i> Syncing...</span>
+                    <button class="header-btn" id="tokenBtn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
                 </div>
             </div>
         </div>
@@ -317,25 +191,21 @@
                     <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> Append Item Entry</button>
                 </div>
 
-                <!-- Git Repository Sync and Authentication Config Controls Panel -->
+                <!-- Git Repository Sync Controls -->
                 <div style="margin-top: 20px; border-top: 1px solid var(--border2); padding-top: 14px;">
-                    <div class="sec-lbl" style="margin-bottom: 4px;">Storage & Git Version Control</div>
+                    <div class="sec-lbl" style="margin-bottom: 4px;">GitHub Sync</div>
                     <p style="font-size: 11px; color: var(--muted); margin: 0 0 10px 0; line-height: 1.3;">
-                        Data stores securely within your private repository ecosystem. Configure your Personal Access Token below to enable automated write-backs.
+                        Data syncs to your private repository. Use the 🔑 button in the header to set or update your Personal Access Token.
                     </p>
-                    <div class="flex-between" style="gap: 8px; flex-wrap: wrap;">
-                        <button class="btn btn-secondary" onclick="configureGitHubToken()" style="padding: 6px 12px;">
-                            <i class="fa-solid fa-key"></i> Set GitHub PAT
-                        </button>
-                        <button class="btn btn-secondary" onclick="fetchDataFromGitHub()" style="padding: 6px 12px;">
-                            <i class="fa-solid fa-rotate"></i> Force Pull Update
-                        </button>
-                    </div>
+                    <button class="btn btn-secondary" onclick="fetchDataFromGitHub(); closeAddItemModal();" style="padding: 6px 12px;">
+                        <i class="fa-solid fa-rotate"></i> Refresh from GitHub
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="../../shared/utils.js"></script>
     <script>
 // Core repository setup mapped exactly to your file tree structure
         const GITHUB_CONFIG = {
@@ -344,9 +214,6 @@
             path: "data/via-alpina.json",     
             branch: "main"
         };
-
-        let gitSha = null; 
-        let workingAuthPrefix = 'Bearer'; // Dynamically swaps to 'token' if classic PAT alignment is discovered
 
         // Core baseline data matrix pre-populated comprehensively with category divisions
         const initialDefaultItems = [
@@ -435,31 +302,22 @@
         let collapsedCategories = {};
         categoriesList.forEach(cat => { collapsedCategories[cat] = true; });
 
-        /* Remote Git Sync System Engine Controllers */
-        function getGitHubToken() {
-            return localStorage.getItem('sahani_suite_git_pat') || '';
-        }
-
-        function configureGitHubToken() {
-            const currentToken = getGitHubToken();
-            const tokenInput = prompt("Enter your GitHub Personal Access Token (PAT):", currentToken);
-            if (tokenInput !== null) {
-                localStorage.setItem('sahani_suite_git_pat', tokenInput.trim());
-                if (tokenInput.trim()) {
-                    fetchDataFromGitHub();
-                }
-            }
-        }
+        /* Remote Git Sync — delegates to ../../shared/utils.js
+           (syncToGitHub / fetchFromGitHub / promptForGitToken), which
+           already handles: cache-busted SHA fetch, in-flight + pending
+           queue to serialize same-tab syncs, automatic retry on 409/422
+           conflicts, and classified error messages. We only wire the
+           existing sync badge UI on top of it. */
 
         function updateSyncStatus(statusText, isError = false) {
             const badge = document.getElementById('syncStatusBadge');
-            badge.innerHTML = isError ? statusText : statusText;
+            badge.innerHTML = statusText;
             badge.style.background = isError ? "var(--bg-danger)" : "var(--app-primary2)";
             badge.style.color = isError ? "var(--c-danger)" : "var(--app-on-primary2)";
         }
 
         async function fetchDataFromGitHub() {
-            const token = getGitHubToken();
+            const token = localStorage.getItem('gh_pat_token');
             if (!token) {
                 updateSyncStatus("<i class='fa-solid fa-key'></i> Token Required", true);
                 listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
@@ -469,127 +327,43 @@
             }
 
             updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Pulling...");
-            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+            const remote = await fetchFromGitHub(GITHUB_CONFIG, '_fetchErrorSink');
 
-            try {
-                // Try retrieving via default 'Bearer' schema first
-                let response = await fetch(url, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Accept": "application/vnd.github.v3+json"
-                    }
-                });
-
-                // Dual-Auth Fallback Strategy: If masked as 404/401/403, retry instantly using the legacy 'token' schema prefix
-                if (!response.ok && (response.status === 401 || response.status === 403 || response.status === 404)) {
-                    const fallbackResponse = await fetch(url, {
-                        headers: {
-                            "Authorization": `token ${token}`,
-                            "Accept": "application/vnd.github.v3+json"
-                        }
-                    });
-                    if (fallbackResponse.ok) {
-                        response = fallbackResponse;
-                        workingAuthPrefix = 'token'; // Lock working prefix for future saves
-                    }
-                }
-
-                // If still a 404 after testing both header strategies, the path target is genuinely missing
-                if (response.status === 404) {
-                    listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
-                    gitSha = null;
-                    await pushDataToGitHub();
-                    return;
-                }
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const payload = await response.json();
-                gitSha = payload.sha;
-                
-                // Scrub whitespaces and convert base64 safely utilizing modern TextDecoder array mappings
-                const base64Clean = payload.content.replace(/\s/g, '');
-                const rawBinaryString = atob(base64Clean);
-                const bytes = Uint8Array.from(rawBinaryString, c => c.charCodeAt(0));
-                const rawJson = new TextDecoder("utf-8").decode(bytes);
-                
-                // Explicitly purge hidden BOM (\uFEFF) data entries introduced from web editors
-                const cleanJson = rawJson.trim().replace(/^\uFEFF/, '');
-                
-                listData = JSON.parse(cleanJson);
+            if (remote && remote.rishi && remote.marion) {
+                listData = remote;
                 updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Synced");
-                updateCounter();
-                renderList();
-            } catch (err) {
-                console.error(err);
-                
-                // High-precision diagnostic parsing to surface true blocker root causes instantly
-                let errorDiagnostics = err.message;
-                if (err instanceof SyntaxError) errorDiagnostics = "JSON Format Error";
-                if (err instanceof TypeError) errorDiagnostics = "Network/CORS Block";
-                
-                updateSyncStatus(`<i class="fa-solid fa-circle-xmark"></i> Pull Failed (${errorDiagnostics})`, true);
-                
-                if(!listData.rishi.length) {
-                    listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
-                    updateCounter();
-                    renderList();
-                }
+            } else {
+                // No file yet (first run) or fetch failed — seed defaults.
+                // If it's a genuine first run, push the seed immediately
+                // so the repo file exists for next time.
+                listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                updateSyncStatus("<i class='fa-solid fa-cloud-arrow-up'></i> Initializing...");
+                syncToGitHub(GITHUB_CONFIG, buildSyncPayload, 'syncSpinner');
             }
+            updateCounter();
+            renderList();
         }
 
-        async function pushDataToGitHub() {
-            const token = getGitHubToken();
-            if (!token) return;
-
-            updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Pushing...");
-            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-            
-            try {
-                const rawJsonString = JSON.stringify(listData, null, 2);
-                const base64Payload = btoa(unescape(encodeURIComponent(rawJsonString)));
-
-                const reqBody = {
-                    message: "Update packing state tracker matrix via Sahani Suite UI",
-                    content: base64Payload,
-                    branch: GITHUB_CONFIG.branch
-                };
-
-                if (gitSha) reqBody.sha = gitSha;
-
-                const response = await fetch(url, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `${workingAuthPrefix} ${token}`,
-                        "Content-Type": "application/json",
-                        "Accept": "application/vnd.github.v3+json"
-                    },
-                    body: JSON.stringify(reqBody)
-                });
-
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const resData = await response.json();
-                gitSha = resData.content.sha; 
-                updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Saved");
-            } catch (err) {
-                console.error(err);
-                updateSyncStatus(`Push Failed (${err.message})`, true);
-            }
+        /** Payload builder passed to syncToGitHub() — called at sync time. */
+        function buildSyncPayload() {
+            return listData;
         }
 
         function triggerStateMutationSave() {
             updateCounter();
-            pushDataToGitHub();
+            updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Saving...");
+            syncToGitHub(GITHUB_CONFIG, buildSyncPayload, 'syncSpinner')
+                .then(() => updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Saved"))
+                .catch(() => updateSyncStatus("<i class='fa-solid fa-circle-xmark'></i> Save failed", true));
         }
 
         /* Core UI Render and Event Handling Mechanisms */
-        function linkifyText(text) {
-            if (!text) return "";
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return text.replace(urlRegex, function(url) {
-                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-            });
+        // linkifyText() provided by ../../shared/utils.js
+
+        function escapeHtml(s) {
+            return String(s || '').replace(/[&<>"']/g, c =>
+                ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])
+            );
         }
 
         function updateCounter() {
@@ -732,11 +506,11 @@
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div>
                                     <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Item Name</label>
-                                    <input type="text" id="editName-${item.id}" class="input-field" value="${item.name}">
+                                    <input type="text" id="editName-${item.id}" class="input-field" value="${escapeHtml(item.name)}">
                                 </div>
                                 <div style="margin-bottom: var(--sp-2);">
                                     <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Notes & Links</label>
-                                    <textarea id="editNotes-${item.id}" class="input-field" style="resize: vertical; min-height: 60px;">${item.notes || ''}</textarea>
+                                    <textarea id="editNotes-${item.id}" class="input-field" style="resize: vertical; min-height: 60px;">${escapeHtml(item.notes || '')}</textarea>
                                 </div>
                             </div>
                             <div class="flex-between" style="gap: 8px;">
@@ -759,14 +533,14 @@
                                 <div class="ri-left-mobile">
                                     <input type="checkbox" class="item-checkbox" ${item.checked ? 'checked' : ''} onchange="toggleItemCheck(${item.id})">
                                     <span class="ri-name-mobile ${item.checked ? 'item-checked-text' : ''}" style="font-size: var(--t-base);">
-                                        ${item.name}
+                                        ${escapeHtml(item.name)}
                                     </span>
                                 </div>
                                 <button onclick="startInlineEdit(${item.id}, event)" class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; margin-top: -2px;"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                             </div>
                             ${item.notes ? `
                                 <div class="db-body" style="margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border2); color: var(--muted); font-size: 13px; word-break: break-word; overflow-wrap: anywhere; line-height: 1.4;">
-                                    ${linkifyText(item.notes)}
+                                    ${linkifyText(escapeHtml(item.notes))}
                                 </div>
                             ` : ''}
                         `;
@@ -785,5 +559,10 @@
             fetchDataFromGitHub();
         });
     </script>
+    <!-- Hidden sink for fetchFromGitHub error rendering on auth failure -->
+    <div id="_fetchErrorSink" style="display:none"></div>
+    <!-- Required by utils.js tooltip system -->
+    <div id="chartTooltip"></div>
+
 </body>
 </html>
