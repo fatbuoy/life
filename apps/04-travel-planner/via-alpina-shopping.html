@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Via Alpina Packing Tracker — Sahani Suite</title>
     
+    <!-- Favicon & Apple Touch Icon App Suite Assets -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M10 85 L50 20 L90 85 Z' fill='%23185fa5'/%3E%3Cpath d='M35 85 L50 50 L65 85 Z' fill='%230c2340'/%3E%3C/svg%3E">
     <link class="apple-touch-icon" rel="apple-touch-icon" href="../../images/icons/gear-list.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- Linked to the base design system -->
     <link rel="stylesheet" href="../../shared/base.css">
+    <!-- Font Awesome CDN for clean vector icons (No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -20,41 +23,38 @@
             --app-primary2:   #1a3a5c; /* Mid Navy Badges */
             --app-primary3:   #2d5a8a; /* Light Navy Borders */
             --app-accent:     #185fa5; /* Blue Actions/Checkboxes */
+            --app-accent-bright: #1d7ce8; /* Brighter high-contrast action blue */
             --app-on-primary:    #ffffff;
             --app-on-primary2:   #a8cfed;
             --app-on-primary3:   #7fa8cc;
         }
 
-        /* Header Profile Switcher Overrides */
-        .header-left {
+        /* Premium Profile Switcher Segmented Deck Control */
+        .user-switcher-deck {
             display: flex;
-            align-items: center;
+            background: var(--border2);
+            padding: 3px;
+            border-radius: var(--r-md);
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
         }
-        .header-profiles {
-            display: inline-flex;
-            gap: 4px;
-            margin-left: 12px;
-        }
-        .header-profiles .header-btn {
-            background: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.85);
-            border: none;
-            padding: 4px 10px;
-            border-radius: var(--r-sm, 4px);
-            font-size: 12px;
+        .user-switch-btn {
+            flex: 1;
+            text-align: center;
+            padding: 6px var(--sp-3);
+            font-size: var(--t-sm);
             font-weight: 600;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            border-radius: calc(var(--r-md) - 2px);
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.15s ease;
         }
-        .header-profiles .header-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: #fff;
-        }
-        .header-profiles .header-btn.active {
-            background: #ffffff !important;
-            color: var(--app-primary) !important;
-            opacity: 1 !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        .user-switch-btn.active {
+            background: var(--white);
+            color: var(--app-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         /* Responsive grid adjustment for forms */
@@ -69,23 +69,6 @@
             }
         }
 
-        /* Custom structural alignments for form layout elements */
-        .input-field {
-            width: 100%;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
-            padding: 8px 12px;
-            font-size: var(--t-base);
-            font-family: inherit;
-            color: var(--text);
-            outline: none;
-            transition: border-color .15s;
-        }
-        .input-field:focus {
-            border-color: var(--app-accent);
-        }
-
         /* Custom styled checkboxes matching the design language */
         .item-checkbox {
             width: 18px;
@@ -94,28 +77,6 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
-        /* Inline button components leveraging base tokens */
-        .btn {
-            padding: 6px 12px;
-            border-radius: var(--r-md);
-            font-size: var(--t-sm);
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all .15s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
-        .btn-primary { background: var(--app-accent); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
-        .btn-secondary:hover { border-color: #bbb; color: var(--text); }
-        .btn-danger { background: var(--bg-danger); color: var(--c-danger); }
-        .btn-danger:hover { background: #fcdad7; }
 
         /* Scannable crossed out state for completed rows */
         .item-checked-text {
@@ -127,60 +88,6 @@
             font-size: var(--t-lg);
             font-weight: 700;
             color: var(--text);
-        }
-
-        /* Category Header Container Design styling elements */
-        .category-section {
-            margin-bottom: 16px;
-        }
-        .category-header {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--r-md);
-            padding: 10px 14px;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.15s;
-        }
-        .category-header:hover {
-            background: #f1f5f9;
-        }
-        .category-header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .category-title {
-            font-size: var(--t-base);
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .category-icon-width {
-            width: 14px;
-            text-align: center;
-            color: var(--muted);
-        }
-        
-        /* Dynamic category-level track progress indicator status meter */
-        .category-progress-container {
-            width: 100%;
-            background: var(--border2);
-            border-radius: var(--r-sm);
-            height: 6px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-        .category-progress-bar {
-            background: var(--app-accent);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
         }
 
         /* Mobile layout adaptations for row structure elements */
@@ -203,42 +110,6 @@
             line-height: 1.4;
         }
 
-        /* Modal Layout System Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(12, 35, 64, 0.5); /* Primary tint backdrop overlay */
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 16px;
-        }
-        .modal-box {
-            background: var(--white);
-            border-radius: var(--r-lg);
-            border: 1px solid var(--border);
-            width: 100%;
-            max-width: 550px;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            animation: modalSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-        }
-        .modal-header {
-            background: var(--surface);
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-body {
-            padding: 16px;
-        }
         @keyframes modalSlideIn {
             from { transform: translateY(12px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -247,21 +118,18 @@
 </head>
 <body>
 
+    <!-- Ultra-clean streamlined layout header pattern -->
     <header class="header">
         <div class="container">
-            <div class="header-row">
-                <div class="header-left">
+            <div class="header-row" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div class="header-left" style="display: flex; align-items: center; gap: 8px;">
                     <a class="header-home" href="../../index.html" title="Hub">⌂</a>
-                    <span class="header-title">Via Alpina Packing Tracker</span>
-                    <div class="header-profiles">
-                        <button class="header-btn active" id="prof-rishi" onclick="switchUser('rishi')">Rishi</button>
-                        <button class="header-btn" id="prof-marion" onclick="switchUser('marion')">Marion</button>
-                    </div>
+                    <span class="header-title" style="white-space: nowrap;">Via Alpina Gear-List</span>
                 </div>
-                <div class="header-right">
-                    <span class="header-badge" id="syncStatusBadge"><i class="fa-solid fa-cloud"></i> Syncing...</span>
-                    <button class="header-btn" onclick="fetchDataFromGitHub()" title="Refresh from GitHub">↻</button>
-                    <button class="header-btn" id="tokenBtn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
+                <div class="header-right" style="display: flex; align-items: center; gap: 6px;">
+                    <span class="header-badge" id="syncStatusBadge" style="font-size: 11px; padding: 4px 8px; white-space: nowrap;"><i class="fa-solid fa-cloud"></i> Syncing...</span>
+                    <button class="header-btn" onclick="fetchDataFromGitHub()" title="Refresh from GitHub" style="padding: 4px 8px;">↻</button>
+                    <button class="header-btn" id="tokenBtn" onclick="promptForGitToken()" title="Set GitHub token" style="padding: 4px 8px;">🔑</button>
                 </div>
             </div>
         </div>
@@ -269,29 +137,38 @@
 
     <main class="container" style="padding-left: 12px; padding-right: 12px; margin-top: 16px;">
         
+        <!-- Native User Switching Control Deck Layout Segment -->
+        <div class="user-switcher-deck">
+            <button class="user-switch-btn" id="prof-rishi" onclick="switchUser('rishi')">Rishi</button>
+            <button class="user-switch-btn" id="prof-marion" onclick="switchUser('marion')">Marion</button>
+        </div>
+
+        <!-- Filter pills + Smart Explicit Toggle + Add Item -->
         <div class="mb-3" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <div class="filter-pill-bar" style="margin-bottom: 0; flex: 1;">
-                <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')">All Items</button>
-                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')"><i class="fa-solid fa-circle-check"></i> Ready</button>
-                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
+            <div class="filter-pill-bar" style="margin-bottom: 0; flex: 1; display: flex; gap: 4px;">
+                <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0;">All Items</button>
+                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Ready</button>
+                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0; gap: 4px;"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
             </div>
             <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                <button class="btn btn-secondary" id="globalCollapseToggle" onclick="toggleAllCollapse()" title="Toggle Expand/Collapse All" style="padding: 0; width: 34px; height: 34px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border-radius: var(--r-md);">⊞</button>
-                <button class="filter-pill" onclick="openAddItemModal()" style="background: var(--app-accent); color: #fff; border-color: var(--app-accent); margin: 0; height: 34px; display: inline-flex; align-items: center;">
+                <button class="btn btn-secondary" id="globalCollapseToggle" onclick="toggleAllCollapse()" title="Toggle Expand/Collapse All" style="padding: 0; width: 34px; height: 34px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border-radius: var(--r-md); margin: 0; box-sizing: border-box;">⊞</button>
+                <button class="filter-pill" onclick="openAddItemModal()" style="background: var(--app-accent-bright); color: #fff; border-color: var(--app-accent-bright); margin: 0; height: 34px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; font-weight: 600; gap: 4px;">
                     <i class="fa-solid fa-plus"></i> Add Item
                 </button>
             </div>
         </div>
 
+        <!-- Container target for JavaScript DOM injection -->
         <div id="itemsContainer"></div>
 
     </main>
 
+    <!-- Add Item Modal -->
     <div id="addItemModal" class="modal-overlay" onclick="closeAddItemModalOutside(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <span class="profile-title" style="font-size: var(--t-base); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-plus" style="color: var(--app-accent);"></i> Add Item
+                    <i class="fa-solid fa-plus" style="color: var(--app-accent-bright);"></i> Add Item
                 </span>
                 <button class="btn btn-secondary" style="padding: 4px 8px; border: none; background: transparent;" onclick="closeAddItemModal()"><i class="fa-solid fa-xmark" style="font-size: var(--t-base);"></i></button>
             </div>
@@ -322,7 +199,7 @@
                     <input type="text" id="newItemNotes" class="input-field" placeholder="Notes or links (https://...)">
                 </div>
                 <div style="margin-top: 16px;">
-                    <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> Add to List</button>
+                    <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center; background: var(--app-accent-bright);"><i class="fa-solid fa-plus"></i> Add to List</button>
                 </div>
             </div>
         </div>
@@ -337,78 +214,8 @@
             branch: "main"
         };
 
-        // Core baseline data matrix pre-populated comprehensively with category divisions
-        const initialDefaultItems = [
-            // Footwear
-            { id: 101, category: "Footwear", name: "Trekking boots, lightweight mid-cut (1 pair)", notes: "[Need to Buy] Salomon X Ultra 5 Mid GTX or La Sportiva Ultra Raptor 3 Mid — buy now, needs break-in miles before late July", checked: false },
-            { id: 102, category: "Footwear", name: "Hut/town shoes (1 pair)", notes: "[Need to Buy] Lightweight packable sandals or foam slip-ons (~150–200g) — most huts require swapping out of boots", checked: false },
-            { id: 103, category: "Footwear", name: "Trail running shoes (1 pair)", notes: "[Need to Buy] Saucony Peregrine 16 (versatile all-rounder, Vibram Megagrip, reasonably light) or Altra Lone Peak 9 (wider toe box, zero-drop, very popular with hikers too) — both pack down far smaller than the NovaBlast 5/Endorphin Pro and double as your go-to for future light day hikes", checked: false },
-            { id: 104, category: "Footwear", name: "Hiking socks", notes: "[Own + Buy] You have 2 pairs Mountain Hardwear (synthetic); add 1–2 more — ideally merino, for odor/moisture control over 22 days — for a safe 3–4 pair rotation", checked: false },
-            
-            // Lower Body Clothing
-            { id: 201, category: "Lower Body Clothing", name: "Hiking shorts (Northface Speedlight) (1)", notes: "[Own] Primary daytime bottom", checked: true },
-            { id: 202, category: "Lower Body Clothing", name: "Hiking pants (Arc'teryx Konseal) (1)", notes: "[Own] Cold/wind days, evenings, bug protection", checked: true },
-            { id: 203, category: "Lower Body Clothing", name: "Rain pants (North Face Hyvent 2.5L) (1)", notes: "[Own] Already covered", checked: true },
-            { id: 204, category: "Lower Body Clothing", name: "Underwear (Jockey sport/quick-dry) (4)", notes: "[Own] Confirmed sufficient with periodic laundry", checked: true },
-            { id: 205, category: "Lower Body Clothing", name: "Gaiters (lightweight) (1 pair)", notes: "[Decision Needed] Conditional — only if Stage 13 Blüemlisalphütte high route or late-season snow patches are in play", checked: false },
-            
-            // Upper Body & Insulation
-            { id: 301, category: "Upper Body & Insulation", name: "Hiking t-shirt / long-sleeve technical shirts (On, Hoka) (2–3 total)", notes: "[Own] Rotate: 1 worn, 1 drying, 1 spare", checked: true },
-            { id: 302, category: "Upper Body & Insulation", name: "Columbia long-sleeve hiking shirt (1)", notes: "[Own] Sun protection / cooler days", checked: true },
-            { id: 303, category: "Upper Body & Insulation", name: "Midweight fleece or merino layer (1)", notes: "[Need to Buy] Gap layer between base layers and the down jacket — needed for cold, windy pass crossings", checked: false },
-            { id: 304, category: "Upper Body & Insulation", name: "Uniqlo ultralight down jacket (1)", notes: "[Own] Static/evening insulation", checked: true },
-            { id: 305, category: "Upper Body & Insulation", name: "Rain shell — Mammut Dry Tech Premium (1)", notes: "[Own] Recommended primary over the Norvan SL: pit zips matter on long sustained climbs, and Gore-Tex Shakedry fabric is well known for abrading/delaminating against loaded pack straps over multi-week use — a real risk with a packed Salomon Peak 30L worn daily for 22 days. Leave the Norvan SL home, or bring it only as a featherweight spare if there's room", checked: true },
-            { id: 306, category: "Upper Body & Insulation", name: "Evening/sleep top (optional) (0–1)", notes: "A spare shirt can double as sleepwear; skip a dedicated piece", checked: false },
-            
-            // Head, Hands, Accessories
-            { id: 401, category: "Head, Hands, Accessories", name: "Buff (1)", notes: "[Own]", checked: true },
-            { id: 402, category: "Head, Hands, Accessories", name: "Sunglasses (1)", notes: "[Own]", checked: true },
-            { id: 403, category: "Head, Hands, Accessories", name: "Lightweight gloves (1 pair)", notes: "[Own]", checked: true },
-            { id: 404, category: "Head, Hands, Accessories", name: "Warm hat/beanie (1)", notes: "[Own] Your wool hats are fine — no need for a dedicated 'technical' one", checked: true },
-            { id: 405, category: "Head, Hands, Accessories", name: "Sun hat with brim (1)", notes: "[Need to Buy] Adds face/ear/neck shade — pairs with long sleeves and buff to cut down sunscreen needs", checked: false },
-            
-            // Sleep System
-            { id: 501, category: "Sleep System", name: "Silk sleeping bag liner (1)", notes: "[Need to Buy] Required or strongly preferred at most huts even with bedding provided (~150g)", checked: false },
-            { id: 502, category: "Sleep System", name: "Earplugs", notes: "[Own] Dorm-style huts get loud", checked: true },
-            { id: 503, category: "Sleep System", name: "Eye mask", notes: "[Own]", checked: true },
-            
-            // Pack & Hydration
-            { id: 601, category: "Pack & Hydration", name: "Salomon Peak 30L (1)", notes: "[Own]", checked: true },
-            { id: 602, category: "Pack & Hydration", name: "Pack liner / dry bags (1–2)", notes: "[Need to Buy] Waterproofs contents without relying on a separate rain cover", checked: false },
-            { id: 603, category: "Pack & Hydration", name: "Sigg aluminium bottles (2)", notes: "[Own] (verify) Confirm combined capacity ≥1.5L", checked: true },
-            { id: 604, category: "Pack & Hydration", name: "Water purification tablets (1 pack)", notes: "[Need to Buy] For stream refills between huts/hotels", checked: false },
-            
-            // Navigation & Electronics
-            { id: 701, category: "Navigation & Electronics", name: "Headlamp + spare batteries (1)", notes: "[Need to Buy] Pre-dawn starts, hut common areas after lights-out", checked: false },
-            { id: 702, category: "Navigation & Electronics", name: "Power bank (1)", notes: "[Need to Buy] Small (5,000–10,000mAh) — huts rarely have ample outlets", checked: false },
-            { id: 703, category: "Navigation & Electronics", name: "Charging cables", notes: "[Need to Buy] as needed", checked: false },
-            { id: 704, category: "Navigation & Electronics", name: "Phone with offline maps (SwitzerlandMobility)", notes: "[Own] Already part of your planning workflow", checked: true },
-            
-            // Health & Hygiene
-            { id: 801, category: "Health & Hygiene", name: "Blister kit (Compeed) (small)", notes: "[Need to Buy] Non-negotiable for 22 consecutive days", checked: false },
-            { id: 802, category: "Health & Hygiene", name: "Leukotape (1 roll)", notes: "[Need to Buy] Preventative taping for hot spots", checked: false },
-            { id: 803, category: "Health & Hygiene", name: "Personal first aid + meds (small kit)", notes: "[Need to Buy]", checked: false },
-            { id: 804, category: "Health & Hygiene", name: "Sunscreen, high SPF (1 small stick ~20g)", notes: "[Need to Buy] Long sleeves + buff + brimmed hat cover most skin, but face, ears, and hands stay exposed — scale down to a small stick rather than a full tube, don't skip it entirely", checked: false },
-            { id: 805, category: "Health & Hygiene", name: "SPF lip balm (1)", notes: "[Need to Buy]", checked: false },
-            { id: 806, category: "Health & Hygiene", name: "Quick-dry travel towel (1)", notes: "[Own]", checked: true },
-            { id: 807, category: "Health & Hygiene", name: "Travel soap/wash (1 small)", notes: "[Need to Buy] Doubles as laundry soap for sink-washing socks/underwear", checked: false },
-            { id: 808, category: "Health & Hygiene", name: "Toothbrush/toothpaste (travel size)", notes: "[Need to Buy]", checked: false },
-            
-            // Repair & Misc
-            { id: 901, category: "Repair & Misc", name: "Gear repair tape (Tenacious Tape) (small strip)", notes: "[Need to Buy]", checked: false },
-            { id: 902, category: "Repair & Misc", name: "Spare trekking pole tip (1)", notes: "[Need to Buy]", checked: false },
-            { id: 903, category: "Repair & Misc", name: "Mountain Hardwear poles (1 pair)", notes: "[Own]", checked: true },
-            { id: 904, category: "Repair & Misc", name: "Small ziplock/stuff bags (a few)", notes: "[Need to Buy] Organization, keeps wet/dry separated", checked: false },
-            
-            // Documents & Money
-            { id: 1001, category: "Documents & Money", name: "ID / passport", notes: "[Own] (assumed)", checked: true },
-            { id: 1002, category: "Documents & Money", name: "Accommodation confirmations", notes: "[Own] Already booked per your stage planner", checked: true },
-            { id: 1003, category: "Documents & Money", name: "Cash (CHF)", notes: "[Need to Buy] Many huts are cash-only", checked: false },
-            { id: 1004, category: "Documents & Money", name: "Cards", notes: "[Own] (assumed)", checked: true }
-        ];
-
-        // UI Context Core State Tracker Variables
-        let currentUser = 'rishi';
+        // UI Context Core State Tracker Variables - Persistent profile setup
+        let currentUser = localStorage.getItem('via_alpina_profile') || 'rishi';
         let currentFilter = 'all';
         let editingItemId = null;
         let listData = { rishi: [], marion: [] };
@@ -433,7 +240,6 @@
                 if (allCatItems.length > 0) {
                     const readyCount = allCatItems.filter(i => i.checked).length;
                     const totalCount = allCatItems.length;
-                    // Automatically collapse fully packed categories, expand those needing items
                     collapsedCategories[cat] = (readyCount === totalCount);
                 } else {
                     collapsedCategories[cat] = true;
@@ -441,10 +247,7 @@
             });
         }
 
-        /* ── Sync — delegates to ../../shared/utils.js ──────────────────
-           syncToGitHub: SHA-conflict retry, in-flight queue, cache-busting
-           fetchFromGitHub: UTF-8 safe decode, classified error messages   */
-
+        /* ── Sync — delegates to ../../shared/utils.js ────────────────── */
         function updateSyncStatus(statusText, isError = false) {
             currentSyncText = statusText;
             currentSyncError = isError;
@@ -473,7 +276,7 @@
             const token = localStorage.getItem('gh_pat_token');
             if (!token) {
                 updateSyncStatus("<i class='fa-solid fa-key'></i> Token Required", true);
-                listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                listData = { rishi: [], marion: [] };
                 initializeSmartCollapse();
                 updateCounter();
                 renderList();
@@ -485,7 +288,7 @@
                 listData = remote;
                 updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Synced");
             } else {
-                listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                listData = { rishi: [], marion: [] };
                 updateSyncStatus("<i class='fa-solid fa-cloud-arrow-up'></i> Initializing...");
                 syncToGitHub(GITHUB_CONFIG, () => listData, 'syncSpinner');
             }
@@ -513,8 +316,10 @@
             renderSyncBadge();
         }
 
+        // Context Switcher Core Setup Elements with localStorage integration
         function switchUser(user) {
             currentUser = user;
+            localStorage.setItem('via_alpina_profile', user);
             editingItemId = null;
             document.getElementById('prof-rishi').classList.toggle('active', user === 'rishi');
             document.getElementById('prof-marion').classList.toggle('active', user === 'marion');
@@ -531,6 +336,7 @@
             renderList();
         }
 
+        // Dropdown Collapsibles
         function toggleCategoryCollapse(catName) {
             collapsedCategories[catName] = !collapsedCategories[catName];
             renderList();
@@ -542,6 +348,7 @@
             renderList();
         }
 
+        // // UX Control Element Sync
         function updateCollapseToggleIcon() {
             const btn = document.getElementById('globalCollapseToggle');
             if (!btn) return;
@@ -557,7 +364,12 @@
         function closeAddItemModal() { document.getElementById('addItemModal').style.display = 'none'; document.body.style.overflow = ''; }
         function closeAddItemModalOutside(e) { if (e.target.id === 'addItemModal') closeAddItemModal(); }
 
-        document.addEventListener("DOMContentLoaded", () => { fetchDataFromGitHub(); });
+        document.addEventListener("DOMContentLoaded", () => { 
+            // Synchronize the switcher visual state to look accurate immediately before data pull completes
+            document.getElementById('prof-rishi').classList.toggle('active', currentUser === 'rishi');
+            document.getElementById('prof-marion').classList.toggle('active', currentUser === 'marion');
+            fetchDataFromGitHub(); 
+        });
 
         function addItem() {
             const nameInput = document.getElementById('newItemName');
@@ -651,7 +463,7 @@
                         editCard.className = "card";
                         editCard.style.marginBottom = "8px";
                         editCard.innerHTML = `
-                            <div class="sec-lbl" style="color: var(--app-accent); font-size: 11px;">Editing Item Details</div>
+                            <div class="sec-lbl" style="color: var(--app-accent-bright); font-size: 11px;">Editing Item Details</div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 <div>
                                     <label class="sec-lbl" style="font-size: 9px; display:block; margin-bottom:2px;">Item Name</label>
@@ -666,7 +478,7 @@
                                 <button onclick="deleteItem(${item.id}, event)" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Delete</button>
                                 <div class="flex gap-2">
                                     <button onclick="cancelEdit(event)" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> Cancel</button>
-                                    <button onclick="saveInlineEdit(${item.id}, event)" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                                    <button onclick="saveInlineEdit(${item.id}, event)" class="btn btn-primary" style="background: var(--app-accent-bright);"><i class="fa-solid fa-floppy-disk"></i> Save</button>
                                 </div>
                             </div>
                         `;
@@ -700,13 +512,20 @@
             });
 
             if (container.children.length === 0) {
-                container.innerHTML = `<div class="notice notice-info"><div class="notice-body">No packing tracker items found matching the selected filters.</div></div>`;
+                const missingToken = !localStorage.getItem('gh_pat_token');
+                const infoMessage = missingToken 
+                    ? "Access Denied. Please provide a valid token via the key icon above to load the packing list tracker elements." 
+                    : "No packing tracker items found matching the selected filters.";
+                container.innerHTML = `<div class="notice notice-info"><div class="notice-body">${infoMessage}</div></div>`;
             }
         }
     </script>
 
+    <!-- Shared Sahani Suite utilities (sync, token prompt, linkifyText) -->
     <script src="../../shared/utils.js"></script>
+    <!-- Hidden sink for fetchFromGitHub error rendering on auth failure -->
     <div id="_fetchErrorSink" style="display:none"></div>
+    <!-- Required by utils.js tooltip system -->
     <div id="chartTooltip"></div>
 </body>
 </html>
