@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Via Alpina Packing Tracker — Sahani Suite</title>
     
-    <!-- Favicon & Apple Touch Icon App Suite Assets -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M10 85 L50 20 L90 85 Z' fill='%23185fa5'/%3E%3Cpath d='M35 85 L50 50 L65 85 Z' fill='%230c2340'/%3E%3C/svg%3E">
     <link class="apple-touch-icon" rel="apple-touch-icon" href="../../images/icons/gear-list.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Linked to the base design system -->
     <link rel="stylesheet" href="../../shared/base.css">
-    <!-- Font Awesome CDN for clean vector icons (No Emojis) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -28,6 +25,38 @@
             --app-on-primary3:   #7fa8cc;
         }
 
+        /* Header Profile Switcher Overrides */
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .header-profiles {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 12px;
+        }
+        .header-profiles .header-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+            border: none;
+            padding: 4px 10px;
+            border-radius: var(--r-sm, 4px);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .header-profiles .header-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
+        }
+        .header-profiles .header-btn.active {
+            background: #ffffff !important;
+            color: var(--app-primary) !important;
+            opacity: 1 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
         /* Responsive grid adjustment for forms */
         .responsive-form-grid {
             display: grid;
@@ -40,6 +69,23 @@
             }
         }
 
+        /* Custom structural alignments for form layout elements */
+        .input-field {
+            width: 100%;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 8px 12px;
+            font-size: var(--t-base);
+            font-family: inherit;
+            color: var(--text);
+            outline: none;
+            transition: border-color .15s;
+        }
+        .input-field:focus {
+            border-color: var(--app-accent);
+        }
+
         /* Custom styled checkboxes matching the design language */
         .item-checkbox {
             width: 18px;
@@ -48,6 +94,28 @@
             cursor: pointer;
             flex-shrink: 0;
         }
+
+        /* Inline button components leveraging base tokens */
+        .btn {
+            padding: 6px 12px;
+            border-radius: var(--r-md);
+            font-size: var(--t-sm);
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .15s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn-primary { background: var(--app-accent); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+        .btn-secondary:hover { border-color: #bbb; color: var(--text); }
+        .btn-danger { background: var(--bg-danger); color: var(--c-danger); }
+        .btn-danger:hover { background: #fcdad7; }
 
         /* Scannable crossed out state for completed rows */
         .item-checked-text {
@@ -59,6 +127,60 @@
             font-size: var(--t-lg);
             font-weight: 700;
             color: var(--text);
+        }
+
+        /* Category Header Container Design styling elements */
+        .category-section {
+            margin-bottom: 16px;
+        }
+        .category-header {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .category-header:hover {
+            background: #f1f5f9;
+        }
+        .category-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .category-title {
+            font-size: var(--t-base);
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category-icon-width {
+            width: 14px;
+            text-align: center;
+            color: var(--muted);
+        }
+        
+        /* Dynamic category-level track progress indicator status meter */
+        .category-progress-container {
+            width: 100%;
+            background: var(--border2);
+            border-radius: var(--r-sm);
+            height: 6px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .category-progress-bar {
+            background: var(--app-accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         /* Mobile layout adaptations for row structure elements */
@@ -82,7 +204,41 @@
         }
 
         /* Modal Layout System Styles */
-
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(12, 35, 64, 0.5); /* Primary tint backdrop overlay */
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--r-lg);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            animation: modalSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+        .modal-header {
+            background: var(--surface);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 16px;
+        }
         @keyframes modalSlideIn {
             from { transform: translateY(12px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -91,82 +247,62 @@
 </head>
 <body>
 
-    <!-- Header Pattern (§5) pointing directly to Hub -->
     <header class="header">
         <div class="container">
             <div class="header-row">
                 <div class="header-left">
                     <a class="header-home" href="../../index.html" title="Hub">⌂</a>
                     <span class="header-title">Via Alpina Packing Tracker</span>
+                    <div class="header-profiles">
+                        <button class="header-btn active" id="prof-rishi" onclick="switchUser('rishi')">Rishi</button>
+                        <button class="header-btn" id="prof-marion" onclick="switchUser('marion')">Marion</button>
+                    </div>
                 </div>
                 <div class="header-right">
                     <span class="header-badge" id="syncStatusBadge"><i class="fa-solid fa-cloud"></i> Syncing...</span>
+                    <button class="header-btn" onclick="fetchDataFromGitHub()" title="Refresh from GitHub">↻</button>
                     <button class="header-btn" id="tokenBtn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="container" style="padding-left: 12px; padding-right: 12px;">
+    <main class="container" style="padding-left: 12px; padding-right: 12px; margin-top: 16px;">
         
-        <!-- App Profile Selection Control Panel — Built using Period/Year Strip Pattern (§14) -->
-        <div class="mb-3">
-            <div class="sec-lbl">Active Hiker Profile</div>
-            <div class="period-strip">
-                <button class="period-btn active" id="prof-rishi" onclick="switchUser('rishi')">Rishi</button>
-                <button class="period-btn" id="prof-marion" onclick="switchUser('marion')">Marion</button>
+        <div class="mb-3" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <div class="filter-pill-bar" style="margin-bottom: 0; flex: 1;">
+                <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')">All Items</button>
+                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')"><i class="fa-solid fa-circle-check"></i> Ready</button>
+                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <button class="btn btn-secondary" id="globalCollapseToggle" onclick="toggleAllCollapse()" title="Toggle Expand/Collapse All" style="padding: 0; width: 34px; height: 34px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border-radius: var(--r-md);">⊞</button>
+                <button class="filter-pill" onclick="openAddItemModal()" style="background: var(--app-accent); color: #fff; border-color: var(--app-accent); margin: 0; height: 34px; display: inline-flex; align-items: center;">
+                    <i class="fa-solid fa-plus"></i> Add Item
+                </button>
             </div>
         </div>
 
-        <!-- Filter Controls & Add Action Module Row Combo Panel -->
-        <div class="mb-3 flex-between" style="gap: 12px; flex-wrap: wrap; align-items: flex-end;">
-            <div style="flex: 1; min-width: 240px;">
-                <div class="sec-lbl">Filter Packing Status</div>
-                <div class="filter-pill-bar" style="overflow-x: auto; white-space: nowrap; padding-bottom: 4px; display: inline-flex; gap: 6px; width: 100%;">
-                    <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')">All Items</button>
-                    <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')"><i class="fa-solid fa-circle-check"></i> Ready</button>
-                    <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="openAddItemModal()" style="margin-bottom: 4px; height: 34px;"><i class="fa-solid fa-plus"></i> Options & Add Item</button>
-        </div>
-
-        <!-- Master Packing List Toolbar Status and Bulk Actions Row -->
-        <div class="flex-between mb-2" style="gap: 8px; flex-wrap: wrap; align-items: center;">
-            <div>
-                <span class="profile-title" id="activeProfileLabel">Rishi's Packing List</span>
-                <span class="badge badge-neutral" id="listCounter" style="margin-left: 4px;">0 / 0 Packed</span>
-            </div>
-            <div class="flex gap-2">
-                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="setAllCollapseState(false)"><i class="fa-solid fa-folder-open"></i> Expand All</button>
-                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="setAllCollapseState(true)"><i class="fa-solid fa-folder"></i> Collapse All</button>
-            </div>
-        </div>
-
-        <!-- Container target for JavaScript DOM injection -->
         <div id="itemsContainer"></div>
 
     </main>
 
-    <!-- Operational Config / Creation Workspace Modal Module -->
     <div id="addItemModal" class="modal-overlay" onclick="closeAddItemModalOutside(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <span class="profile-title" style="font-size: var(--t-base); display: flex; align-items: center; gap: 8px;">
-                    <i class="fa-solid fa-sliders" style="color: var(--app-accent);"></i> Profile Options & New Item
+                    <i class="fa-solid fa-plus" style="color: var(--app-accent);"></i> Add Item
                 </span>
                 <button class="btn btn-secondary" style="padding: 4px 8px; border: none; background: transparent;" onclick="closeAddItemModal()"><i class="fa-solid fa-xmark" style="font-size: var(--t-base);"></i></button>
             </div>
             <div class="modal-body">
-                <div class="sec-lbl" style="margin-bottom: 8px;">Add New Item to Active Profile</div>
-                
                 <div class="responsive-form-grid">
                     <div>
                         <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Item Name</label>
                         <input type="text" id="newItemName" class="input-field" placeholder="e.g., Salomon X Ultra Boots">
                     </div>
                     <div>
-                        <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Category Selection</label>
+                        <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Category</label>
                         <select id="newItemCategory" class="input-field" style="height: 37px; -webkit-appearance: menulist; appearance: menulist;">
                             <option value="Footwear">Footwear</option>
                             <option value="Lower Body Clothing">Lower Body Clothing</option>
@@ -181,33 +317,19 @@
                         </select>
                     </div>
                 </div>
-                
                 <div style="margin-top: 10px;">
                     <label class="sec-lbl" style="font-size: 10px; margin-bottom: 2px; display: block;">Notes or Links</label>
                     <input type="text" id="newItemNotes" class="input-field" placeholder="Notes or links (https://...)">
                 </div>
-
-                <div style="margin-top: 16px; margin-bottom: 4px;">
-                    <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> Append Item Entry</button>
-                </div>
-
-                <!-- Git Repository Sync Controls -->
-                <div style="margin-top: 20px; border-top: 1px solid var(--border2); padding-top: 14px;">
-                    <div class="sec-lbl" style="margin-bottom: 4px;">GitHub Sync</div>
-                    <p style="font-size: 11px; color: var(--muted); margin: 0 0 10px 0; line-height: 1.3;">
-                        Data syncs to your private repository. Use the 🔑 button in the header to set or update your Personal Access Token.
-                    </p>
-                    <button class="btn btn-secondary" onclick="fetchDataFromGitHub(); closeAddItemModal();" style="padding: 6px 12px;">
-                        <i class="fa-solid fa-rotate"></i> Refresh from GitHub
-                    </button>
+                <div style="margin-top: 16px;">
+                    <button class="btn btn-primary" onclick="addItem()" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> Add to List</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../../shared/utils.js"></script>
     <script>
-// Core repository setup mapped exactly to your file tree structure
+        // Core repository setup mapped exactly to your file tree structure
         const GITHUB_CONFIG = {
             owner: "fatbuoy", 
             repo: "app-data",       
@@ -290,6 +412,8 @@
         let currentFilter = 'all';
         let editingItemId = null;
         let listData = { rishi: [], marion: [] };
+        let currentSyncText = "<i class='fa-solid fa-cloud'></i> Syncing...";
+        let currentSyncError = false;
 
         // Available application category block definition map
         const categoriesList = [
@@ -298,22 +422,51 @@
             "Navigation & Electronics", "Health & Hygiene", "Repair & Misc", "Documents & Money"
         ];
 
-        // Collapsible configuration track index — DEFAULT: All collapsed on load layout
+        // Collapsible configuration track index
         let collapsedCategories = {};
-        categoriesList.forEach(cat => { collapsedCategories[cat] = true; });
 
-        /* Remote Git Sync — delegates to ../../shared/utils.js
-           (syncToGitHub / fetchFromGitHub / promptForGitToken), which
-           already handles: cache-busted SHA fetch, in-flight + pending
-           queue to serialize same-tab syncs, automatic retry on 409/422
-           conflicts, and classified error messages. We only wire the
-           existing sync badge UI on top of it. */
+        // Intelligent default behavior states initialized contextually
+        function initializeSmartCollapse() {
+            const activeItems = listData[currentUser] || [];
+            categoriesList.forEach(cat => {
+                const allCatItems = activeItems.filter(item => (item.category || "Footwear") === cat);
+                if (allCatItems.length > 0) {
+                    const readyCount = allCatItems.filter(i => i.checked).length;
+                    const totalCount = allCatItems.length;
+                    // Automatically collapse fully packed categories, expand those needing items
+                    collapsedCategories[cat] = (readyCount === totalCount);
+                } else {
+                    collapsedCategories[cat] = true;
+                }
+            });
+        }
+
+        /* ── Sync — delegates to ../../shared/utils.js ──────────────────
+           syncToGitHub: SHA-conflict retry, in-flight queue, cache-busting
+           fetchFromGitHub: UTF-8 safe decode, classified error messages   */
 
         function updateSyncStatus(statusText, isError = false) {
+            currentSyncText = statusText;
+            currentSyncError = isError;
+            renderSyncBadge();
+        }
+
+        function renderSyncBadge() {
             const badge = document.getElementById('syncStatusBadge');
-            badge.innerHTML = statusText;
-            badge.style.background = isError ? "var(--bg-danger)" : "var(--app-primary2)";
-            badge.style.color = isError ? "var(--c-danger)" : "var(--app-on-primary2)";
+            if (!badge) return;
+
+            const activeItems = listData[currentUser] || [];
+            const completed = activeItems.filter(i => i.checked).length;
+
+            if (activeItems.length > 0 && completed === activeItems.length && !currentSyncError && (currentSyncText.includes("Synced") || currentSyncText.includes("Saved") || currentSyncText.includes("Initializing"))) {
+                badge.innerHTML = "✓ All packed";
+                badge.style.background = "#e8f5e9";
+                badge.style.color = "#2e7d32";
+            } else {
+                badge.innerHTML = currentSyncText;
+                badge.style.background = currentSyncError ? "var(--bg-danger)" : "var(--app-primary2)";
+                badge.style.color = currentSyncError ? "var(--c-danger)" : "var(--app-on-primary2)";
+            }
         }
 
         async function fetchDataFromGitHub() {
@@ -321,45 +474,35 @@
             if (!token) {
                 updateSyncStatus("<i class='fa-solid fa-key'></i> Token Required", true);
                 listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
+                initializeSmartCollapse();
                 updateCounter();
                 renderList();
                 return;
             }
-
             updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Pulling...");
             const remote = await fetchFromGitHub(GITHUB_CONFIG, '_fetchErrorSink');
-
             if (remote && remote.rishi && remote.marion) {
                 listData = remote;
                 updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Synced");
             } else {
-                // No file yet (first run) or fetch failed — seed defaults.
-                // If it's a genuine first run, push the seed immediately
-                // so the repo file exists for next time.
                 listData = { rishi: [...initialDefaultItems], marion: [...initialDefaultItems] };
                 updateSyncStatus("<i class='fa-solid fa-cloud-arrow-up'></i> Initializing...");
-                syncToGitHub(GITHUB_CONFIG, buildSyncPayload, 'syncSpinner');
+                syncToGitHub(GITHUB_CONFIG, () => listData, 'syncSpinner');
             }
+            initializeSmartCollapse();
             updateCounter();
             renderList();
-        }
-
-        /** Payload builder passed to syncToGitHub() — called at sync time. */
-        function buildSyncPayload() {
-            return listData;
         }
 
         function triggerStateMutationSave() {
             updateCounter();
             updateSyncStatus("<i class='fa-solid fa-spinner fa-spin'></i> Saving...");
-            syncToGitHub(GITHUB_CONFIG, buildSyncPayload, 'syncSpinner')
+            syncToGitHub(GITHUB_CONFIG, () => listData, 'syncSpinner')
                 .then(() => updateSyncStatus("<i class='fa-solid fa-cloud-check'></i> Saved"))
                 .catch(() => updateSyncStatus("<i class='fa-solid fa-circle-xmark'></i> Save failed", true));
         }
 
         /* Core UI Render and Event Handling Mechanisms */
-        // linkifyText() provided by ../../shared/utils.js
-
         function escapeHtml(s) {
             return String(s || '').replace(/[&<>"']/g, c =>
                 ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c])
@@ -367,10 +510,7 @@
         }
 
         function updateCounter() {
-            const activeItems = listData[currentUser] || [];
-            const completed = activeItems.filter(i => i.checked).length;
-            document.getElementById('listCounter').textContent = `${completed} / ${activeItems.length} Packed`;
-            document.getElementById('activeProfileLabel').textContent = `${currentUser === 'rishi' ? "Rishi's" : "Marion's"} Packing List`;
+            renderSyncBadge();
         }
 
         function switchUser(user) {
@@ -378,6 +518,7 @@
             editingItemId = null;
             document.getElementById('prof-rishi').classList.toggle('active', user === 'rishi');
             document.getElementById('prof-marion').classList.toggle('active', user === 'marion');
+            initializeSmartCollapse();
             updateCounter();
             renderList();
         }
@@ -395,9 +536,17 @@
             renderList();
         }
 
-        function setAllCollapseState(collapseBool) {
-            categoriesList.forEach(cat => { collapsedCategories[cat] = collapseBool; });
+        function toggleAllCollapse() {
+            const anyExpanded = categoriesList.some(cat => !collapsedCategories[cat]);
+            categoriesList.forEach(cat => { collapsedCategories[cat] = anyExpanded; });
             renderList();
+        }
+
+        function updateCollapseToggleIcon() {
+            const btn = document.getElementById('globalCollapseToggle');
+            if (!btn) return;
+            const anyExpanded = categoriesList.some(cat => !collapsedCategories[cat]);
+            btn.textContent = anyExpanded ? "⊟" : "⊞";
         }
 
         // Operational Modals
@@ -410,7 +559,6 @@
 
         document.addEventListener("DOMContentLoaded", () => { fetchDataFromGitHub(); });
 
-        // Remaining setup utilities mapping local arrays to execution bindings
         function addItem() {
             const nameInput = document.getElementById('newItemName');
             const catSelect = document.getElementById('newItemCategory');
@@ -450,6 +598,7 @@
         }
 
         function renderList() {
+            updateCollapseToggleIcon();
             const container = document.getElementById('itemsContainer');
             container.innerHTML = "";
             const activeItems = listData[currentUser] || [];
@@ -554,15 +703,10 @@
                 container.innerHTML = `<div class="notice notice-info"><div class="notice-body">No packing tracker items found matching the selected filters.</div></div>`;
             }
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchDataFromGitHub();
-        });
     </script>
-    <!-- Hidden sink for fetchFromGitHub error rendering on auth failure -->
-    <div id="_fetchErrorSink" style="display:none"></div>
-    <!-- Required by utils.js tooltip system -->
-    <div id="chartTooltip"></div>
 
+    <script src="../../shared/utils.js"></script>
+    <div id="_fetchErrorSink" style="display:none"></div>
+    <div id="chartTooltip"></div>
 </body>
 </html>
