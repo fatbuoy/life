@@ -146,15 +146,13 @@
         <!-- Filter pills + Smart Explicit Toggle + Add Item -->
         <div class="mb-3" style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
             <div class="filter-pill-bar" style="margin-bottom: 0; flex: 1; display: flex; gap: 4px;">
-                <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0;">All Items</button>
-                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0; gap: 4px;"><i class="fa-solid fa-circle-check"></i> Ready</button>
-                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')" style="height: 34px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; box-sizing: border-box; margin: 0; gap: 4px;"><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
+                <button class="filter-pill active" id="filter-all" onclick="switchFilter('all')">All Items</button>
+                <button class="filter-pill" id="filter-ready" onclick="switchFilter('ready')" ></i> Ready</button>
+                <button class="filter-pill" id="filter-tobuy" onclick="switchFilter('tobuy')" ><i class="fa-solid fa-cart-shopping"></i> To Buy</button>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-                <button class="btn btn-secondary" id="globalCollapseToggle" onclick="toggleAllCollapse()" title="Toggle Expand/Collapse All" style="padding: 0; width: 34px; height: 34px; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; border-radius: var(--r-md); margin: 0; box-sizing: border-box;">⊞</button>
-                <button class="filter-pill" onclick="openAddItemModal()" style="background: var(--app-accent-bright); color: #fff; border-color: var(--app-accent-bright); margin: 0; height: 34px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; font-weight: 600; gap: 4px;">
-                    <i class="fa-solid fa-plus"></i> Add Item
-                </button>
+            <div class="filter-pill-bar" style="margin-bottom: 0; flex: -10; display: flex; gap: 4px;">
+                <button class="filter-pill" onclick="openAddItemModal()" ><i class="fa-solid fa-plus"></i> Add Item</button>
+                <button class="filter-pill" id="globalCollapseToggle" onclick="toggleAllCollapse()" title="Toggle Expand/Collapse All" >⊞</button>
             </div>
         </div>
 
