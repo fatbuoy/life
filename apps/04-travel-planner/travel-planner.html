@@ -2752,6 +2752,7 @@ function exportJSON() {
       hides itself once the today section is in view. */
 function scrollToToday(container) {
   const today = new Date().toISOString().split('T')[0];
+  if (!currentTrip || today < currentTrip.startDate || today > currentTrip.endDate) return;
 
   // Find the anchor for today, or the first future date if today isn't present
   function findBestAnchor() {
@@ -2775,8 +2776,12 @@ function scrollToToday(container) {
 
   // Scroll the sheet body to the anchor, with a small top margin
   requestAnimationFrame(() => {
-    const offset = anchor.offsetTop - 12;
-    container.scrollTo({ top: offset, behavior: 'smooth' });
+    const containerRect = container.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    container.scrollTo({
+      top: container.scrollTop + (anchorRect.top - containerRect.top) - 12,
+      behavior: 'smooth'
+    });
   });
 
   // ── Jump button ──────────────────────────────────────────────────
@@ -2806,7 +2811,13 @@ function scrollToToday(container) {
 
   btn.addEventListener('click', () => {
     const a = findBestAnchor();
-    if (a) container.scrollTo({ top: a.offsetTop - 12, behavior: 'smooth' });
+    if (!a) return;
+    const containerRect = container.getBoundingClientRect();
+    const anchorRect = a.getBoundingClientRect();
+    container.scrollTo({
+      top: container.scrollTop + (anchorRect.top - containerRect.top) - 12,
+      behavior: 'smooth'
+    });
   });
 
   // Show/hide based on whether the anchor is visible in the scroll container
