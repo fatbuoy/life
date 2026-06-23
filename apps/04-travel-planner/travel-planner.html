@@ -909,7 +909,7 @@ function renderTrekStageList() {
     const route = s.location || s.title || '';
 
     return `
-    <div class="trek-stage-card">
+    <div class="trek-stage-card" id="day-${s.date || 'stage-' + realIdx}">
       <div class="trek-stage-summary" onclick="toggleTrekStage(this)">
         <div class="trek-stage-badge" style="background:${badgeBg}; color:${badgeColor};">${badgeLabel}</div>
         <div class="trek-stage-mid">
@@ -959,6 +959,7 @@ function renderTrekStageList() {
       </div>
     </div>`;
   }).join('') + `</div>`;
+  scrollToToday(container);
 }
 
 function toggleTrekStage(summaryEl) {
@@ -1242,11 +1243,12 @@ function renderSubTab() {
     matches.forEach(item => {
       if (item.date !== lastDate) {
         lastDate = item.date;
-        html += `<div class="ios-group-title">${fmtDate(item.date)}</div>`;
+        html += `<div class="ios-group-title" id="day-${item.date}">${fmtDate(item.date)}</div>`;
       }
       html += buildItemRowMarkup(item);
     });
     container.innerHTML = html;
+    scrollToToday(container);
   } else {
     container.innerHTML = `<div class="ios-group-title">Saved Ideas</div>` + matches.map(item => buildItemRowMarkup(item)).join('');
   }
@@ -2742,6 +2744,90 @@ function exportJSON() {
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
+}
+/* ── SCROLL-TO-TODAY + JUMP BUTTON ─────────────────────────────────
+   Called after renderSubTab() and renderTrekStageList() to:
+   1. Auto-scroll #subTabContent to today's (or next future) day section
+   2. Inject a floating "↓ Today" pill that re-scrolls on demand and
+      hides itself once the today section is in view. */
+function scrollToToday(container) {
+  const today = new Date().toISOString().split('T')[0];
+
+  // Find the anchor for today, or the first future date if today isn't present
+  function findBestAnchor() {
+    // Collect all day-* ids in DOM order
+    const anchors = Array.from(container.querySelectorAll('[id^="day-"]'));
+    if (!anchors.length) return null;
+
+    // Exact match first
+    const exact = container.querySelector(`#day-${today}`);
+    if (exact) return exact;
+
+    // Next future date
+    return anchors.find(el => {
+      const date = el.id.replace('day-', '');
+      return date >= today;
+    }) || null;
+  }
+
+  const anchor = findBestAnchor();
+  if (!anchor) return;   // trip is entirely in the past — stay at top
+
+  // Scroll the sheet body to the anchor, with a small top margin
+  requestAnimationFrame(() => {
+    const offset = anchor.offsetTop - 12;
+    container.scrollTo({ top: offset, behavior: 'smooth' });
+  });
+
+  // ── Jump button ──────────────────────────────────────────────────
+  // Remove any leftover button from a previous render
+  const sheet = document.getElementById('iosSheet');
+  document.getElementById('_jumpTodayBtn')?.remove();
+
+  const btn = document.createElement('button');
+  btn.id = '_jumpTodayBtn';
+  btn.textContent = '↓ Today';
+  btn.style.cssText = `
+    position: absolute; bottom: 72px; left: 50%; transform: translateX(-50%);
+    background: var(--app-accent); color: #fff;
+    border: none; border-radius: 20px;
+    padding: 7px 18px; font-size: 12px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,122,255,0.35);
+    z-index: 500; opacity: 0; transition: opacity .2s;
+    pointer-events: none; white-space: nowrap;
+  `;
+
+  // The sheet needs position:relative for absolute child to work
+  if (getComputedStyle(sheet).position === 'static') {
+    sheet.style.position = 'relative';
+  }
+  sheet.appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    const a = findBestAnchor();
+    if (a) container.scrollTo({ top: a.offsetTop - 12, behavior: 'smooth' });
+  });
+
+  // Show/hide based on whether the anchor is visible in the scroll container
+  function updateButtonVisibility() {
+    const containerRect = container.getBoundingClientRect();
+    const anchorRect = anchor.getBoundingClientRect();
+    const isVisible = anchorRect.top >= containerRect.top && anchorRect.top < containerRect.bottom;
+    btn.style.opacity = isVisible ? '0' : '1';
+    btn.style.pointerEvents = isVisible ? 'none' : 'auto';
+  }
+
+  // Initial check (after scroll lands)
+  setTimeout(updateButtonVisibility, 400);
+  container.addEventListener('scroll', updateButtonVisibility, { passive: true });
+  // Clean up listener when the sheet is closed
+  const origClose = window.closeSheet;
+  window.closeSheet = function() {
+    container.removeEventListener('scroll', updateButtonVisibility);
+    window.closeSheet = origClose;
+    origClose();
+  };
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
