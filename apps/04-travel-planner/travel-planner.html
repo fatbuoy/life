@@ -211,6 +211,37 @@ body {
 
 .trek-section-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #6c6c70; margin: 14px 0 6px 2px; }
 
+/* Packing list link row — sits below stats bar in trek hero */
+.trek-packing-row {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.trek-packing-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--r-md);
+  padding: 7px 14px;
+  text-decoration: none;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.trek-packing-btn:hover {
+  background: rgba(255,255,255,0.2);
+  text-decoration: none;
+  color: #fff;
+}
+.trek-packing-arrow {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
 /* ── IDEA BANK LIBRARY ── */
 .lib-search-row { display: flex; gap: 8px; margin-bottom: 10px; }
 .lib-search-input { flex-grow: 1; background: #fff; border: 1px solid #e5e5ea; border-radius: 10px; padding: 9px 12px; font-size: 14px; outline: none; }
@@ -800,11 +831,18 @@ function renderTrekSheet() {
           <div class="trek-stat-val" style="color:#ff9d8a;">-${totalDesc.toLocaleString()}</div>
           <div class="trek-stat-lbl">m descent</div>
         </div>
-        <div class="trek-stat">
+      <div class="trek-stat">
           <div class="trek-stat-val">${stages.length}</div>
           <div class="trek-stat-lbl">days</div>
         </div>
       </div>
+      ${currentTrip.packingList ? `
+      <div class="trek-packing-row">
+        <a class="trek-packing-btn" href="/${currentTrip.packingList}" target="_blank">
+          🎒 Packing List
+          <span class="trek-packing-arrow">→</span>
+        </a>
+      </div>` : ''}
     </div>
 
     <div class="trek-filter-bar">
