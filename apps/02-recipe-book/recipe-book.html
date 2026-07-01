@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="../../shared/base.css">
 <script src="../../shared/utils.js"></script>
 <style>
-/* ── Recipe Book app theme: deep burgundy ── */
 :root {
   --app-primary:    #3a1020;
   --app-primary2:   #5a1830;
@@ -55,42 +54,45 @@
 .macro-lbl{font-size:8px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
 .no-results{grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--faint);font-size:13px}
 
-/* ── View modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(12,35,64,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+/* ── View modal — fixed full height ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,35,64,.55);z-index:1000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+@media(min-width:600px){.modal-overlay{align-items:center;padding:16px}}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--bg);border-radius:var(--r-lg);max-width:680px;width:100%;max-height:90vh;overflow-y:auto;transform:scale(.96) translateY(12px);transition:transform .2s;position:relative}
-.modal-overlay.open .modal{transform:scale(1) translateY(0)}
+/* Mobile: slides up from bottom, fills screen height */
+.modal{background:var(--bg);width:100%;height:92vh;border-radius:14px 14px 0 0;overflow-y:auto;transform:translateY(100%);transition:transform .25s cubic-bezier(.2,.85,.4,1);position:relative;display:flex;flex-direction:column}
+.modal-overlay.open .modal{transform:translateY(0)}
+/* Desktop: centred card with max dimensions */
+@media(min-width:600px){
+  .modal{max-width:680px;height:88vh;border-radius:var(--r-lg);transform:scale(.96) translateY(12px)}
+  .modal-overlay.open .modal{transform:scale(1) translateY(0)}
+}
+.modal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;background:rgba(0,0,0,.4);color:#fff;border:none;border-radius:50%;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:background .15s}
 .modal-close:hover{background:rgba(0,0,0,.65)}
-.modal-img-wrap{position:relative;width:100%;height:220px;overflow:hidden;border-radius:var(--r-lg) var(--r-lg) 0 0;background:var(--surface)}
+.modal-img-wrap{position:relative;width:100%;height:200px;overflow:hidden;border-radius:14px 14px 0 0;background:var(--surface);flex-shrink:0}
+@media(min-width:600px){.modal-img-wrap{border-radius:var(--r-lg) var(--r-lg) 0 0;height:220px}}
 .modal-img{width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;transition:transform .35s}
 .modal-img:hover{transform:scale(1.04)}
 .modal-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
 .img-link-hint{position:absolute;bottom:10px;right:10px;background:rgba(12,35,64,.75);color:#a8cfed;padding:3px 9px;border-radius:5px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;pointer-events:none;opacity:0;transition:opacity .15s}
 .modal-img-wrap:hover .img-link-hint{opacity:1}
 
-/* ── Hero band ── */
-.modal-hero{background:var(--app-primary);padding:12px 16px 12px}
-.modal-hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+/* ── Hero band — name + scaler on same row ── */
+.modal-hero{background:var(--app-primary);padding:11px 16px 11px;flex-shrink:0}
+.modal-hero-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .mh-left{flex:1;min-width:0}
-.mh-title{font-size:16px;font-weight:600;color:var(--app-on-primary);line-height:1.3}
+.mh-title{font-size:15px;font-weight:600;color:var(--app-on-primary);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mh-sub{font-size:11px;color:var(--app-on-primary3);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.mh-edit-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:5px;color:var(--app-on-primary2);font-size:10px;font-weight:600;padding:2px 8px;cursor:pointer;font-family:inherit;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.mh-edit-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:5px;color:var(--app-on-primary2);font-size:10px;font-weight:600;padding:2px 8px;cursor:pointer;font-family:inherit;transition:background .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
 .mh-edit-btn:hover{background:rgba(255,255,255,.22)}
-.mh-right{text-align:right;flex-shrink:0}
-.mh-kcal{font-size:26px;font-weight:600;color:var(--app-on-primary);line-height:1}
-.mh-lbl{font-size:10px;color:var(--app-on-primary3);margin-top:2px}
-
-/* ── Servings scaler (in hero, below kcal) ── */
-.scaler-row{display:inline-flex;align-items:center;gap:0;margin-top:7px;background:rgba(255,255,255,.1);border-radius:8px;padding:4px 8px}
-.scaler-lbl{font-size:9px;font-weight:600;color:var(--app-on-primary3);text-transform:uppercase;letter-spacing:.07em;margin-right:7px}
-.scaler-btn{width:24px;height:24px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:5px;color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent;font-family:inherit;flex-shrink:0}
+/* Scaler sits right-side, same row as title */
+.scaler-row{display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,.1);border-radius:8px;padding:4px 8px;flex-shrink:0}
+.scaler-btn{width:28px;height:28px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent;font-family:inherit;flex-shrink:0}
 .scaler-btn:hover:not(:disabled){background:rgba(255,255,255,.28)}
 .scaler-btn:disabled{opacity:.3;cursor:default}
-.scaler-val{font-size:14px;font-weight:600;color:#fff;min-width:30px;text-align:center}
-.scaler-base{font-size:9px;color:var(--app-on-primary3);margin-left:5px;white-space:nowrap}
+.scaler-val{font-size:15px;font-weight:600;color:#fff;min-width:34px;text-align:center}
 
-.modal-body{padding:12px 14px 20px}
+.modal-body{padding:12px 14px 20px;flex:1}
 
 /* ── Nutrition panel ── */
 .nut-panel{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:10px}
@@ -126,9 +128,9 @@
 .ing-name{color:var(--text);flex:1}
 .no-ings{font-size:11px;color:var(--faint);font-style:italic;padding:8px 12px}
 
-/* ── Tab nav inside modal ── */
+/* ── Tab nav inside view modal ── */
 .modal-tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:12px}
-.modal-tab-btn{flex:1;background:none;border:none;padding:9px 8px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.modal-tab-btn{flex:1;background:none;border:none;padding:9px 6px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .modal-tab-btn:hover{color:var(--text)}
 .modal-tab-btn.active{color:var(--app-accent);border-bottom-color:var(--app-accent)}
 .modal-tab-panel{display:none}
@@ -146,7 +148,7 @@
 .no-steps{font-size:11px;color:var(--faint);font-style:italic;text-align:center;padding:24px 16px;background:var(--surface);border-radius:10px;line-height:1.6}
 .steps-progress{font-size:10px;color:var(--muted);text-align:right;margin-bottom:8px}
 
-/* ── iOS edit sheet overrides for kitchen theme ── */
+/* ── iOS edit sheet ── */
 .ios-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(58,16,32,.45);backdrop-filter:blur(8px);justify-content:center;align-items:flex-start}
 .ios-sheet{background:#f2f2f7;width:100%;max-width:560px;height:94vh;margin-top:6vh;border-top-left-radius:14px;border-top-right-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -8px 30px rgba(0,0,0,.2);animation:iosSheetSlideUp .28s cubic-bezier(.1,.76,.55,.94)}
 @keyframes iosSheetSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -169,29 +171,41 @@
 .ios-danger-block{margin-top:24px;padding:0 8px}
 .ios-danger-btn{width:100%;text-align:center;background:#fff;padding:12px;border-radius:10px;border:1px solid #e5e5ea}
 
-/* ── Ingredient editor rows (inside ios sheet) ── */
+/* ── Ingredient editor rows ── */
 .ed-ing-row{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid #e5e5ea;background:#fff}
 .ed-ing-row:last-child{border-bottom:none}
-.ed-ing-qty{width:60px;border:none;background:none;font-size:14px;color:#1c1c1e;font-family:inherit;outline:none;text-align:right}
-.ed-ing-unit{width:70px;border:none;background:none;font-size:13px;color:#8e8e93;font-family:inherit;outline:none;text-align:center}
+.ed-ing-qty{width:55px;border:none;background:none;font-size:14px;color:#1c1c1e;font-family:inherit;outline:none;text-align:right}
+.ed-ing-unit{width:65px;border:none;background:none;font-size:13px;color:#8e8e93;font-family:inherit;outline:none;text-align:center}
 .ed-ing-name{flex:1;border:none;background:none;font-size:14px;color:#1c1c1e;font-family:inherit;outline:none}
-.ed-ing-del{width:24px;height:24px;border-radius:50%;background:#ff3b30;color:#fff;border:none;font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
-.ed-cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 4px;background:#f7f7f7;border-bottom:1px solid #e5e5ea}
+.ed-ing-del{width:22px;height:22px;border-radius:50%;background:#ff3b30;color:#fff;border:none;font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.ed-cat-hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 14px 4px;background:#f7f7f7;border-bottom:1px solid #e5e5ea}
 .ed-cat-lbl{font-size:10px;font-weight:700;color:#636366;text-transform:uppercase;letter-spacing:.05em}
 .ed-cat-add{font-size:11px;color:var(--app-accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;-webkit-tap-highlight-color:transparent}
-.ed-add-cat-row{padding:8px 14px;border-bottom:1px solid #e5e5ea;background:#fff;display:flex;align-items:center;gap:8px}
+.ed-add-cat-row{padding:8px 14px;background:#fff;display:flex;align-items:center;gap:8px}
 .ed-add-cat-sel{flex:1;border:none;background:none;font-size:14px;color:#1c1c1e;font-family:inherit;outline:none;appearance:none}
-.ed-add-cat-btn{font-size:11px;color:var(--app-accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600}
+.ed-add-cat-btn{font-size:11px;color:var(--app-accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap}
 
-/* ── Step editor rows ── */
+/* ── Steps paste-and-convert UX ── */
+.steps-paste-wrap{padding:10px 14px;background:#fff;border-bottom:1px solid #e5e5ea}
+.steps-paste-ta{width:100%;border:1.5px solid #e5e5ea;border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:#1c1c1e;resize:none;min-height:100px;outline:none;line-height:1.55;transition:border-color .15s}
+.steps-paste-ta:focus{border-color:var(--app-accent)}
+.steps-paste-ta::placeholder{color:#aeaeb2}
+.steps-paste-hint{font-size:11px;color:#aeaeb2;margin-top:5px;line-height:1.5}
+.steps-paste-actions{display:flex;gap:8px;margin-top:8px}
+.steps-paste-btn{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.steps-paste-convert{background:var(--app-accent);color:#fff}
+.steps-paste-convert:hover{opacity:.9}
+.steps-paste-clear{background:#f2f2f7;color:#636366;border:1px solid #e5e5ea}
+/* Individual step display in editor */
 .ed-step-row{display:flex;align-items:flex-start;gap:8px;padding:8px 14px;border-bottom:1px solid #e5e5ea;background:#fff}
 .ed-step-row:last-child{border-bottom:none}
 .ed-step-num{width:22px;height:22px;border-radius:50%;background:var(--app-accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.ed-step-text{flex:1;border:none;background:none;font-size:14px;color:#1c1c1e;font-family:inherit;outline:none;resize:none;min-height:44px;line-height:1.5;padding:2px 0}
-.ed-step-del{width:22px;height:22px;border-radius:50%;background:#ff3b30;color:#fff;border:none;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;-webkit-tap-highlight-color:transparent}
+.ed-step-text{flex:1;font-size:13.5px;color:#1c1c1e;line-height:1.5;padding:2px 0}
+.ed-step-del{width:20px;height:20px;border-radius:50%;background:#ff3b30;color:#fff;border:none;font-size:12px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;-webkit-tap-highlight-color:transparent}
+.ed-steps-empty{font-size:12px;color:#aeaeb2;text-align:center;padding:14px;font-style:italic}
 
-/* ── Save indicator ── */
-.save-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--app-primary);color:#fff;padding:9px 20px;border-radius:var(--r-pill);font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+/* ── Save toast ── */
+.save-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--app-primary);color:#fff;padding:9px 20px;border-radius:var(--r-pill);font-size:12px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap}
 .save-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media(min-width:600px){.container{padding:0 var(--sp-6)}}
@@ -207,7 +221,7 @@
         <span class="header-title">FatBoy's Kitchen</span>
       </div>
       <div class="header-right">
-        <button class="header-btn" onclick="openEditor(null)" title="Add new recipe">＋ New</button>
+        <button class="header-btn" onclick="openEditor(null)">＋ New</button>
         <button class="header-btn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
         <span class="header-badge" id="recipeCountBadge"></span>
       </div>
@@ -236,19 +250,21 @@
   <div class="recipe-grid" id="recipeGrid"></div>
 </div>
 
-<!-- View modal -->
+<!-- View modal — wraps in .modal-scroll so hero+tabs stay sticky-like -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modal">
     <button class="modal-close" id="modalClose">✕</button>
-    <div class="modal-img-wrap" id="modalImgWrap"></div>
-    <div class="modal-hero" id="modalHero"></div>
-    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-scroll" id="modalScroll">
+      <div class="modal-img-wrap" id="modalImgWrap"></div>
+      <div class="modal-hero" id="modalHero"></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
   </div>
 </div>
 
 <!-- Edit / Create iOS sheet -->
 <div class="ios-overlay" id="editorOverlay">
-  <div class="ios-sheet" id="editorSheet">
+  <div class="ios-sheet">
     <div class="ios-nav-bar">
       <button class="ios-link-btn" onclick="closeEditor()">Cancel</button>
       <div class="ios-nav-title" id="editorTitle">New Recipe</div>
@@ -258,25 +274,17 @@
   </div>
 </div>
 
-<!-- Save toast -->
 <div class="save-toast" id="saveToast"></div>
 
 <script>
-const GITHUB_CONFIG = {
-  owner:  "fatbuoy",
-  repo:   "app-data",
-  path:   "data/recipes.json",
-  branch: "main"
-};
-
-const PLACEHOLDER = 'https://www.myfitnesspal.com/images/recipe_image_placeholder.png';
+const GITHUB_CONFIG = { owner:"fatbuoy", repo:"app-data", path:"data/recipes.json", branch:"main" };
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
-let recipes      = [];   // flat adapted array for display
-let ingredients  = {};   // {id: [{cat, qty, rawQty, unit, name}]}
-let stepsData    = {};   // {id: [{step, instruction}]}
-let rawNutrition = {};   // {id: nutrition object} — static, not scaled
-let rawRecipeMap = {};   // {id: full raw JSON recipe} — for edit pre-fill
+let recipes      = [];
+let ingredients  = {};   // {id: [{cat,qty,rawQty,unit,name}]}
+let stepsData    = {};   // {id: [{step,instruction}]}
+let rawNutrition = {};   // {id: nutrition obj} — static, never scaled
+let rawRecipeMap = {};   // {id: full raw JSON recipe}
 
 const CUISINES   = ['Indian','Mexican','Sri Lankan','Asian','Western','Cocktails'];
 const CATEGORIES = ['Biryani','Bowl','Bread','Breakfast','Brunch','Burger','Cake','Cocktail','Condiment','Curry','Dal','Dessert','Dip','Drinks','Gravy','Juice','Noodles','Pancakes','Pasta','Pickle','Pizza','Raita','Rice','Roti','Salad','Sandwich','Snack','Soup','Starter','Stir Fry','Tacos','Wrap','Other'];
@@ -286,26 +294,19 @@ function adaptRecipes(raw) {
   raw.recipes.forEach(r => {
     const id = parseInt(r.id);
     recipes.push({
-      id, name: r.name, cuisine: r.cuisine, sub: r.category,
-      servings: r.servings, img: r.imageUrl, link: r.pageLink,
-      source: r.source || '',
-      cal: r.nutrition?.calories, fat: r.nutrition?.fat_g,
-      satFat: r.nutrition?.saturatedFat_g, carb: r.nutrition?.carbs_g,
-      fiber: r.nutrition?.fiber_g, sugar: r.nutrition?.sugars_g,
-      protein: r.nutrition?.protein_g, sodium: r.nutrition?.sodium_mg,
-      chol: r.nutrition?.cholesterol_mg,
+      id, name:r.name, cuisine:r.cuisine, sub:r.category,
+      servings:r.servings, img:r.imageUrl, link:r.pageLink, source:r.source||'',
+      cal:r.nutrition?.calories, protein:r.nutrition?.protein_g,
+      carb:r.nutrition?.carbs_g, fat:r.nutrition?.fat_g,
     });
-    ingredients[id] = (r.ingredients || []).flatMap(g =>
-      (g.items || []).map(i => ({
-        cat: g.category,
-        qty: i.quantity + (i.unit ? ' ' + i.unit : ''),
-        rawQty: parseFloat(i.quantity) || null,
-        unit: i.unit || '',
-        name: i.name
+    ingredients[id] = (r.ingredients||[]).flatMap(g =>
+      (g.items||[]).map(i => ({
+        cat:g.category, qty:i.quantity+(i.unit?' '+i.unit:''),
+        rawQty:parseFloat(i.quantity)||null, unit:i.unit||'', name:i.name
       }))
     );
-    stepsData[id]    = (r.steps || []).slice().sort((a, b) => a.step - b.step);
-    rawNutrition[id] = r.nutrition || {};
+    stepsData[id]    = (r.steps||[]).slice().sort((a,b)=>a.step-b.step);
+    rawNutrition[id] = r.nutrition||{};
     rawRecipeMap[id] = r;
   });
 }
@@ -317,15 +318,14 @@ let checkedIngredients = new Set();
 let checkedSteps       = new Set();
 let activeTab          = 'ingredients';
 
-// ─── SCALE HELPERS ────────────────────────────────────────────────────────────
 function scaleQty(rawQty, unit, scale) {
-  if (rawQty === null) return '';
-  const val = rawQty * scale;
-  const display = Number.isInteger(val) ? String(val) : val.toFixed(1);
-  return unit ? display + ' ' + unit : display;
+  if (rawQty===null) return '';
+  const val = rawQty*scale;
+  const d = Number.isInteger(val) ? String(val) : val.toFixed(1);
+  return unit ? d+' '+unit : d;
 }
 
-// ─── DROPDOWNS ───────────────────────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 const cuisineFilter = document.getElementById('cuisineFilter');
 const subCatFilter  = document.getElementById('subCatFilter');
 const searchInput   = document.getElementById('searchInput');
@@ -336,78 +336,63 @@ async function init() {
   const raw = await fetchFromGitHub(GITHUB_CONFIG, 'recipeGrid');
   if (!raw) return;
   adaptRecipes(raw);
-
-  const cuisines = [...new Set(recipes.map(r => r.cuisine))].sort();
-  const subCats  = [...new Set(recipes.map(r => r.sub).filter(Boolean))].sort();
-  cuisineFilter.innerHTML = '<option value="">All cuisines</option>' + cuisines.map(c => `<option>${c}</option>`).join('');
-  subCatFilter.innerHTML  = '<option value="">All categories</option>' + subCats.map(s => `<option>${s}</option>`).join('');
+  const cuisines = [...new Set(recipes.map(r=>r.cuisine))].sort();
+  const subCats  = [...new Set(recipes.map(r=>r.sub).filter(Boolean))].sort();
+  cuisineFilter.innerHTML = '<option value="">All cuisines</option>'+cuisines.map(c=>`<option>${c}</option>`).join('');
+  subCatFilter.innerHTML  = '<option value="">All categories</option>'+subCats.map(s=>`<option>${s}</option>`).join('');
   renderCards(recipes);
 }
 
-// ─── TAG CLASSES ──────────────────────────────────────────────────────────────
 const cuisineTagClass = {'Indian':'tag-indian','Cocktails':'tag-cocktails','Mexican':'tag-mexican','Sri Lankan':'tag-sri-lankan','Asian':'tag-asian','Western':'tag-western'};
 const cuisineEmoji    = {'Indian':'🍛','Cocktails':'🍹','Mexican':'🌮','Sri Lankan':'🥥','Asian':'🥢','Western':'🍽️'};
-function isPlaceholder(url) { return !url || url.includes('recipe_image_placeholder'); }
+function isPlaceholder(url){return !url||url.includes('recipe_image_placeholder')}
 
 // ─── RENDER CARDS ─────────────────────────────────────────────────────────────
 function renderCards(list) {
-  recipeGrid.innerHTML = '';
-  resultsInfo.textContent = `${list.length} recipe${list.length !== 1 ? 's' : ''} found`;
-  const badge = document.getElementById('recipeCountBadge');
-  if (badge) badge.textContent = `${recipes.length} recipes`;
-  if (!list.length) {
-    recipeGrid.innerHTML = '<div class="no-results">No recipes match — try a different search or filter.</div>';
-    return;
-  }
-  list.forEach((r, i) => {
-    const card = document.createElement('div');
-    card.className = 'recipe-card';
-    card.style.animationDelay = `${Math.min(i * 0.025, 0.35)}s`;
-    const tagCls = cuisineTagClass[r.cuisine] || 'tag-indian';
-    const emoji  = cuisineEmoji[r.cuisine] || '🍴';
-    card.innerHTML = `
-      ${isPlaceholder(r.img) ? `<div class="card-img-placeholder">${emoji}</div>` : `<img class="card-img" src="${r.img}" alt="${r.name}" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder>${emoji}</div>'">`}
+  recipeGrid.innerHTML='';
+  resultsInfo.textContent=`${list.length} recipe${list.length!==1?'s':''} found`;
+  const badge=document.getElementById('recipeCountBadge');
+  if(badge) badge.textContent=`${recipes.length} recipes`;
+  if(!list.length){recipeGrid.innerHTML='<div class="no-results">No recipes match — try a different search or filter.</div>';return;}
+  list.forEach((r,i)=>{
+    const card=document.createElement('div');
+    card.className='recipe-card';
+    card.style.animationDelay=`${Math.min(i*.025,.35)}s`;
+    const tc=cuisineTagClass[r.cuisine]||'tag-indian', em=cuisineEmoji[r.cuisine]||'🍴';
+    card.innerHTML=`
+      ${isPlaceholder(r.img)?`<div class="card-img-placeholder">${em}</div>`:`<img class="card-img" src="${r.img}" alt="${r.name}" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder>${em}</div>'">`}
       <div class="card-body">
-        <div class="card-tags">
-          <span class="tag ${tagCls}">${r.cuisine}</span>
-          ${r.sub ? `<span class="tag tag-sub">${r.sub}</span>` : ''}
-        </div>
+        <div class="card-tags"><span class="tag ${tc}">${r.cuisine}</span>${r.sub?`<span class="tag tag-sub">${r.sub}</span>`:''}</div>
         <div class="card-name">${r.name}</div>
         <div class="card-macros">
-          <div class="macro-item"><div class="macro-val hl">${r.cal ?? '—'}</div><div class="macro-lbl">kcal</div></div>
-          <div class="macro-item"><div class="macro-val">${r.protein ?? '—'}g</div><div class="macro-lbl">protein</div></div>
-          <div class="macro-item"><div class="macro-val">${r.carb ?? '—'}g</div><div class="macro-lbl">carbs</div></div>
-          <div class="macro-item"><div class="macro-val">${r.fat ?? '—'}g</div><div class="macro-lbl">fat</div></div>
+          <div class="macro-item"><div class="macro-val hl">${r.cal??'—'}</div><div class="macro-lbl">kcal</div></div>
+          <div class="macro-item"><div class="macro-val">${r.protein??'—'}g</div><div class="macro-lbl">protein</div></div>
+          <div class="macro-item"><div class="macro-val">${r.carb??'—'}g</div><div class="macro-lbl">carbs</div></div>
+          <div class="macro-item"><div class="macro-val">${r.fat??'—'}g</div><div class="macro-lbl">fat</div></div>
         </div>
       </div>`;
-    card.addEventListener('click', () => openModal(r));
+    card.addEventListener('click',()=>openModal(r));
     recipeGrid.appendChild(card);
   });
 }
 
-// ─── FILTER ───────────────────────────────────────────────────────────────────
-function filterRecipes() {
-  const q = searchInput.value.toLowerCase().trim();
-  const cu = cuisineFilter.value, sc = subCatFilter.value;
-  return recipes.filter(r => {
-    if (cu && r.cuisine !== cu) return false;
-    if (sc && r.sub !== sc)    return false;
-    if (q) {
-      const ings = (ingredients[r.id] || []).map(i => i.name.toLowerCase()).join(' ');
-      if (!r.name.toLowerCase().includes(q) && !r.cuisine.toLowerCase().includes(q) &&
-          !r.sub.toLowerCase().includes(q) && !ings.includes(q)) return false;
+function filterRecipes(){
+  const q=searchInput.value.toLowerCase().trim(), cu=cuisineFilter.value, sc=subCatFilter.value;
+  return recipes.filter(r=>{
+    if(cu&&r.cuisine!==cu) return false;
+    if(sc&&r.sub!==sc) return false;
+    if(q){
+      const ings=(ingredients[r.id]||[]).map(i=>i.name.toLowerCase()).join(' ');
+      if(!r.name.toLowerCase().includes(q)&&!r.cuisine.toLowerCase().includes(q)&&!r.sub.toLowerCase().includes(q)&&!ings.includes(q)) return false;
     }
     return true;
   });
 }
-function applyFilters() { renderCards(filterRecipes()); }
-searchInput.addEventListener('input', applyFilters);
-cuisineFilter.addEventListener('change', applyFilters);
-subCatFilter.addEventListener('change', applyFilters);
-document.getElementById('clearBtn').addEventListener('click', () => {
-  searchInput.value = ''; cuisineFilter.value = ''; subCatFilter.value = '';
-  applyFilters();
-});
+function applyFilters(){renderCards(filterRecipes());}
+searchInput.addEventListener('input',applyFilters);
+cuisineFilter.addEventListener('change',applyFilters);
+subCatFilter.addEventListener('change',applyFilters);
+document.getElementById('clearBtn').addEventListener('click',()=>{searchInput.value='';cuisineFilter.value='';subCatFilter.value='';applyFilters();});
 
 // ─── VIEW MODAL ───────────────────────────────────────────────────────────────
 const overlay      = document.getElementById('modalOverlay');
@@ -415,35 +400,31 @@ const modalImgWrap = document.getElementById('modalImgWrap');
 const modalHero    = document.getElementById('modalHero');
 const modalBody    = document.getElementById('modalBody');
 
+// Hero: name + edit button on left, scaler (no labels) on right — same row
 function renderModalHero(r) {
-  const tagCls = cuisineTagClass[r.cuisine] || 'tag-indian';
-  modalHero.innerHTML = `
+  const tc = cuisineTagClass[r.cuisine]||'tag-indian';
+  modalHero.innerHTML=`
     <div class="modal-hero-row">
       <div class="mh-left">
         <div class="mh-title">${r.name}</div>
         <div class="mh-sub">
-          <span class="tag ${tagCls}" style="font-size:9px">${r.cuisine}</span>
-          ${r.sub ? `<span class="tag tag-sub" style="font-size:9px;background:rgba(255,255,255,.12);color:#a8cfed;border-color:transparent">${r.sub}</span>` : ''}
+          <span class="tag ${tc}" style="font-size:9px">${r.cuisine}</span>
+          ${r.sub?`<span class="tag tag-sub" style="font-size:9px;background:rgba(255,255,255,.12);color:#a8cfed;border-color:transparent">${r.sub}</span>`:''}
           <button class="mh-edit-btn" onclick="openEditor(currentRecipe)">✎ Edit</button>
         </div>
       </div>
-      <div class="mh-right">
-        <div class="mh-kcal">${r.cal ?? '—'}</div>
-        <div class="mh-lbl">kcal / serving</div>
-        <div class="scaler-row">
-          <span class="scaler-lbl">Serves</span>
-          <button class="scaler-btn" onclick="changeServings(-1)" ${currentServings <= 1 ? 'disabled' : ''}>−</button>
-          <span class="scaler-val">${currentServings}</span>
-          <button class="scaler-btn" onclick="changeServings(1)" ${currentServings >= 20 ? 'disabled' : ''}>+</button>
-          ${currentServings !== r.servings ? `<span class="scaler-base">(base ${r.servings})</span>` : ''}
-        </div>
+      <div class="scaler-row">
+        <button class="scaler-btn" onclick="changeServings(-1)" ${currentServings<=1?'disabled':''}>−</button>
+        <span class="scaler-val">${currentServings}</span>
+        <button class="scaler-btn" onclick="changeServings(1)" ${currentServings>=20?'disabled':''}>+</button>
       </div>
     </div>`;
 }
 
+// Nutrition tab — static, never affected by scaler
 function renderNutritionTab(r) {
-  const nut = rawNutrition[r.id];
-  if (!nut || !Object.keys(nut).length) return `<div class="no-steps">No nutrition data recorded for this recipe.</div>`;
+  const nut=rawNutrition[r.id];
+  if(!nut||!Object.keys(nut).length) return `<div class="no-steps">No nutrition data recorded yet.<br>This will be auto-calculated from ingredients in a future update.</div>`;
   return `
     <div class="nut-panel" style="margin-top:4px">
       <div class="nut-panel-hdr">
@@ -451,50 +432,47 @@ function renderNutritionTab(r) {
         <span class="nut-panel-sub">per serving · recipe makes ${r.servings}</span>
       </div>
       <div class="nut-grid">
-        <div class="nut-cell"><div class="nut-val hl">${nut.calories ?? '—'}</div><div class="nut-lbl">Calories</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.protein_g ?? '—'}g</div><div class="nut-lbl">Protein</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.carbs_g ?? '—'}g</div><div class="nut-lbl">Carbs</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.fat_g ?? '—'}g</div><div class="nut-lbl">Fat</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.fiber_g ?? '—'}g</div><div class="nut-lbl">Fiber</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.sugars_g ?? '—'}g</div><div class="nut-lbl">Sugar</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.saturatedFat_g ?? '—'}g</div><div class="nut-lbl">Sat Fat</div></div>
-        <div class="nut-cell"><div class="nut-val">${nut.sodium_mg ?? '—'}mg</div><div class="nut-lbl">Sodium</div></div>
+        <div class="nut-cell"><div class="nut-val hl">${nut.calories??'—'}</div><div class="nut-lbl">Calories</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.protein_g??'—'}g</div><div class="nut-lbl">Protein</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.carbs_g??'—'}g</div><div class="nut-lbl">Carbs</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.fat_g??'—'}g</div><div class="nut-lbl">Fat</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.fiber_g??'—'}g</div><div class="nut-lbl">Fiber</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.sugars_g??'—'}g</div><div class="nut-lbl">Sugar</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.saturatedFat_g??'—'}g</div><div class="nut-lbl">Sat Fat</div></div>
+        <div class="nut-cell"><div class="nut-val">${nut.sodium_mg??'—'}mg</div><div class="nut-lbl">Sodium</div></div>
       </div>
     </div>
-    <p style="font-size:10px;color:var(--faint);text-align:center;margin-top:10px">Values are per serving as entered. Edit recipe to update.</p>`;
+    <p style="font-size:10px;color:var(--faint);text-align:center;margin-top:10px">Values per serving as recorded. Will auto-calculate from ingredients in Phase 3.</p>`;
 }
 
 function renderIngredientsTab(r, scale) {
-  const ings = ingredients[r.id] || [];
-  const byCat = {};
-  ings.forEach((item, idx) => { (byCat[item.cat] = byCat[item.cat] || []).push({...item, idx}); });
-  const sortedCats = Object.keys(byCat).sort((a, b) => {
-    const ia = CAT_ORDER.indexOf(a), ib = CAT_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  const ings=ingredients[r.id]||[];
+  const byCat={};
+  ings.forEach((item,idx)=>{(byCat[item.cat]=byCat[item.cat]||[]).push({...item,idx});});
+  const sortedCats=Object.keys(byCat).sort((a,b)=>{
+    const ia=CAT_ORDER.indexOf(a),ib=CAT_ORDER.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
   });
-  const ingHTML = sortedCats.length
-    ? sortedCats.map(cat => `
-        <div class="ing-cat">
-          <div class="ing-cat-name">${cat}</div>
-          <ul class="ing-list">
-            ${byCat[cat].map(item => {
-              const scaledQty = (scale !== 1 && item.rawQty !== null)
-                ? scaleQty(item.rawQty, item.unit, scale)
-                : item.qty;
-              const cls = checkedIngredients.has(item.idx) ? ' checked' : '';
-              return `<li class="ing-row${cls}" data-idx="${item.idx}" onclick="toggleIngredient(${item.idx})">
-                <span class="ing-qty">${scaledQty || '—'}</span>
-                <span class="ing-name">${item.name}</span>
-              </li>`;
-            }).join('')}
-          </ul>
-        </div>`).join('')
-    : '<p class="no-ings">No ingredient details available</p>';
-
+  const ingHTML=sortedCats.length
+    ?sortedCats.map(cat=>`
+      <div class="ing-cat">
+        <div class="ing-cat-name">${cat}</div>
+        <ul class="ing-list">
+          ${byCat[cat].map(item=>{
+            const sq=(scale!==1&&item.rawQty!==null)?scaleQty(item.rawQty,item.unit,scale):item.qty;
+            const cls=checkedIngredients.has(item.idx)?' checked':'';
+            return `<li class="ing-row${cls}" data-idx="${item.idx}" onclick="toggleIngredient(${item.idx})">
+              <span class="ing-qty">${sq||'—'}</span>
+              <span class="ing-name">${item.name}</span>
+            </li>`;
+          }).join('')}
+        </ul>
+      </div>`).join('')
+    :'<p class="no-ings">No ingredient details available</p>';
   return `
     <div class="sec-lbl" style="margin-bottom:6px">
       Ingredients by category
-      ${ings.length ? `<span style="font-weight:400;color:var(--faint);text-transform:none;font-size:9px;letter-spacing:0;margin-left:6px" id="ingCounter">${checkedIngredients.size}/${ings.length} checked</span>` : ''}
+      ${ings.length?`<span style="font-weight:400;color:var(--faint);text-transform:none;font-size:9px;letter-spacing:0;margin-left:6px" id="ingCounter">${checkedIngredients.size}/${ings.length} checked</span>`:''}
     </div>
     <div class="ing-section">
       <div class="ing-section-hdr"><span class="ing-section-lbl">Tap any row to check off</span></div>
@@ -503,15 +481,15 @@ function renderIngredientsTab(r, scale) {
 }
 
 function renderMethodTab(r) {
-  const steps = stepsData[r.id] || [];
-  if (!steps.length) return `<div class="no-steps">No method added yet.<br>Tap <strong>Edit</strong> in the recipe header to add steps.</div>`;
+  const steps=stepsData[r.id]||[];
+  if(!steps.length) return `<div class="no-steps">No method added yet.<br>Tap <strong>✎ Edit</strong> to add steps.</div>`;
   return `
     <div class="steps-progress" id="stepsProgress">${checkedSteps.size} of ${steps.length} steps done</div>
     <div class="steps-list">
-      ${steps.map((s, idx) => {
-        const cls = checkedSteps.has(idx) ? ' checked' : '';
+      ${steps.map((s,idx)=>{
+        const cls=checkedSteps.has(idx)?' checked':'';
         return `<div class="step-row${cls}" data-step="${idx}" onclick="toggleStep(${idx})">
-          <div class="step-num">${checkedSteps.has(idx) ? '✓' : s.step}</div>
+          <div class="step-num">${checkedSteps.has(idx)?'✓':s.step}</div>
           <div class="step-text">${s.instruction}</div>
         </div>`;
       }).join('')}
@@ -519,11 +497,11 @@ function renderMethodTab(r) {
 }
 
 function renderModalBody(r, scale) {
-  const steps = stepsData[r.id] || [];
-  modalBody.innerHTML = `
+  const steps=stepsData[r.id]||[];
+  modalBody.innerHTML=`
     <div class="modal-tab-bar">
       <button class="modal-tab-btn${activeTab==='ingredients'?' active':''}" onclick="switchTab('ingredients',this)">🥄 Ingredients</button>
-      <button class="modal-tab-btn${activeTab==='method'?' active':''}" onclick="switchTab('method',this)">📋 Method${steps.length ? ` (${steps.length})` : ''}</button>
+      <button class="modal-tab-btn${activeTab==='method'?' active':''}" onclick="switchTab('method',this)">📋 Method${steps.length?` (${steps.length})`:''}</button>
       <button class="modal-tab-btn${activeTab==='nutrition'?' active':''}" onclick="switchTab('nutrition',this)">📊 Nutrition</button>
     </div>
     <div class="modal-tab-panel${activeTab==='ingredients'?' active':''}" id="tabIngredients">${renderIngredientsTab(r,scale)}</div>
@@ -531,165 +509,115 @@ function renderModalBody(r, scale) {
     <div class="modal-tab-panel${activeTab==='nutrition'?' active':''}" id="tabNutrition">${renderNutritionTab(r)}</div>`;
 }
 
-function switchTab(tab, btn) {
-  activeTab = tab;
-  document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.modal-tab-panel').forEach(p => p.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  const panels = {ingredients:'tabIngredients', method:'tabMethod', nutrition:'tabNutrition'};
-  const panel = document.getElementById(panels[tab]);
-  if (panel) panel.classList.add('active');
+function switchTab(tab,btn){
+  activeTab=tab;
+  document.querySelectorAll('.modal-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.modal-tab-panel').forEach(p=>p.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const ids={ingredients:'tabIngredients',method:'tabMethod',nutrition:'tabNutrition'};
+  const p=document.getElementById(ids[tab]); if(p) p.classList.add('active');
 }
 
-function toggleIngredient(idx) {
-  checkedIngredients.has(idx) ? checkedIngredients.delete(idx) : checkedIngredients.add(idx);
-  const row = document.querySelector(`.ing-row[data-idx="${idx}"]`);
-  if (row) row.classList.toggle('checked', checkedIngredients.has(idx));
-  const ings = ingredients[currentRecipe.id] || [];
-  const counter = document.getElementById('ingCounter');
-  if (counter) counter.textContent = `${checkedIngredients.size}/${ings.length} checked`;
+function toggleIngredient(idx){
+  checkedIngredients.has(idx)?checkedIngredients.delete(idx):checkedIngredients.add(idx);
+  const row=document.querySelector(`.ing-row[data-idx="${idx}"]`);
+  if(row) row.classList.toggle('checked',checkedIngredients.has(idx));
+  const ings=ingredients[currentRecipe.id]||[];
+  const counter=document.getElementById('ingCounter');
+  if(counter) counter.textContent=`${checkedIngredients.size}/${ings.length} checked`;
 }
 
-function toggleStep(idx) {
-  checkedSteps.has(idx) ? checkedSteps.delete(idx) : checkedSteps.add(idx);
-  const row = document.querySelector(`.step-row[data-step="${idx}"]`);
-  if (row) {
-    row.classList.toggle('checked', checkedSteps.has(idx));
-    const numEl = row.querySelector('.step-num');
-    const steps = stepsData[currentRecipe.id] || [];
-    if (numEl) numEl.textContent = checkedSteps.has(idx) ? '✓' : String(steps[idx]?.step ?? idx + 1);
+function toggleStep(idx){
+  checkedSteps.has(idx)?checkedSteps.delete(idx):checkedSteps.add(idx);
+  const row=document.querySelector(`.step-row[data-step="${idx}"]`);
+  if(row){
+    row.classList.toggle('checked',checkedSteps.has(idx));
+    const ne=row.querySelector('.step-num');
+    const steps=stepsData[currentRecipe.id]||[];
+    if(ne) ne.textContent=checkedSteps.has(idx)?'✓':String(steps[idx]?.step??idx+1);
   }
-  const prog = document.getElementById('stepsProgress');
-  if (prog) prog.textContent = `${checkedSteps.size} of ${(stepsData[currentRecipe.id]||[]).length} steps done`;
+  const prog=document.getElementById('stepsProgress');
+  if(prog) prog.textContent=`${checkedSteps.size} of ${(stepsData[currentRecipe.id]||[]).length} steps done`;
 }
 
-function changeServings(delta) {
-  const next = currentServings + delta;
-  if (next < 1 || next > 20) return;
-  currentServings = next;
-  const scale = currentServings / currentRecipe.servings;
-  renderModalHero(currentRecipe);  // hero re-renders (static kcal)
-  // Only patch the ingredients tab if it's active — avoid re-render cascade
-  const ingPanel = document.getElementById('tabIngredients');
-  if (ingPanel) ingPanel.innerHTML = renderIngredientsTab(currentRecipe, scale);
+function changeServings(delta){
+  const next=currentServings+delta;
+  if(next<1||next>20) return;
+  currentServings=next;
+  const scale=currentServings/currentRecipe.servings;
+  renderModalHero(currentRecipe);
+  // Patch ingredients tab only — nutrition stays static
+  const ingPanel=document.getElementById('tabIngredients');
+  if(ingPanel) ingPanel.innerHTML=renderIngredientsTab(currentRecipe,scale);
 }
 
-function openModal(r) {
-  currentRecipe = r;
-  currentServings = r.servings;
-  checkedIngredients.clear();
-  checkedSteps.clear();
-  activeTab = 'ingredients';
-
-  const emoji = cuisineEmoji[r.cuisine] || '🍴';
-  const hasImg = !isPlaceholder(r.img), hasLink = !!r.link;
-  modalImgWrap.innerHTML = hasImg
-    ? `<img class="modal-img" src="${r.img}" alt="${r.name}"${hasLink?` onclick="window.open('${r.link}','_blank')" title="Open recipe page"`:''} onerror="this.parentNode.innerHTML='<div class=modal-img-placeholder>${emoji}</div>'">${hasLink?'<div class="img-link-hint">↗ Open recipe page</div>':''}`
-    : `<div class="modal-img-placeholder"${hasLink?` onclick="window.open('${r.link}','_blank')" style="cursor:pointer"`:''} >${emoji}</div>${hasLink?'<div class="img-link-hint">↗ Open recipe page</div>':''}`;
-
+function openModal(r){
+  currentRecipe=r; currentServings=r.servings;
+  checkedIngredients.clear(); checkedSteps.clear(); activeTab='ingredients';
+  const em=cuisineEmoji[r.cuisine]||'🍴', hasImg=!isPlaceholder(r.img), hasLink=!!r.link;
+  modalImgWrap.innerHTML=hasImg
+    ?`<img class="modal-img" src="${r.img}" alt="${r.name}"${hasLink?` onclick="window.open('${r.link}','_blank')" title="Open recipe page"`:''} onerror="this.parentNode.innerHTML='<div class=modal-img-placeholder>${em}</div>'">${hasLink?'<div class="img-link-hint">↗ Open recipe page</div>':''}`
+    :`<div class="modal-img-placeholder"${hasLink?` onclick="window.open('${r.link}','_blank')" style="cursor:pointer"`:''} >${em}</div>${hasLink?'<div class="img-link-hint">↗ Open recipe page</div>':''}`;
   renderModalHero(r);
-  renderModalBody(r, 1);
+  renderModalBody(r,1);
   overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
 
-function closeModal() {
+function closeModal(){
   overlay.classList.remove('open');
-  document.body.style.overflow = '';
-  currentRecipe = null;
-  checkedIngredients.clear();
-  checkedSteps.clear();
-  activeTab = 'ingredients';
+  document.body.style.overflow='';
+  currentRecipe=null; checkedIngredients.clear(); checkedSteps.clear(); activeTab='ingredients';
 }
 
-document.getElementById('modalClose').addEventListener('click', closeModal);
-overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeEditor(); } });
+document.getElementById('modalClose').addEventListener('click',closeModal);
+overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeEditor();}});
 
 // ─── EDITOR ───────────────────────────────────────────────────────────────────
-// Editor state — lives as plain objects, serialised to JSON on save
-let editorRecipe    = null;   // raw recipe being edited (null = new)
-let edIngredients   = [];     // [{category, items:[{name,quantity,unit}]}]
-let edSteps         = [];     // [{step,instruction}]
+let editorRecipe  = null;
+let edIngredients = [];
+let edSteps       = [];
 
 const editorOverlay = document.getElementById('editorOverlay');
 
-function openEditor(r) {
-  closeModal();  // close view modal if open
-  editorRecipe = r ? rawRecipeMap[r.id] : null;
-
-  if (editorRecipe) {
-    edIngredients = JSON.parse(JSON.stringify(editorRecipe.ingredients || []));
-    edSteps       = JSON.parse(JSON.stringify(editorRecipe.steps || [])).sort((a,b) => a.step - b.step);
+function openEditor(r){
+  closeModal();
+  editorRecipe=r?rawRecipeMap[r.id]:null;
+  if(editorRecipe){
+    edIngredients=JSON.parse(JSON.stringify(editorRecipe.ingredients||[]));
+    edSteps=JSON.parse(JSON.stringify(editorRecipe.steps||[])).sort((a,b)=>a.step-b.step);
   } else {
-    edIngredients = [];
-    edSteps       = [];
+    edIngredients=[]; edSteps=[];
   }
-
-  document.getElementById('editorTitle').textContent = editorRecipe ? 'Edit Recipe' : 'New Recipe';
+  document.getElementById('editorTitle').textContent=editorRecipe?'Edit Recipe':'New Recipe';
   renderEditorBody();
-  editorOverlay.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  editorOverlay.style.display='flex';
+  document.body.style.overflow='hidden';
 }
 
-function closeEditor() {
-  editorOverlay.style.display = 'none';
-  document.body.style.overflow = '';
-  editorRecipe = null;
-  edIngredients = [];
-  edSteps = [];
+function closeEditor(){
+  editorOverlay.style.display='none';
+  document.body.style.overflow='';
+  editorRecipe=null; edIngredients=[]; edSteps=[];
 }
 
-function renderEditorBody() {
-  const r = editorRecipe;
-  const cuisineOptions  = CUISINES.map(c  => `<option value="${c}"${r?.cuisine===c?' selected':''}>${c}</option>`).join('');
-  const categoryOptions = CATEGORIES.map(c => `<option value="${c}"${r?.category===c?' selected':''}>${c}</option>`).join('');
+function renderEditorBody(){
+  const r=editorRecipe;
+  const cuOpts=CUISINES.map(c=>`<option value="${c}"${r?.cuisine===c?' selected':''}>${c}</option>`).join('');
+  const catOpts=CATEGORIES.map(c=>`<option value="${c}"${r?.category===c?' selected':''}>${c}</option>`).join('');
 
-  document.getElementById('editorBody').innerHTML = `
+  document.getElementById('editorBody').innerHTML=`
     <!-- Details -->
     <div class="ios-group-title">Details</div>
     <div class="ios-group">
-      <div class="ios-row">
-        <label class="ios-label">Name</label>
-        <input class="ios-input" id="ef-name" type="text" placeholder="Recipe name" value="${esc(r?.name||'')}">
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Cuisine</label>
-        <select class="ios-select" id="ef-cuisine"><option value="">— select —</option>${cuisineOptions}</select>
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Category</label>
-        <select class="ios-select" id="ef-category"><option value="">— select —</option>${categoryOptions}</select>
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Source</label>
-        <input class="ios-input" id="ef-source" type="text" placeholder="Person, book or website" value="${esc(r?.source||'')}">
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Servings</label>
-        <input class="ios-input" id="ef-servings" type="number" min="1" max="50" placeholder="4" value="${r?.servings||''}">
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Page link</label>
-        <input class="ios-input" id="ef-link" type="url" placeholder="https://…" value="${esc(r?.pageLink||'')}">
-      </div>
-      <div class="ios-row">
-        <label class="ios-label">Image URL</label>
-        <input class="ios-input" id="ef-img" type="url" placeholder="../../images/recipes/…" value="${esc(r?.imageUrl||'')}">
-      </div>
-    </div>
-
-    <!-- Nutrition -->
-    <div class="ios-group-title">Nutrition <span style="font-weight:400;text-transform:none;letter-spacing:0">per serving</span></div>
-    <div class="ios-group">
-      ${nutRow('Calories','ef-cal','calories',r)}
-      ${nutRow('Protein (g)','ef-protein','protein_g',r)}
-      ${nutRow('Carbs (g)','ef-carbs','carbs_g',r)}
-      ${nutRow('Fat (g)','ef-fat','fat_g',r)}
-      ${nutRow('Fibre (g)','ef-fiber','fiber_g',r)}
-      ${nutRow('Sugar (g)','ef-sugar','sugars_g',r)}
-      ${nutRow('Sat Fat (g)','ef-satfat','saturatedFat_g',r)}
-      ${nutRow('Sodium (mg)','ef-sodium','sodium_mg',r)}
+      <div class="ios-row"><label class="ios-label">Name</label><input class="ios-input" id="ef-name" type="text" placeholder="Recipe name" value="${esc(r?.name||'')}"></div>
+      <div class="ios-row"><label class="ios-label">Cuisine</label><select class="ios-select" id="ef-cuisine"><option value="">— select —</option>${cuOpts}</select></div>
+      <div class="ios-row"><label class="ios-label">Category</label><select class="ios-select" id="ef-category"><option value="">— select —</option>${catOpts}</select></div>
+      <div class="ios-row"><label class="ios-label">Source</label><input class="ios-input" id="ef-source" type="text" placeholder="Person, book or website" value="${esc(r?.source||'')}"></div>
+      <div class="ios-row"><label class="ios-label">Servings</label><input class="ios-input" id="ef-servings" type="number" min="1" max="50" placeholder="4" value="${r?.servings||''}"></div>
+      <div class="ios-row"><label class="ios-label">Page link</label><input class="ios-input" id="ef-link" type="url" placeholder="https://…" value="${esc(r?.pageLink||'')}"></div>
+      <div class="ios-row"><label class="ios-label">Image URL</label><input class="ios-input" id="ef-img" type="url" placeholder="../../images/recipes/…" value="${esc(r?.imageUrl||'')}"></div>
     </div>
 
     <!-- Ingredients -->
@@ -697,327 +625,244 @@ function renderEditorBody() {
     <div class="ios-group" id="ed-ing-group">
       ${renderEdIngredients()}
       <div class="ed-add-cat-row">
-        <select class="ed-add-cat-sel" id="ed-new-cat-sel">
-          ${CAT_ORDER.map(c => `<option>${c}</option>`).join('')}
-        </select>
+        <select class="ed-add-cat-sel" id="ed-new-cat-sel">${CAT_ORDER.map(c=>`<option>${c}</option>`).join('')}</select>
         <button class="ed-add-cat-btn" onclick="edAddCategory()">＋ Add category</button>
       </div>
     </div>
 
-    <!-- Steps -->
+    <!-- Steps — paste-and-convert -->
     <div class="ios-group-title">Method steps</div>
     <div class="ios-group" id="ed-steps-group">
-      ${renderEdSteps()}
-      <div class="ios-row" style="justify-content:center">
-        <button class="ed-add-cat-btn" onclick="edAddStep()">＋ Add step</button>
+      ${renderEdStepsList()}
+      <div class="steps-paste-wrap">
+        <textarea class="steps-paste-ta" id="stepsPasteArea" placeholder="Paste or type steps here — one per line, or numbered like:&#10;1. Rinse the dal&#10;2. Heat oil in a pan&#10;3. Add the spices…"></textarea>
+        <p class="steps-paste-hint">Each line becomes a step. Numbers and dots are stripped automatically.</p>
+        <div class="steps-paste-actions">
+          <button class="steps-paste-btn steps-paste-convert" onclick="convertPastedSteps()">Convert to steps</button>
+          <button class="steps-paste-btn steps-paste-clear" onclick="clearPasteArea()">Clear</button>
+        </div>
       </div>
     </div>
 
-    ${r ? `<div class="ios-danger-block">
-      <button class="ios-link-btn danger bold ios-danger-btn" onclick="confirmDeleteRecipe()">Delete Recipe</button>
-    </div>` : ''}
+    ${r?`<div class="ios-danger-block"><button class="ios-link-btn danger bold ios-danger-btn" onclick="confirmDeleteRecipe()">Delete Recipe</button></div>`:''}
     <div style="height:20px"></div>`;
 }
 
-function nutRow(label, id, field, r) {
-  const val = r?.nutrition?.[field] ?? '';
-  return `<div class="ios-row">
-    <label class="ios-label">${label}</label>
-    <input class="ios-input" id="${id}" type="number" min="0" step="0.1" placeholder="0" value="${val}">
-  </div>`;
-}
+function esc(s){return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 
-function esc(s) { return String(s).replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
-
-// ── Ingredient editor ──────────────────────────────────────────────────────────
-function renderEdIngredients() {
-  if (!edIngredients.length) return '';
-  return edIngredients.map((group, gi) => `
+// ── Ingredient editor ─────────────────────────────────────────────────────────
+function renderEdIngredients(){
+  if(!edIngredients.length) return '';
+  return edIngredients.map((group,gi)=>`
     <div class="ed-cat-hdr">
       <span class="ed-cat-lbl">${group.category}</span>
       <button class="ed-cat-add" onclick="edAddIngRow(${gi})">＋ item</button>
     </div>
-    ${(group.items||[]).map((item, ii) => `
+    ${(group.items||[]).map((item,ii)=>`
       <div class="ed-ing-row" id="ing-${gi}-${ii}">
-        <input class="ed-ing-qty" type="text" placeholder="qty" value="${esc(item.quantity||'')}"
-          oninput="edUpdateIng(${gi},${ii},'quantity',this.value)">
-        <input class="ed-ing-unit" type="text" placeholder="unit" value="${esc(item.unit||'')}"
-          oninput="edUpdateIng(${gi},${ii},'unit',this.value)">
-        <input class="ed-ing-name" type="text" placeholder="ingredient" value="${esc(item.name||'')}"
-          oninput="edUpdateIng(${gi},${ii},'name',this.value)">
-        <button class="ed-ing-del" onclick="edRemoveIng(${gi},${ii})" title="Remove">×</button>
+        <input class="ed-ing-qty" type="text" placeholder="qty" value="${esc(item.quantity||'')}" oninput="edUpdateIng(${gi},${ii},'quantity',this.value)">
+        <input class="ed-ing-unit" type="text" placeholder="unit" value="${esc(item.unit||'')}" oninput="edUpdateIng(${gi},${ii},'unit',this.value)">
+        <input class="ed-ing-name" type="text" placeholder="ingredient" value="${esc(item.name||'')}" oninput="edUpdateIng(${gi},${ii},'name',this.value)">
+        <button class="ed-ing-del" onclick="edRemoveIng(${gi},${ii})">×</button>
       </div>`).join('')}`).join('');
 }
 
-function edUpdateIng(gi, ii, field, val) {
-  if (edIngredients[gi]?.items?.[ii]) edIngredients[gi].items[ii][field] = val;
-}
-function edAddIngRow(gi) {
-  edIngredients[gi].items.push({ name:'', quantity:'', unit:'' });
+function edUpdateIng(gi,ii,field,val){if(edIngredients[gi]?.items?.[ii]) edIngredients[gi].items[ii][field]=val;}
+function edAddIngRow(gi){edIngredients[gi].items.push({name:'',quantity:'',unit:''});refreshEdIngredients();}
+function edRemoveIng(gi,ii){
+  edIngredients[gi].items.splice(ii,1);
+  if(!edIngredients[gi].items.length) edIngredients.splice(gi,1);
   refreshEdIngredients();
 }
-function edRemoveIng(gi, ii) {
-  edIngredients[gi].items.splice(ii, 1);
-  if (!edIngredients[gi].items.length) edIngredients.splice(gi, 1);
+function edAddCategory(){
+  const sel=document.getElementById('ed-new-cat-sel'), cat=sel?.value;
+  if(!cat) return;
+  if(edIngredients.find(g=>g.category===cat)){showToast(`"${cat}" already exists`);return;}
+  edIngredients.push({category:cat,items:[{name:'',quantity:'',unit:''}]});
   refreshEdIngredients();
 }
-function edAddCategory() {
-  const sel = document.getElementById('ed-new-cat-sel');
-  const cat = sel?.value;
-  if (!cat) return;
-  if (edIngredients.find(g => g.category === cat)) {
-    showToast(`"${cat}" already exists — scroll up`); return;
-  }
-  edIngredients.push({ category: cat, items: [{ name:'', quantity:'', unit:'' }] });
-  refreshEdIngredients();
-}
-function refreshEdIngredients() {
-  const grp = document.getElementById('ed-ing-group');
-  if (!grp) return;
-  // Preserve the add-row at bottom, re-render ingredient content before it
-  const addRow = grp.querySelector('.ed-add-cat-row');
-  // Collect current live values before overwrite
-  grp.innerHTML = renderEdIngredients() + (addRow ? addRow.outerHTML : '');
+function refreshEdIngredients(){
+  const grp=document.getElementById('ed-ing-group');
+  if(!grp) return;
+  const addRow=grp.querySelector('.ed-add-cat-row');
+  grp.innerHTML=renderEdIngredients()+(addRow?addRow.outerHTML:'');
 }
 
-// ── Step editor ───────────────────────────────────────────────────────────────
-function renderEdSteps() {
-  return edSteps.map((s, idx) => `
-    <div class="ed-step-row" id="step-${idx}">
+// ── Steps paste-and-convert ───────────────────────────────────────────────────
+function renderEdStepsList(){
+  if(!edSteps.length) return `<div class="ed-steps-empty" id="stepsEmptyMsg">Steps added via the box below will appear here.</div>`;
+  return edSteps.map((s,idx)=>`
+    <div class="ed-step-row" id="ed-step-${idx}">
       <div class="ed-step-num">${idx+1}</div>
-      <textarea class="ed-step-text" placeholder="Describe this step…"
-        oninput="edUpdateStep(${idx},this.value)">${esc(s.instruction||'')}</textarea>
-      <button class="ed-step-del" onclick="edRemoveStep(${idx})" title="Remove">×</button>
+      <div class="ed-step-text">${esc(s.instruction||'')}</div>
+      <button class="ed-step-del" onclick="edRemoveStep(${idx})">×</button>
     </div>`).join('');
 }
-function edUpdateStep(idx, val) { if (edSteps[idx]) edSteps[idx].instruction = val; }
-function edAddStep() {
-  edSteps.push({ step: edSteps.length + 1, instruction: '' });
+
+function convertPastedSteps(){
+  const ta=document.getElementById('stepsPasteArea');
+  if(!ta||!ta.value.trim()){showToast('Nothing to convert');return;}
+  const lines=ta.value.split('\n')
+    .map(l=>l.replace(/^\s*(\d+[\.\)]\s*|\-\s*|\*\s*)/,'').trim())
+    .filter(l=>l.length>0);
+  if(!lines.length){showToast('No steps found');return;}
+  // Append to existing steps (don't wipe)
+  const startIdx=edSteps.length;
+  lines.forEach((line,i)=>edSteps.push({step:startIdx+i+1,instruction:line}));
+  ta.value='';
   refreshEdSteps();
-  // Focus new textarea
-  setTimeout(() => {
-    const grp = document.getElementById('ed-steps-group');
-    const texts = grp?.querySelectorAll('.ed-step-text');
-    if (texts?.length) texts[texts.length-1].focus();
-  }, 50);
+  showToast(`${lines.length} step${lines.length!==1?'s':''} added`);
 }
-function edRemoveStep(idx) {
-  edSteps.splice(idx, 1);
-  edSteps.forEach((s, i) => s.step = i + 1);
+
+function clearPasteArea(){
+  const ta=document.getElementById('stepsPasteArea');
+  if(ta) ta.value='';
+}
+
+function edRemoveStep(idx){
+  edSteps.splice(idx,1);
+  edSteps.forEach((s,i)=>s.step=i+1);
   refreshEdSteps();
 }
-function refreshEdSteps() {
-  const grp = document.getElementById('ed-steps-group');
-  if (!grp) return;
-  const addRow = grp.querySelector('.ios-row');  // the add-step row
-  grp.innerHTML = renderEdSteps() + (addRow ? addRow.outerHTML : '');
+
+function refreshEdSteps(){
+  const grp=document.getElementById('ed-steps-group');
+  if(!grp) return;
+  const pasteWrap=grp.querySelector('.steps-paste-wrap');
+  grp.innerHTML=renderEdStepsList()+(pasteWrap?pasteWrap.outerHTML:'');
 }
 
 // ── Delete ────────────────────────────────────────────────────────────────────
-function confirmDeleteRecipe() {
-  const r = editorRecipe;
-  if (!r) return;
-  if (!confirm(`Delete "${r.name}"? This cannot be undone.`)) return;
-  deleteRecipe(r.id);
+function confirmDeleteRecipe(){
+  if(!editorRecipe) return;
+  if(!confirm(`Delete "${editorRecipe.name}"? This cannot be undone.`)) return;
+  deleteRecipe(editorRecipe.id);
 }
-async function deleteRecipe(id) {
-  const token = localStorage.getItem('gh_pat_token');
-  if (!token) { alert('No GitHub token — save locally only'); return; }
+async function deleteRecipe(id){
+  const token=localStorage.getItem('gh_pat_token');
+  if(!token){showToast('No GitHub token');return;}
   showToast('Deleting…');
-  try {
-    const raw = await ghGetFile();
-    raw.recipes = raw.recipes.filter(r => r.id !== String(id));
-    raw.meta.count = raw.recipes.length;
-    await ghPutFile(raw, raw._sha);
-    // Remove from local arrays
-    const idx = recipes.findIndex(r => r.id === parseInt(id));
-    if (idx !== -1) recipes.splice(idx, 1);
-    delete ingredients[parseInt(id)];
-    delete stepsData[parseInt(id)];
-    delete rawNutrition[parseInt(id)];
-    delete rawRecipeMap[parseInt(id)];
-    closeEditor();
-    applyFilters();
-    showToast('Recipe deleted');
-  } catch(e) {
-    showToast('Delete failed: ' + e.message);
-  }
+  try{
+    const raw=await ghGetFile();
+    raw.recipes=raw.recipes.filter(r=>r.id!==String(id));
+    raw.meta.count=raw.recipes.length;
+    await ghPutFile(raw,raw._sha);
+    const idx=recipes.findIndex(r=>r.id===parseInt(id));
+    if(idx!==-1) recipes.splice(idx,1);
+    delete ingredients[parseInt(id)]; delete stepsData[parseInt(id)];
+    delete rawNutrition[parseInt(id)]; delete rawRecipeMap[parseInt(id)];
+    closeEditor(); applyFilters(); showToast('Recipe deleted');
+  } catch(e){showToast('Delete failed: '+e.message);}
 }
 
 // ── Save ──────────────────────────────────────────────────────────────────────
-async function saveRecipe() {
-  const btn = document.getElementById('editorSaveBtn');
-  btn.disabled = true;
-  btn.textContent = 'Saving…';
-
-  try {
-    const built = buildRecipeFromForm();
-    if (!built.name) { showToast('Name is required'); btn.disabled=false; btn.textContent='Save'; return; }
-
-    const token = localStorage.getItem('gh_pat_token');
-    if (!token) {
-      // No token — update in-memory only, no GitHub write
-      applyLocalUpdate(built);
-      closeEditor();
-      applyFilters();
+async function saveRecipe(){
+  const btn=document.getElementById('editorSaveBtn');
+  btn.disabled=true; btn.textContent='Saving…';
+  try{
+    const built=buildRecipeFromForm();
+    if(!built.name){showToast('Name is required');btn.disabled=false;btn.textContent='Save';return;}
+    const token=localStorage.getItem('gh_pat_token');
+    if(!token){
+      applyLocalUpdate(built); closeEditor(); applyFilters();
       showToast('Saved locally (no GitHub token)');
       return;
     }
-
     showToast('Saving to GitHub…');
-    const raw = await ghGetFile();
-    const existingIdx = raw.recipes.findIndex(r => r.id === built.id);
-    if (existingIdx !== -1) {
-      raw.recipes[existingIdx] = built;
-    } else {
-      raw.recipes.push(built);
-      raw.meta.count = raw.recipes.length;
-    }
-    await ghPutFile(raw, raw._sha);
-    applyLocalUpdate(built);
-    closeEditor();
-    applyFilters();
-    showToast('Saved ✓');
-  } catch(e) {
-    showToast('Save failed: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save';
-  }
+    const raw=await ghGetFile();
+    const ei=raw.recipes.findIndex(r=>r.id===built.id);
+    if(ei!==-1){raw.recipes[ei]=built;}else{raw.recipes.push(built);raw.meta.count=raw.recipes.length;}
+    await ghPutFile(raw,raw._sha);
+    applyLocalUpdate(built); closeEditor(); applyFilters(); showToast('Saved ✓');
+  } catch(e){showToast('Save failed: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='Save';}
 }
 
-function buildRecipeFromForm() {
-  const isNew = !editorRecipe;
-  const newId = isNew
-    ? String(Math.max(0, ...recipes.map(r => r.id)) + 1)
-    : String(editorRecipe.id);
+function buildRecipeFromForm(){
+  const isNew=!editorRecipe;
+  const newId=isNew?String(Math.max(0,...recipes.map(r=>r.id))+1):String(editorRecipe.id);
 
-  // Collect live ingredient values from DOM inputs (may have unsaved keystrokes)
-  const liveIngs = JSON.parse(JSON.stringify(edIngredients));
-  document.querySelectorAll('.ed-ing-row').forEach(row => {
-    const id = row.id;  // "ing-GI-II"
-    const [, gi, ii] = id.split('-').map(Number);
-    const inputs = row.querySelectorAll('input');
-    if (liveIngs[gi]?.items?.[ii]) {
-      liveIngs[gi].items[ii].quantity = inputs[0]?.value || '';
-      liveIngs[gi].items[ii].unit     = inputs[1]?.value || '';
-      liveIngs[gi].items[ii].name     = inputs[2]?.value || '';
+  // Capture live ingredient values from DOM
+  const liveIngs=JSON.parse(JSON.stringify(edIngredients));
+  document.querySelectorAll('.ed-ing-row').forEach(row=>{
+    const parts=row.id.split('-'); const gi=parseInt(parts[1]),ii=parseInt(parts[2]);
+    const inputs=row.querySelectorAll('input');
+    if(liveIngs[gi]?.items?.[ii]){
+      liveIngs[gi].items[ii].quantity=inputs[0]?.value||'';
+      liveIngs[gi].items[ii].unit=inputs[1]?.value||'';
+      liveIngs[gi].items[ii].name=inputs[2]?.value||'';
     }
   });
-  // Collect live step values
-  const liveSteps = edSteps.map((s, idx) => {
-    const ta = document.getElementById(`step-${idx}`)?.querySelector('textarea');
-    return { step: idx + 1, instruction: ta ? ta.value : (s.instruction || '') };
-  });
-  // Filter empty items / steps
-  const cleanIngs = liveIngs.map(g => ({
-    ...g,
-    items: g.items.filter(i => i.name.trim())
-  })).filter(g => g.items.length);
-  const cleanSteps = liveSteps.filter(s => s.instruction.trim());
+  const cleanIngs=liveIngs.map(g=>({...g,items:g.items.filter(i=>i.name.trim())})).filter(g=>g.items.length);
+  const cleanSteps=edSteps.filter(s=>(s.instruction||'').trim());
 
   return {
-    id:        newId,
-    name:      (document.getElementById('ef-name')?.value || '').trim(),
-    source:    (document.getElementById('ef-source')?.value || '').trim(),
-    cuisine:   document.getElementById('ef-cuisine')?.value || '',
-    category:  document.getElementById('ef-category')?.value || '',
-    servings:  parseInt(document.getElementById('ef-servings')?.value) || 4,
-    imageUrl:  (document.getElementById('ef-img')?.value || '').trim(),
-    pageLink:  (document.getElementById('ef-link')?.value || '').trim(),
-    nutrition: {
-      calories:       numOrNull('ef-cal'),
-      protein_g:      numOrNull('ef-protein'),
-      carbs_g:        numOrNull('ef-carbs'),
-      fat_g:          numOrNull('ef-fat'),
-      fiber_g:        numOrNull('ef-fiber'),
-      sugars_g:       numOrNull('ef-sugar'),
-      saturatedFat_g: numOrNull('ef-satfat'),
-      sodium_mg:      numOrNull('ef-sodium'),
-      cholesterol_mg: editorRecipe?.nutrition?.cholesterol_mg ?? 0,
-    },
-    ingredients: cleanIngs,
-    steps:       cleanSteps,
-    linkedRecipes: editorRecipe?.linkedRecipes || [],
+    id:newId,
+    name:(document.getElementById('ef-name')?.value||'').trim(),
+    source:(document.getElementById('ef-source')?.value||'').trim(),
+    cuisine:document.getElementById('ef-cuisine')?.value||'',
+    category:document.getElementById('ef-category')?.value||'',
+    servings:parseInt(document.getElementById('ef-servings')?.value)||4,
+    imageUrl:(document.getElementById('ef-img')?.value||'').trim(),
+    pageLink:(document.getElementById('ef-link')?.value||'').trim(),
+    // Preserve existing nutrition data; Phase 3 will compute from ingredients
+    nutrition:editorRecipe?.nutrition||{calories:null,protein_g:null,carbs_g:null,fat_g:null,fiber_g:null,sugars_g:null,saturatedFat_g:null,sodium_mg:null,cholesterol_mg:null},
+    ingredients:cleanIngs,
+    steps:cleanSteps,
+    linkedRecipes:editorRecipe?.linkedRecipes||[],
   };
 }
 
-function numOrNull(id) {
-  const v = parseFloat(document.getElementById(id)?.value);
-  return isNaN(v) ? null : v;
-}
-
-function applyLocalUpdate(built) {
-  const id = parseInt(built.id);
-  const existingIdx = recipes.findIndex(r => r.id === id);
-  const adapted = {
-    id, name: built.name, cuisine: built.cuisine, sub: built.category,
-    servings: built.servings, img: built.imageUrl, link: built.pageLink,
-    source: built.source,
-    cal: built.nutrition?.calories, fat: built.nutrition?.fat_g,
-    satFat: built.nutrition?.saturatedFat_g, carb: built.nutrition?.carbs_g,
-    fiber: built.nutrition?.fiber_g, sugar: built.nutrition?.sugars_g,
-    protein: built.nutrition?.protein_g, sodium: built.nutrition?.sodium_mg,
-    chol: built.nutrition?.cholesterol_mg,
+function applyLocalUpdate(built){
+  const id=parseInt(built.id);
+  const ei=recipes.findIndex(r=>r.id===id);
+  const adapted={
+    id, name:built.name, cuisine:built.cuisine, sub:built.category,
+    servings:built.servings, img:built.imageUrl, link:built.pageLink, source:built.source,
+    cal:built.nutrition?.calories, protein:built.nutrition?.protein_g,
+    carb:built.nutrition?.carbs_g, fat:built.nutrition?.fat_g,
   };
-  if (existingIdx !== -1) { recipes[existingIdx] = adapted; } else { recipes.push(adapted); }
-  ingredients[id] = (built.ingredients || []).flatMap(g =>
-    (g.items||[]).map(i => ({
-      cat: g.category,
-      qty: i.quantity + (i.unit ? ' '+i.unit : ''),
-      rawQty: parseFloat(i.quantity) || null,
-      unit: i.unit || '',
-      name: i.name
-    }))
-  );
-  stepsData[id]    = (built.steps || []).slice().sort((a,b) => a.step - b.step);
-  rawNutrition[id] = built.nutrition || {};
-  rawRecipeMap[id] = built;
+  if(ei!==-1){recipes[ei]=adapted;}else{recipes.push(adapted);}
+  ingredients[id]=(built.ingredients||[]).flatMap(g=>(g.items||[]).map(i=>({
+    cat:g.category,qty:i.quantity+(i.unit?' '+i.unit:''),
+    rawQty:parseFloat(i.quantity)||null,unit:i.unit||'',name:i.name
+  })));
+  stepsData[id]=(built.steps||[]).slice().sort((a,b)=>a.step-b.step);
+  rawNutrition[id]=built.nutrition||{};
+  rawRecipeMap[id]=built;
 }
 
-// ── GitHub read / write ───────────────────────────────────────────────────────
-async function ghGetFile() {
-  const token = localStorage.getItem('gh_pat_token');
-  const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
-  const res = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
-  if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
-  const meta = await res.json();
-  const binary = atob(meta.content.replace(/\n/g,''));
-  const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0));
-  const parsed = JSON.parse(new TextDecoder('utf-8').decode(bytes));
-  parsed._sha  = meta.sha;   // stash SHA for the PUT
-  return parsed;
+// ── GitHub helpers ────────────────────────────────────────────────────────────
+async function ghGetFile(){
+  const token=localStorage.getItem('gh_pat_token');
+  const url=`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}?ref=${GITHUB_CONFIG.branch}`;
+  const res=await fetch(url,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});
+  if(!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+  const meta=await res.json();
+  const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
+  const parsed=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+  parsed._sha=meta.sha; return parsed;
 }
-
-async function ghPutFile(data, sha) {
-  const token = localStorage.getItem('gh_pat_token');
-  const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
-  const { _sha, ...clean } = data;   // strip internal _sha before serialising
-  const base64 = btoa(unescape(encodeURIComponent(JSON.stringify(clean, null, 2))));
-  const body = { message: 'Update recipes via FatBoy Kitchen app', content: base64, branch: GITHUB_CONFIG.branch };
-  if (sha) body.sha = sha;
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || `GitHub PUT failed: ${res.status}`);
-  }
+async function ghPutFile(data,sha){
+  const token=localStorage.getItem('gh_pat_token');
+  const url=`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+  const {_sha,...clean}=data;
+  const b64=btoa(unescape(encodeURIComponent(JSON.stringify(clean,null,2))));
+  const body={message:'Update recipes via FatBoy Kitchen app',content:b64,branch:GITHUB_CONFIG.branch};
+  if(sha) body.sha=sha;
+  const res=await fetch(url,{method:'PUT',headers:{'Authorization':`token ${token}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.message||`GitHub PUT failed: ${res.status}`);}
 }
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
 let _toastTimer;
-function showToast(msg) {
-  const toast = document.getElementById('saveToast');
-  toast.textContent = msg;
-  toast.classList.add('show');
+function showToast(msg){
+  const t=document.getElementById('saveToast');
+  t.textContent=msg; t.classList.add('show');
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  _toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
