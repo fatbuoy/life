@@ -54,6 +54,8 @@
 .macro-val.hl{color:var(--app-accent)}
 .macro-lbl{font-size:8px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
 .no-results{grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--faint);font-size:13px}
+
+/* ── Modal overlay ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(12,35,64,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg);border-radius:var(--r-lg);max-width:680px;width:100%;max-height:90vh;overflow-y:auto;transform:scale(.96) translateY(12px);transition:transform .2s;position:relative}
@@ -97,11 +99,43 @@
 .ing-cat:nth-child(6){border-color:#20a080}.ing-cat:nth-child(6) .ing-cat-name{color:#0a6050}
 .ing-cat-name{font-size:9px;font-weight:600;color:var(--app-accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
 .ing-list{list-style:none;display:flex;flex-direction:column;gap:2px}
-.ing-row{display:flex;align-items:baseline;gap:6px;font-size:11.5px;padding:2px 0;border-bottom:1px solid var(--border2)}
+.ing-row{display:flex;align-items:baseline;gap:6px;font-size:11.5px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .12s;border-radius:4px;padding:4px 4px 4px 0;-webkit-tap-highlight-color:transparent}
 .ing-row:last-child{border-bottom:none}
+.ing-row:hover{background:rgba(160,48,32,.04)}
+.ing-row.checked .ing-qty,.ing-row.checked .ing-name{text-decoration:line-through;color:var(--faint);opacity:.6}
 .ing-qty{min-width:56px;font-weight:600;color:var(--app-primary);font-size:11px}
 .ing-name{color:var(--text);flex:1}
 .no-ings{font-size:11px;color:var(--faint);font-style:italic;padding:8px 12px}
+
+/* ── Servings scaler ── */
+.scaler-row{display:inline-flex;align-items:center;gap:0;margin-top:8px;background:rgba(255,255,255,.1);border-radius:8px;padding:5px 10px}
+.scaler-lbl{font-size:9px;font-weight:600;color:var(--app-on-primary3);text-transform:uppercase;letter-spacing:.07em;margin-right:8px}
+.scaler-btn{width:26px;height:26px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent;font-family:inherit;flex-shrink:0}
+.scaler-btn:hover:not(:disabled){background:rgba(255,255,255,.28)}
+.scaler-btn:disabled{opacity:.3;cursor:default}
+.scaler-val{font-size:15px;font-weight:600;color:#fff;min-width:36px;text-align:center;line-height:1}
+.scaler-base{font-size:9px;color:var(--app-on-primary3);margin-left:6px;white-space:nowrap}
+
+/* ── Tab nav inside modal ── */
+.modal-tab-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:12px}
+.modal-tab-btn{flex:1;background:none;border:none;padding:9px 12px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent}
+.modal-tab-btn:hover{color:var(--text)}
+.modal-tab-btn.active{color:var(--app-accent);border-bottom-color:var(--app-accent)}
+.modal-tab-panel{display:none}
+.modal-tab-panel.active{display:block}
+
+/* ── Method / steps ── */
+.steps-list{display:flex;flex-direction:column;gap:0}
+.step-row{display:flex;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .12s;border-radius:4px;-webkit-tap-highlight-color:transparent}
+.step-row:last-child{border-bottom:none}
+.step-row:hover{background:rgba(160,48,32,.04)}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--app-accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:background .15s}
+.step-row.checked .step-num{background:var(--c-success)}
+.step-row.checked .step-text{text-decoration:line-through;color:var(--faint);opacity:.7}
+.step-text{font-size:12.5px;color:var(--text);line-height:1.55;flex:1}
+.no-steps{font-size:11px;color:var(--faint);font-style:italic;text-align:center;padding:24px 16px;background:var(--surface);border-radius:10px;line-height:1.6}
+.steps-progress{font-size:10px;color:var(--muted);text-align:right;margin-bottom:8px}
+
 @media(min-width:600px){.container{padding:0 var(--sp-6)}}
 </style>
 </head>
@@ -168,15 +202,18 @@ const GITHUB_CONFIG = {
 const PLACEHOLDER = 'https://www.myfitnesspal.com/images/recipe_image_placeholder.png';
 
 // ─── DATA — loaded from GitHub (fatbuoy/app-data) ──────────────────────────
-let recipes = [];      // flat array, same shape as before
-let ingredients = {};  // {id: [{cat, qty, name}]}
+let recipes      = [];   // flat array, same shape as before
+let ingredients  = {};   // {id: [{cat, qty, rawQty, unit, name}]}
+let stepsData    = {};   // {id: [{step, instruction}]}
+let rawNutrition = {};   // {id: raw nutrition object} — for scaling
 
 // Maps JSON schema → legacy field names used by renderCards / openModal
 function adaptRecipes(raw) {
   raw.recipes.forEach(r => {
-    // Flat recipe object matching original field names
+    const id = parseInt(r.id);
+
     recipes.push({
-      id:       parseInt(r.id),
+      id,
       name:     r.name,
       cuisine:  r.cuisine,
       sub:      r.category,
@@ -193,15 +230,44 @@ function adaptRecipes(raw) {
       sodium:   r.nutrition.sodium_mg,
       chol:     r.nutrition.cholesterol_mg,
     });
-    // Ingredients: flatten groups into [{cat, qty, name}]
-    ingredients[parseInt(r.id)] = (r.ingredients || []).flatMap(g =>
+
+    // Ingredients: flatten groups, preserve raw numeric quantity for scaling
+    ingredients[id] = (r.ingredients || []).flatMap(g =>
       (g.items || []).map(i => ({
-        cat:  g.category,
-        qty:  i.quantity + (i.unit ? ' ' + i.unit : ''),
-        name: i.name
+        cat:    g.category,
+        qty:    i.quantity + (i.unit ? ' ' + i.unit : ''),
+        rawQty: parseFloat(i.quantity) || null,  // null if non-numeric
+        unit:   i.unit || '',
+        name:   i.name
       }))
     );
+
+    // Steps (sorted by step number; may be absent)
+    stepsData[id] = (r.steps || []).slice().sort((a, b) => a.step - b.step);
+
+    // Raw nutrition for scaling
+    rawNutrition[id] = r.nutrition;
   });
+}
+
+// ─── COOK MODE STATE ─────────────────────────────────────────────────────────
+let currentRecipe      = null;
+let currentServings    = 1;
+let checkedIngredients = new Set();  // ingredient index values
+let checkedSteps       = new Set();  // step index values
+let activeTab          = 'ingredients';
+
+// ─── SCALING HELPERS ─────────────────────────────────────────────────────────
+function scaleQty(rawQty, unit, scale) {
+  if (rawQty === null) return '';  // non-numeric quantity — leave as-is
+  const val = rawQty * scale;
+  const display = Number.isInteger(val) ? String(val) : val.toFixed(1);
+  return unit ? display + ' ' + unit : display;
+}
+
+function scaleNutrient(base, scale) {
+  if (base == null) return '—';
+  return Math.round(base * scale);
 }
 
 // ─── POPULATE DROPDOWNS ──────────────────────────────────────────────────────
@@ -211,14 +277,13 @@ const searchInput   = document.getElementById('searchInput');
 const recipeGrid    = document.getElementById('recipeGrid');
 const resultsInfo   = document.getElementById('resultsInfo');
 
-// ─── INIT — fetch from GitHub then wire everything up ────────────────────────
+// ─── INIT — fetch from GitHub then wire everything up ─────────────────────────
 async function init() {
   const raw = await fetchFromGitHub(GITHUB_CONFIG, 'recipeGrid');
   if (!raw) return;
 
   adaptRecipes(raw);
 
-  // Populate dropdowns from loaded data
   const cuisines = [...new Set(recipes.map(r => r.cuisine))].sort();
   const subCats  = [...new Set(recipes.map(r => r.sub).filter(Boolean))].sort();
 
@@ -230,7 +295,7 @@ async function init() {
   renderCards(recipes);
 }
 
-// ─── TAG CLASSES ─────────────────────────────────────────────────────────────
+// ─── TAG CLASSES ──────────────────────────────────────────────────────────────
 const cuisineTagClass = {
   'Indian':'tag-indian','Cocktails':'tag-cocktails','Mexican':'tag-mexican',
   'Sri Lankan':'tag-sri-lankan','Asian':'tag-asian','Western':'tag-western'
@@ -239,9 +304,9 @@ const cuisineEmoji = {
   'Indian':'🍛','Cocktails':'🍹','Mexican':'🌮','Sri Lankan':'🥥','Asian':'🥢','Western':'🍽️'
 };
 
-function isPlaceholder(url){ return !url || url.includes('recipe_image_placeholder'); }
+function isPlaceholder(url) { return !url || url.includes('recipe_image_placeholder'); }
 
-// ─── RENDER CARDS ────────────────────────────────────────────────────────────
+// ─── RENDER CARDS ─────────────────────────────────────────────────────────────
 function renderCards(list) {
   recipeGrid.innerHTML = '';
   resultsInfo.textContent = `${list.length} recipe${list.length !== 1 ? 's' : ''} found`;
@@ -285,7 +350,7 @@ function renderCards(list) {
   });
 }
 
-// ─── FILTER ──────────────────────────────────────────────────────────────────
+// ─── FILTER ───────────────────────────────────────────────────────────────────
 function filterRecipes() {
   const q  = searchInput.value.toLowerCase().trim();
   const cu = cuisineFilter.value;
@@ -304,7 +369,7 @@ function filterRecipes() {
   });
 }
 
-function applyFilters(){ renderCards(filterRecipes()); }
+function applyFilters() { renderCards(filterRecipes()); }
 searchInput.addEventListener('input', applyFilters);
 cuisineFilter.addEventListener('change', applyFilters);
 subCatFilter.addEventListener('change', applyFilters);
@@ -313,17 +378,216 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   applyFilters();
 });
 
-// ─── MODAL ───────────────────────────────────────────────────────────────────
-const overlay    = document.getElementById('modalOverlay');
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+const overlay      = document.getElementById('modalOverlay');
 const modalImgWrap = document.getElementById('modalImgWrap');
-const modalHero  = document.getElementById('modalHero');
-const modalBody  = document.getElementById('modalBody');
+const modalHero    = document.getElementById('modalHero');
+const modalBody    = document.getElementById('modalBody');
 
 const CAT_ORDER = ['Vegetables','Legumes/Dals','Grains/Flour','Dairy','Nuts/Coconut',
   'Spices (Powder)','Spices (Whole/Seeds)','Fresh Aromatics','Oils/Fats',
   'Alcohol/Cocktail','Citrus/Acid','Liquids','Fruits','Salt/Seasonings','Other'];
 
+// ── Hero band — re-rendered on every scaler change ───────────────────────────
+function renderModalHero(r, scale) {
+  const tagCls = cuisineTagClass[r.cuisine] || 'tag-indian';
+  const nut    = rawNutrition[r.id];
+  const scaledCal = nut ? scaleNutrient(nut.calories, scale) : r.cal;
+
+  modalHero.innerHTML = `
+    <div class="modal-hero-row">
+      <div style="flex:1;min-width:0">
+        <div class="mh-title">${r.name}</div>
+        <div class="mh-sub">
+          <span class="tag ${tagCls}" style="font-size:9px">${r.cuisine}</span>
+          ${r.sub ? `&nbsp;<span class="tag tag-sub" style="font-size:9px;background:rgba(255,255,255,.12);color:#a8cfed;border-color:transparent">${r.sub}</span>` : ''}
+        </div>
+        <div class="scaler-row">
+          <span class="scaler-lbl">Servings</span>
+          <button class="scaler-btn" onclick="changeServings(-1)" ${currentServings <= 1 ? 'disabled' : ''}>−</button>
+          <span class="scaler-val">${currentServings}</span>
+          <button class="scaler-btn" onclick="changeServings(1)" ${currentServings >= 20 ? 'disabled' : ''}>+</button>
+          <span class="scaler-base">${currentServings !== r.servings ? `(base ${r.servings})` : 'servings'}</span>
+        </div>
+      </div>
+      <div class="mh-right">
+        <div class="mh-kcal">${scaledCal}</div>
+        <div class="mh-lbl">kcal / serving</div>
+      </div>
+    </div>`;
+}
+
+// ── Nutrition panel ───────────────────────────────────────────────────────────
+function renderNutritionPanel(r, scale) {
+  const nut = rawNutrition[r.id];
+  if (!nut) return `<div class="no-ings">No nutrition data available</div>`;
+  return `
+    <div class="sec-lbl" style="margin-bottom:6px">Nutrition per serving</div>
+    <div class="nut-panel">
+      <div class="nut-panel-hdr">
+        <span class="nut-panel-lbl">Macros &amp; Micronutrients</span>
+        <span class="nut-panel-servings">per serving · making ${currentServings}</span>
+      </div>
+      <div class="nut-grid">
+        <div class="nut-cell"><div class="nut-val hl">${scaleNutrient(nut.calories,scale)}</div><div class="nut-lbl">Calories</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.protein_g,scale)}g</div><div class="nut-lbl">Protein</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.carbs_g,scale)}g</div><div class="nut-lbl">Carbs</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.fat_g,scale)}g</div><div class="nut-lbl">Fat</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.fiber_g,scale)}g</div><div class="nut-lbl">Fiber</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.sugars_g,scale)}g</div><div class="nut-lbl">Sugar</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.saturatedFat_g,scale)}g</div><div class="nut-lbl">Sat Fat</div></div>
+        <div class="nut-cell"><div class="nut-val">${scaleNutrient(nut.sodium_mg,scale)}mg</div><div class="nut-lbl">Sodium</div></div>
+      </div>
+    </div>`;
+}
+
+// ── Ingredients tab content ───────────────────────────────────────────────────
+function renderIngredientsTab(r, scale) {
+  const ings = ingredients[r.id] || [];
+  const byCat = {};
+  ings.forEach((item, idx) => {
+    (byCat[item.cat] = byCat[item.cat] || []).push({ ...item, idx });
+  });
+  const sortedCats = Object.keys(byCat).sort((a, b) => {
+    const ia = CAT_ORDER.indexOf(a), ib = CAT_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+
+  const ingHTML = sortedCats.length
+    ? sortedCats.map(cat => `
+        <div class="ing-cat">
+          <div class="ing-cat-name">${cat}</div>
+          <ul class="ing-list">
+            ${byCat[cat].map(item => {
+              const scaledQty = (scale !== 1 && item.rawQty !== null)
+                ? scaleQty(item.rawQty, item.unit, scale)
+                : item.qty;
+              const cls = checkedIngredients.has(item.idx) ? ' checked' : '';
+              return `<li class="ing-row${cls}" data-idx="${item.idx}" onclick="toggleIngredient(${item.idx})">
+                <span class="ing-qty">${scaledQty || '—'}</span>
+                <span class="ing-name">${item.name}</span>
+              </li>`;
+            }).join('')}
+          </ul>
+        </div>`).join('')
+    : '<p class="no-ings">No ingredient details available</p>';
+
+  const doneCount = checkedIngredients.size;
+  const totalCount = ings.length;
+
+  return `
+    ${renderNutritionPanel(r, scale)}
+    <div class="sec-lbl" style="margin:10px 0 6px">
+      Ingredients by category
+      ${totalCount ? `<span style="font-weight:400;color:var(--faint);text-transform:none;font-size:9px;letter-spacing:0;margin-left:6px" id="ingCounter">${doneCount}/${totalCount} checked</span>` : ''}
+    </div>
+    <div class="ing-section">
+      <div class="ing-section-hdr"><span class="ing-section-lbl">Tap any row to check off</span></div>
+      <div class="ing-categories">${ingHTML}</div>
+    </div>`;
+}
+
+// ── Method tab content ────────────────────────────────────────────────────────
+function renderMethodTab(r) {
+  const steps = stepsData[r.id] || [];
+  if (!steps.length) {
+    return `<div class="no-steps">No method added yet.<br>Steps will appear here once added to this recipe.</div>`;
+  }
+  return `
+    <div class="steps-progress" id="stepsProgress">${checkedSteps.size} of ${steps.length} steps done</div>
+    <div class="steps-list">
+      ${steps.map((s, idx) => {
+        const cls = checkedSteps.has(idx) ? ' checked' : '';
+        return `<div class="step-row${cls}" data-step="${idx}" onclick="toggleStep(${idx})">
+          <div class="step-num">${checkedSteps.has(idx) ? '✓' : s.step}</div>
+          <div class="step-text">${s.instruction}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── Full modal body: tab bar + two panels ─────────────────────────────────────
+function renderModalBody(r, scale) {
+  const steps = stepsData[r.id] || [];
+  const methodLabel = steps.length ? `📋 Method (${steps.length})` : '📋 Method';
+
+  modalBody.innerHTML = `
+    <div class="modal-tab-bar">
+      <button class="modal-tab-btn${activeTab === 'ingredients' ? ' active' : ''}"
+        onclick="switchTab('ingredients', this)">🥄 Ingredients</button>
+      <button class="modal-tab-btn${activeTab === 'method' ? ' active' : ''}"
+        onclick="switchTab('method', this)">${methodLabel}</button>
+    </div>
+    <div class="modal-tab-panel${activeTab === 'ingredients' ? ' active' : ''}" id="tabIngredients">
+      ${renderIngredientsTab(r, scale)}
+    </div>
+    <div class="modal-tab-panel${activeTab === 'method' ? ' active' : ''}" id="tabMethod">
+      ${renderMethodTab(r)}
+    </div>`;
+}
+
+// ─── INTERACTIVE HANDLERS ─────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  activeTab = tab;
+  document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.modal-tab-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const panelId = tab === 'ingredients' ? 'tabIngredients' : 'tabMethod';
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
+function toggleIngredient(idx) {
+  if (checkedIngredients.has(idx)) {
+    checkedIngredients.delete(idx);
+  } else {
+    checkedIngredients.add(idx);
+  }
+  // Patch just the affected row (no full re-render needed)
+  const row = document.querySelector(`.ing-row[data-idx="${idx}"]`);
+  if (row) row.classList.toggle('checked', checkedIngredients.has(idx));
+  // Update counter label
+  const ings = ingredients[currentRecipe.id] || [];
+  const counter = document.getElementById('ingCounter');
+  if (counter) counter.textContent = `${checkedIngredients.size}/${ings.length} checked`;
+}
+
+function toggleStep(idx) {
+  if (checkedSteps.has(idx)) {
+    checkedSteps.delete(idx);
+  } else {
+    checkedSteps.add(idx);
+  }
+  const row = document.querySelector(`.step-row[data-step="${idx}"]`);
+  if (row) {
+    row.classList.toggle('checked', checkedSteps.has(idx));
+    const numEl = row.querySelector('.step-num');
+    const steps = stepsData[currentRecipe.id] || [];
+    if (numEl) numEl.textContent = checkedSteps.has(idx) ? '✓' : String(steps[idx]?.step ?? idx + 1);
+  }
+  const steps = stepsData[currentRecipe.id] || [];
+  const prog = document.getElementById('stepsProgress');
+  if (prog) prog.textContent = `${checkedSteps.size} of ${steps.length} steps done`;
+}
+
+function changeServings(delta) {
+  const next = currentServings + delta;
+  if (next < 1 || next > 20) return;
+  currentServings = next;
+  const scale = currentServings / currentRecipe.servings;
+  renderModalHero(currentRecipe, scale);
+  renderModalBody(currentRecipe, scale);
+}
+
+// ─── OPEN / CLOSE ─────────────────────────────────────────────────────────────
 function openModal(r) {
+  // Reset cook mode state
+  currentRecipe = r;
+  currentServings = r.servings;
+  checkedIngredients.clear();
+  checkedSteps.clear();
+  activeTab = 'ingredients';
+
   const emoji   = cuisineEmoji[r.cuisine] || '🍴';
   const hasImg  = !isPlaceholder(r.img);
   const hasLink = !!r.link;
@@ -341,83 +605,37 @@ function openModal(r) {
       ${hasLink ? '<div class="img-link-hint">↗ Open recipe page</div>' : ''}`;
   }
 
-  // Hero band
-  const tagCls = cuisineTagClass[r.cuisine] || 'tag-indian';
-  modalHero.innerHTML = `
-    <div class="modal-hero-row">
-      <div>
-        <div class="mh-title">${r.name}</div>
-        <div class="mh-sub">
-          <span class="tag ${tagCls}" style="font-size:9px">${r.cuisine}</span>
-          ${r.sub ? `&nbsp;<span class="tag tag-sub" style="font-size:9px;background:rgba(255,255,255,.12);color:#a8cfed;border-color:transparent">${r.sub}</span>` : ''}
-          &nbsp;· Serves ${r.servings}
-        </div>
-      </div>
-      <div class="mh-right">
-        <div class="mh-kcal">${r.cal}</div>
-        <div class="mh-lbl">kcal / serving</div>
-      </div>
-    </div>`;
-
-  // Ingredients grouped
-  const ings = ingredients[r.id] || [];
-  const byCat = {};
-  ings.forEach(i => { (byCat[i.cat] = byCat[i.cat] || []).push(i); });
-  const sortedCats = Object.keys(byCat).sort((a, b) => {
-    const ia = CAT_ORDER.indexOf(a), ib = CAT_ORDER.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-
-  const ingHTML = sortedCats.length
-    ? sortedCats.map(cat => `
-        <div class="ing-cat">
-          <div class="ing-cat-name">${cat}</div>
-          <ul class="ing-list">
-            ${byCat[cat].map(i => `<li class="ing-row"><span class="ing-qty">${i.qty}</span><span class="ing-name">${i.name}</span></li>`).join('')}
-          </ul>
-        </div>`).join('')
-    : '<p class="no-ings">No ingredient details available</p>';
-
-  modalBody.innerHTML = `
-    <div class="sec-lbl" style="margin-bottom:6px">Nutrition per serving</div>
-    <div class="nut-panel">
-      <div class="nut-panel-hdr">
-        <span class="nut-panel-lbl">Macros &amp; Micronutrients</span>
-        <span class="nut-panel-servings">per serving · serves ${r.servings}</span>
-      </div>
-      <div class="nut-grid">
-        <div class="nut-cell"><div class="nut-val hl">${r.cal}</div><div class="nut-lbl">Calories</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.protein}g</div><div class="nut-lbl">Protein</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.carb}g</div><div class="nut-lbl">Carbs</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.fat}g</div><div class="nut-lbl">Fat</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.fiber}g</div><div class="nut-lbl">Fiber</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.sugar}g</div><div class="nut-lbl">Sugar</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.satFat}g</div><div class="nut-lbl">Sat Fat</div></div>
-        <div class="nut-cell"><div class="nut-val">${r.sodium}mg</div><div class="nut-lbl">Sodium</div></div>
-      </div>
-    </div>
-
-    <div class="sec-lbl" style="margin:10px 0 6px">Ingredients by category</div>
-    <div class="ing-section">
-      <div class="ing-section-hdr"><span class="ing-section-lbl">Shopping &amp; Cooking Guide</span></div>
-      <div class="ing-categories">${ingHTML}</div>
-    </div>`;
+  renderModalHero(r, 1);
+  renderModalBody(r, 1);
 
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeModal(){
+function closeModal() {
   overlay.classList.remove('open');
   document.body.style.overflow = '';
+  // Clear state
+  currentRecipe = null;
+  checkedIngredients.clear();
+  checkedSteps.clear();
+  activeTab = 'ingredients';
 }
 
 document.getElementById('modalClose').addEventListener('click', closeModal);
 overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
