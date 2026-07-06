@@ -692,7 +692,36 @@ function toggleFieldVisibility(chk, ...rules) {
 }
 
 function triggerGitHubAutoSync() {
-  return syncToGitHub(GITHUB_CONFIG, buildExportPayload);
+  return syncToGitHub(GITHUB_CONFIG, buildExportPayload, 'syncIndicator', mergeTravelData);
+}
+
+/**
+ * Conflict-merge strategy for travel.json, used only when a save hits
+ * a 409/422 (i.e. someone else — likely the other device — saved in
+ * between our load and our save). Keeps the fresh remote version of
+ * every trip except the one just edited locally (currentTrip), so a
+ * concurrent edit to a *different* trip on the other device survives
+ * instead of being silently overwritten by our stale in-memory copy.
+ * Known limit: if both devices edit the SAME trip in the same window,
+ * the later save still wins for that one trip — this only stops the
+ * blast radius from spreading to unrelated trips. ideaBank/lingoLibrary
+ * aren't merged yet (still last-write-wins); revisit if that bites.
+ */
+function mergeTravelData(remote, local) {
+  if (!remote) return local; // brand-new file, nothing to reconcile against
+  const changedId = currentTrip?.id;
+  const mergedTrips = (remote.trips || []).map(rt =>
+    rt.id === changedId ? (local.trips.find(lt => lt.id === changedId) || rt) : rt
+  );
+  (local.trips || []).forEach(lt => {
+    if (!mergedTrips.some(mt => mt.id === lt.id)) mergedTrips.push(lt); // trip created locally, not yet on remote
+  });
+  return {
+    meta: remote.meta || local.meta || {},
+    trips: mergedTrips,
+    ideaBank: local.ideaBank || remote.ideaBank || [],
+    lingoLibrary: local.lingoLibrary || remote.lingoLibrary || {}
+  };
 }
 
 function exportJSON() {
