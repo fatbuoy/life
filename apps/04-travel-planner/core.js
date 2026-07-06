@@ -501,6 +501,18 @@ function closeSheet() {
   currentTrip = null;
 }
 
+(function() {
+  const overlay = document.getElementById('iosOverlay');
+  if (!overlay) return;
+  let downOnBackdrop = false;
+  const markDown = e => { downOnBackdrop = (e.target === overlay); };
+  overlay.addEventListener('mousedown', markDown);
+  overlay.addEventListener('touchstart', markDown, { passive: true });
+  overlay.addEventListener('click', e => {
+    if (downOnBackdrop && e.target === overlay) closeSheet();
+  });
+})();
+
 /* ── IDEA BANK LIBRARY ──
    A cross-trip collection of favourite accommodation / food / drink
    / sight-seeing entries, grouped by destination. Items become
