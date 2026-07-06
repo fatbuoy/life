@@ -26,7 +26,10 @@ function getTrekTimeline(trip) {
   const stages = getTrekStages(trip) || [];
   const transits = getTrekTransitItems(trip) || [];
   if (!stages.length && !transits.length) return null;
-  return [...stages, ...transits].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const timeOf = i => (i.type === 'transit' ? i.legs?.[0]?.depart : (i.time || i.start_time)) || '00:00';
+  return [...stages, ...transits].sort((a, b) =>
+    (a.date || '').localeCompare(b.date || '') || timeOf(a).localeCompare(timeOf(b))
+  );
 }
 
 
