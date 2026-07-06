@@ -328,4 +328,3 @@ function saveLibraryEntryLevel(id) {
   closeSheet();
   triggerGitHubAutoSync();
 }
-

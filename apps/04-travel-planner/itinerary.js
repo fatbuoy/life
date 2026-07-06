@@ -163,6 +163,8 @@ function buildItemRowMarkup(item) {
             </a>
           </div>` : ''}
         ${item.type === 'accommodation' && item.checkOutDate ? `<div style="margin-bottom:6px;"><strong>Check-out:</strong> ${fmtDate(item.checkOutDate)}</div>` : ''}
+        ${item.type === 'accommodation' && item.details?.phone ? `<div style="margin-bottom:6px;"><strong>Phone:</strong> <a href="${telHref(item.details.phone)}" style="color: var(--app-accent); text-decoration: none; font-weight: 500;">${item.details.phone}</a></div>` : ''}
+        ${item.type === 'accommodation' && item.details?.refundable ? `<div style="margin-bottom:6px; color:#15803d; font-weight:600; font-size:12px;">✓ Refundable</div>` : ''}
         ${item.details?.pnr ? `<div style="margin-bottom:6px;"><strong>${item.type === 'accommodation' ? 'Booking Number' : 'PNR/Ref'}:</strong> ${item.details.pnr}</div>` : ''}
         ${item.campsite ? `<div style="margin-bottom:6px;"><strong>Hut / Camp:</strong> ${item.campsite}</div>` : ''}
         ${item.notes ? `<div class="yellow-notes">${item.notes}</div>` : ''}
@@ -470,6 +472,10 @@ function openAccommodationForm(index, isNew) {
           <input type="text" id="acmLocation" class="ios-input" placeholder="Address" value="${item.location || ''}">
         </div>
         <div class="ios-row">
+          <label class="ios-label">Phone Number</label>
+          <input type="text" id="acmPhone" class="ios-input" placeholder="+41 ..." value="${item.details?.phone || ''}">
+        </div>
+        <div class="ios-row">
           <label class="ios-label">Check-in</label>
           <input type="date" id="acmCheckIn" class="ios-input" value="${item.date || ''}" ${isIdea ? 'disabled' : ''}>
         </div>
@@ -492,6 +498,13 @@ function openAccommodationForm(index, isNew) {
             <option value="booked" ${item.status==='booked'?'selected':''}>Booked</option>
             <option value="no-booking-required" ${item.status==='no-booking-required'?'selected':''}>No Booking Required</option>
           </select>
+        </div>
+        <div class="ios-row ios-row-between">
+          <label class="ios-label">Refundable</label>
+          <label class="ios-switch">
+            <input type="checkbox" id="acmRefundable" ${item.details?.refundable ? 'checked' : ''}>
+            <span class="ios-slider"></span>
+          </label>
         </div>
       </div>
 
@@ -516,7 +529,11 @@ function saveAccommodationLevel(index) {
     checkOutDate: isIdea ? '' : document.getElementById('acmCheckOut').value,
     location: document.getElementById('acmLocation').value,
     notes: document.getElementById('acmNotes').value,
-    details: { pnr: document.getElementById('acmBookingNum').value }
+    details: {
+      pnr: document.getElementById('acmBookingNum').value,
+      phone: document.getElementById('acmPhone').value,
+      refundable: document.getElementById('acmRefundable').checked
+    }
   };
   if (!isNew) {
     item.favourite = currentTrip.itinerary[index].favourite;

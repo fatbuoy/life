@@ -14,6 +14,21 @@ function getTrekStages(trip) {
   return stages.length ? stages : null;
 }
 
+function getTrekTransitItems(trip) {
+  if (!trip || trip.type !== 'adventure' || !Array.isArray(trip.itinerary)) return null;
+  return trip.itinerary.filter(i => i.type === 'transit');
+}
+
+/* Stages + transit legs merged and sorted by date, for the timeline view
+   only. Hero stats in renderTrekSheet stay stage-only (getTrekStages),
+   since transit items don't carry distance/ascent/descent. */
+function getTrekTimeline(trip) {
+  const stages = getTrekStages(trip) || [];
+  const transits = getTrekTransitItems(trip) || [];
+  if (!stages.length && !transits.length) return null;
+  return [...stages, ...transits].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+}
+
 
 /* ── REUSABLE MULTI-DAY TREK STAGE MODAL ──
    Renders a bespoke stage-list view for any trip with type
@@ -31,6 +46,11 @@ function renderTrekSheet() {
   const totalAsc = stages.reduce((s, x) => s + (parseFloat(x.ascent_m) || 0), 0);
   const totalDesc = stages.reduce((s, x) => s + (parseFloat(x.descent_m) || 0), 0);
   const movingDays = stages.filter(x => (parseFloat(x.distance_km) || 0) > 0).length;
+  const hasCritical = stages.some(x => x.booking_priority === 'Critical');
+  const hasHigh = stages.some(x => x.booking_priority === 'High');
+  if ((trekStageFilter === 'Critical' && !hasCritical) || (trekStageFilter === 'High' && !hasHigh)) {
+    trekStageFilter = 'all';
+  }
 
   sheet.innerHTML = `
     <div class="ios-nav-bar">
@@ -72,10 +92,11 @@ function renderTrekSheet() {
 
     <div class="trek-filter-bar">
       <button class="trek-filter-pill ${trekStageFilter==='all'?'active':''}" onclick="setTrekFilter('all')">All Stages</button>
-      <button class="trek-filter-pill ${trekStageFilter==='Critical'?'active':''}" onclick="setTrekFilter('Critical')">🔴 Critical Booking</button>
-      <button class="trek-filter-pill ${trekStageFilter==='High'?'active':''}" onclick="setTrekFilter('High')">🟠 High Priority</button>
+      ${hasCritical ? `<button class="trek-filter-pill ${trekStageFilter==='Critical'?'active':''}" onclick="setTrekFilter('Critical')">🔴 Critical Booking</button>` : ''}
+      ${hasHigh ? `<button class="trek-filter-pill ${trekStageFilter==='High'?'active':''}" onclick="setTrekFilter('High')">🟠 High Priority</button>` : ''}
       <button class="trek-filter-pill ${trekStageFilter==='rest'?'active':''}" onclick="setTrekFilter('rest')">Rest &amp; Travel</button>
       <button class="trek-filter-pill" style="background:#0f4c2a; color:#fff; border-color:#0f4c2a;" onclick="openStageForm(-1)">+ Add Stage</button>
+      <button class="trek-filter-pill" style="background:#007aff; color:#fff; border-color:#007aff;" onclick="openJourneyForm(-1, true)">+ Add Transit</button>
     </div>
 
     <div class="ios-sheet-body" id="subTabContent" style="padding:0;"></div>
@@ -94,7 +115,7 @@ function setTrekFilter(filter) {
 
 function renderTrekStageList() {
   const container = document.getElementById('subTabContent');
-  const stages = getTrekStages(currentTrip) || [];
+  const stages = getTrekTimeline(currentTrip) || [];
 
   if (stages.length === 0) {
     container.innerHTML = `<div style="text-align:center; padding:50px 20px;">
@@ -108,7 +129,7 @@ function renderTrekStageList() {
   if (trekStageFilter === 'Critical' || trekStageFilter === 'High') {
     filtered = stages.filter(s => s.booking_priority === trekStageFilter);
   } else if (trekStageFilter === 'rest') {
-    filtered = stages.filter(s => (parseFloat(s.distance_km) || 0) === 0);
+    filtered = stages.filter(s => s.type !== 'transit' && (parseFloat(s.distance_km) || 0) === 0);
   }
 
   if (filtered.length === 0) {
@@ -117,7 +138,9 @@ function renderTrekStageList() {
   }
 
   container.innerHTML = `<div class="trek-stage-list">` + filtered.map(s => {
-    const realIdx = stages.indexOf(s);
+    if (s.type === 'transit') return buildJourneyCardMarkup(s);
+
+    const realIdx = currentTrip.itinerary.indexOf(s);
     const km = parseFloat(s.distance_km) || 0;
     const asc = parseFloat(s.ascent_m) || 0;
     const desc = parseFloat(s.descent_m) || 0;
@@ -167,12 +190,14 @@ function renderTrekStageList() {
             <div class="trek-detail-val">${s.breaks || '—'}</div>
           </div>
         </div>
+        ${s.route_map ? `<div style="margin:8px 0;"><a href="${s.route_map}" target="_blank" rel="noopener" style="font-size:11px; font-weight:600; color:#007aff; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">${getIconifyTag('mdi:map-outline', 13, '#007aff')} View Route Map</a></div>` : ''}
         <div class="trek-accom-row">
           ${getIconifyTag('mdi:bed-outline', 16, '#5856d6')}
           <div class="trek-accom-name">
             ${s.suggested_accommodation || '—'}
-            ${isBooked && s.details?.phone ? `<div style="font-size:11px; color:#8e8e93; font-weight:500; margin-top:1px;">${s.details.phone}${s.details?.confirmationRef ? ' · Ref: ' + s.details.confirmationRef : ''}</div>` : ''}
-            ${isBooked && s.details?.address ? `<div style="font-size:11px; color:#8e8e93; font-weight:500;">${s.details.address}</div>` : ''}
+            ${isBooked && s.details?.phone ? `<div style="font-size:11px; color:#8e8e93; font-weight:500; margin-top:1px;"><a href="${telHref(s.details.phone)}" style="color:#007aff; text-decoration:none;">${s.details.phone}</a>${s.details?.confirmationRef ? ' · Ref: ' + s.details.confirmationRef : ''}</div>` : ''}
+            ${isBooked && s.details?.address ? `<div style="font-size:11px; color:#8e8e93; font-weight:500;"><a href="${mapsHref(s.details.address)}" target="_blank" rel="noopener" style="color:#007aff; text-decoration:none;">${s.details.address}</a></div>` : ''}
+            ${isBooked && s.details?.refundable ? `<div style="font-size:10px; color:#15803d; font-weight:600; margin-top:2px;">✓ Refundable</div>` : ''}
           </div>
           <div class="trek-priority-badge" style="background:${prColour}20; color:${prColour};">${isBooked ? '✓ Booked' : priority}</div>
         </div>
@@ -216,7 +241,7 @@ function openStageForm(index, jumpToBooked = false) {
     id: 'it-' + Date.now(), type: 'activity', status: 'not-booked',
     title: '', date: currentTrip.startDate || '', location: '',
     stage_number: String(nextStageNum), distance_km: '', ascent_m: '', descent_m: '',
-    moving_time: '', breaks: '', start_time: '', finish_time: '',
+    moving_time: '', breaks: '', start_time: '', finish_time: '', route_map: '',
     suggested_accommodation: '', booking_priority: 'Low', notes: '', details: {}
   } : stages[index];
 
@@ -276,6 +301,10 @@ function openStageForm(index, jumpToBooked = false) {
           <label class="ios-label">Finish Time</label>
           <input type="text" id="stgFinish" class="ios-input" placeholder="e.g. 16:30" value="${item.finish_time || ''}">
         </div>
+        <div class="ios-row">
+          <label class="ios-label">Route Map URL</label>
+          <input type="url" id="stgRouteMap" class="ios-input" placeholder="https://..." value="${item.route_map || ''}">
+        </div>
       </div>
 
       <div class="ios-group-title">Accommodation &amp; Booking</div>
@@ -316,6 +345,13 @@ function openStageForm(index, jumpToBooked = false) {
           <div class="ios-row">
             <label class="ios-label">Confirmation Ref</label>
             <input type="text" id="stgConfRef" class="ios-input" placeholder="Booking reference" value="${item.details?.confirmationRef || ''}">
+          </div>
+          <div class="ios-row ios-row-between">
+            <label class="ios-label">Refundable</label>
+            <label class="ios-switch">
+              <input type="checkbox" id="stgRefundable" ${item.details?.refundable ? 'checked' : ''}>
+              <span class="ios-slider"></span>
+            </label>
           </div>
         </div>
       </div>
@@ -358,13 +394,15 @@ function saveStageLevel(index) {
     breaks: document.getElementById('stgBreaks').value,
     start_time: document.getElementById('stgStart').value,
     finish_time: document.getElementById('stgFinish').value,
+    route_map: document.getElementById('stgRouteMap').value,
     suggested_accommodation: document.getElementById('stgAccom').value,
     booking_priority: isBooked ? 'Booked' : document.getElementById('stgPriority').value,
     notes: document.getElementById('stgNotes').value,
     details: isBooked ? {
       phone: document.getElementById('stgPhone').value,
       address: document.getElementById('stgAddress').value,
-      confirmationRef: document.getElementById('stgConfRef').value
+      confirmationRef: document.getElementById('stgConfRef').value,
+      refundable: document.getElementById('stgRefundable').checked
     } : (isNew ? {} : (currentTrip.itinerary[index].details || {}))
   };
 
@@ -387,4 +425,3 @@ function deleteStageRaw(index) {
     commitItinerary();
   }
 }
-
