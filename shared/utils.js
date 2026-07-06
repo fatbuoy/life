@@ -12,7 +12,7 @@
  *   Period:   renderPeriodStrip(containerId, periods, selected, onSelect)
  *   Charts:   drawTrendChart(canvas, series, labels, colors)
  *             drawHeroSparkline(canvas, current, prior, budget)
- *   Sync:     syncToGitHub(config, buildPayload, indicatorId?)
+ *   Sync:     syncToGitHub(config, buildPayload, indicatorId?, mergeFn?)
  *             promptForGitToken()
  * ─────────────────────────────────────────────────────────────────────
  */
@@ -552,7 +552,7 @@ let _syncPending  = null;
  * @param {() => object} buildPayload  Called at sync time; returns JSON-serialisable object
  * @param {string} [indicatorId='syncIndicator']
  */
-async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator') {
+async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator', mergeFn = null) {
   const token = localStorage.getItem('gh_pat_token');
   if (!token) {
     console.log('syncToGitHub: no token — saved locally only.');
@@ -561,14 +561,14 @@ async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator')
 
   if (_syncInFlight) {
     // Hold the latest request; discard any earlier pending one.
-    _syncPending = { config, buildPayload, indicatorId };
+    _syncPending = { config, buildPayload, indicatorId, mergeFn };
     console.log('syncToGitHub: queued (sync already in flight).');
     return;
   }
 
   _syncInFlight = true;
   try {
-    await _doGitHubSync(config, buildPayload, indicatorId, token);
+    await _doGitHubSync(config, buildPayload, indicatorId, token, mergeFn);
   } finally {
     _syncInFlight = false;
     if (_syncPending) {
@@ -576,14 +576,14 @@ async function syncToGitHub(config, buildPayload, indicatorId = 'syncIndicator')
       _syncPending = null;
       // Kick off the queued sync in the next microtask so the call stack unwinds.
       Promise.resolve().then(() =>
-        syncToGitHub(next.config, next.buildPayload, next.indicatorId)
+        syncToGitHub(next.config, next.buildPayload, next.indicatorId, next.mergeFn)
       );
     }
   }
 }
 
 /** Internal: runs a single sync attempt with one retry on SHA conflict. */
-async function _doGitHubSync(config, buildPayload, indicatorId, token) {
+async function _doGitHubSync(config, buildPayload, indicatorId, token, mergeFn) {
   const ind = document.getElementById(indicatorId);
   if (ind) ind.style.display = 'inline-block';
 
@@ -602,13 +602,25 @@ async function _doGitHubSync(config, buildPayload, indicatorId, token) {
 
   } catch (err) {
     // ── Conflict: another write landed between our GET and PUT.
-    // Re-fetch the now-current SHA and retry once.
+    // Without a mergeFn: re-fetch the fresh SHA and retry with the same
+    // local snapshot (old behaviour — risks silently overwriting the
+    // other write). With a mergeFn: re-fetch the fresh remote *content*
+    // too, let the caller reconcile local vs remote, and push the
+    // merged result instead of blindly clobbering it.
     if (err.ghStatus === 409 || err.ghStatus === 422) {
       console.warn('syncToGitHub: SHA conflict — retrying with fresh SHA…');
       try {
-        const freshSha = await _ghFetchSha(url, authHeaders);
-        await _ghPut(url, authHeaders, config.branch, buildPayload, freshSha);
-        console.log('syncToGitHub: success after conflict retry.');
+        let freshSha, retryPayload = buildPayload;
+        if (mergeFn) {
+          const { sha: fSha, content: remote } = await _ghFetchContent(url, authHeaders);
+          freshSha = fSha;
+          const merged = mergeFn(remote, buildPayload());
+          retryPayload = () => merged;
+        } else {
+          freshSha = await _ghFetchSha(url, authHeaders);
+        }
+        await _ghPut(url, authHeaders, config.branch, retryPayload, freshSha);
+        console.log('syncToGitHub: success after conflict retry' + (mergeFn ? ' (merged).' : '.'));
         _syncToast('✓ Saved to GitHub', 'success');
         return;
       } catch (retryErr) {
@@ -629,15 +641,32 @@ async function _doGitHubSync(config, buildPayload, indicatorId, token) {
  * Returns '' for a brand-new file (404).
  */
 async function _ghFetchSha(url, headers) {
-  const res = await fetch(`${url}?t=${Date.now()}`, {
-    headers: { ...headers, 'Cache-Control': 'no-cache' },
-  });
+  const res = await fetch(`${url}?t=${Date.now()}`, { headers });
   if (res.ok)              return (await res.json()).sha;
   if (res.status === 404)  return '';          // file doesn't exist yet — that's fine
 
   const err = new Error(`SHA fetch: HTTP ${res.status}`);
   err.ghStatus = res.status;
   throw err;
+}
+
+/**
+ * Like _ghFetchSha, but also returns the parsed remote JSON content.
+ * Only used on the conflict-retry path when a mergeFn is supplied —
+ * the plain SHA-only fetch above stays the default for every ordinary
+ * sync, so this adds no extra cost to the common case.
+ */
+async function _ghFetchContent(url, headers) {
+  const res = await fetch(`${url}?t=${Date.now()}`, { headers });
+  if (res.status === 404) return { sha: '', content: null };
+  if (!res.ok) {
+    const err = new Error(`Content fetch: HTTP ${res.status}`);
+    err.ghStatus = res.status;
+    throw err;
+  }
+  const meta = await res.json();
+  const content = JSON.parse(atob(meta.content.replace(/\n/g, '')));
+  return { sha: meta.sha, content };
 }
 
 /** PUT the payload. Throws a classified error on non-2xx. */
