@@ -296,6 +296,73 @@ function submitPassword() {
   }
 }
 
+/* ─── GITHUB TOKEN ENTRY ────────────────────────────────────────────── */
+
+/**
+ * Prompt for (or edit) the GitHub Personal Access Token used by
+ * syncToGitHub() / fetchFromGitHub(). Stored under 'gh_pat_token' in
+ * localStorage — same key every app in the suite reads.
+ *
+ * Was previously documented in this file's header as part of the
+ * public API but the implementation was never actually added here
+ * during the sync-upgrade refactor; every app's 🔑 button called a
+ * function that didn't exist. Reuses the same self-contained overlay
+ * pattern as showPasswordModal() above (own DOM node + .pw-* classes)
+ * so it works in any app regardless of whether that app has its own
+ * iOS sheet system.
+ */
+function promptForGitToken() {
+  document.getElementById('gitTokenOverlay')?.remove();
+
+  const existing = localStorage.getItem('gh_pat_token') || '';
+  const overlay = document.createElement('div');
+  overlay.className = 'pw-overlay';
+  overlay.id = 'gitTokenOverlay';
+  overlay.innerHTML = `
+    <div class="pw-modal">
+      <div class="pw-title">🔑 GitHub Personal Access Token</div>
+      <div class="pw-sub">Stored locally on this device only — never leaves it.</div>
+      <input class="pw-input" id="gitTokenInput" type="password" placeholder="ghp_..." autocomplete="off" value="${existing}">
+      <div class="pw-error" id="gitTokenError"></div>
+      <div class="pw-actions">
+        <button class="pw-btn pw-btn-cancel" onclick="closeGitTokenModal()">Cancel</button>
+        <button class="pw-btn pw-btn-confirm" onclick="submitGitToken()">Save</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  setupBackdropDismiss('gitTokenOverlay', closeGitTokenModal);
+
+  requestAnimationFrame(() => {
+    const inp = document.getElementById('gitTokenInput');
+    if (inp) {
+      inp.focus();
+      inp.select();
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitGitToken();
+        if (e.key === 'Escape') closeGitTokenModal();
+      });
+    }
+  });
+}
+
+function closeGitTokenModal() {
+  document.getElementById('gitTokenOverlay')?.remove();
+}
+
+function submitGitToken() {
+  const input = document.getElementById('gitTokenInput');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) {
+    const err = document.getElementById('gitTokenError');
+    if (err) err.textContent = 'Enter a token, or Cancel to leave the existing one unchanged';
+    return;
+  }
+  localStorage.setItem('gh_pat_token', val);
+  closeGitTokenModal();
+  _syncToast('✓ GitHub token saved', 'success');
+}
+
 /* ─── BACKDROP DISMISS (ROBUST AGAINST TEXT-SELECTION DRAGS) ─────────── */
 
 /**
