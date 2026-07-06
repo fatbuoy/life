@@ -296,6 +296,49 @@ function submitPassword() {
   }
 }
 
+/* ─── BACKDROP DISMISS (ROBUST AGAINST TEXT-SELECTION DRAGS) ─────────── */
+
+/**
+ * Wires a fixed-position overlay so clicking the backdrop closes it,
+ * without the classic bug where a text-selection drag inside a field
+ * near the panel's edge fires a false-positive close.
+ *
+ * Why the naive version breaks: a plain onclick="close()" on the
+ * overlay + onclick="event.stopPropagation()" on the inner panel
+ * assumes a click always bubbles up from wherever the mousedown
+ * happened. But a click event's target is resolved by where the
+ * *mouseup* lands, not the mousedown. Selecting text in a
+ * right-aligned .ios-input (dragging to the end of the field) can
+ * overshoot the panel's edge by a pixel or two on a trackpad — mouseup
+ * lands on the overlay itself, so the click fires directly on the
+ * overlay with no bubbling involved, and stopPropagation() never gets
+ * a chance to run.
+ *
+ * Fix: only treat it as a genuine backdrop click if BOTH the initial
+ * press (mousedown/touchstart) AND the click landed directly on the
+ * overlay element itself, not a descendant. A selection drag that
+ * starts inside a field never satisfies that, regardless of where it
+ * ends.
+ *
+ * Usage: delete any onclick="close()" on the overlay element and
+ * onclick="event.stopPropagation()" on its inner panel, then call this
+ * once the overlay exists in the DOM:
+ *   setupBackdropDismiss('iosOverlay', closeSheet);
+ *
+ * @param {string} overlayId  ID of the fixed-position backdrop element
+ * @param {Function} closeFn  Called when a genuine backdrop click is detected
+ */
+function setupBackdropDismiss(overlayId, closeFn) {
+  const overlay = document.getElementById(overlayId);
+  if (!overlay) return;
+  let downOnBackdrop = false;
+  const markDown = e => { downOnBackdrop = (e.target === overlay); };
+  overlay.addEventListener('mousedown', markDown);
+  overlay.addEventListener('touchstart', markDown, { passive: true });
+  overlay.addEventListener('click', e => {
+    if (downOnBackdrop && e.target === overlay) closeFn();
+  });
+}
 
 /* ─── PERIOD STRIP ──────────────────────────────────────────────────── */
 
