@@ -421,29 +421,6 @@ body.is-playing #glowing-dot {
         max-height: 50vh !important; 
         overflow-y: auto !important; 
     }
-
-    .mobile-toggle-handle {
-        display: block !important;
-        width: 100% !important; 
-        height: 16px !important; 
-        margin-bottom: 6px;
-        cursor: pointer;
-        position: relative;
-        z-index: 9999 !important;
-        touch-action: none; 
-    }
-
-    .mobile-toggle-handle::after {
-        content: '';
-        position: absolute;
-        top: 6px; 
-        left: 50%;
-        transform: translateX(-50%);
-        width: 32px; 
-        height: 4px; 
-        background: rgba(9, 9, 11, 0.15); 
-        border-radius: 2px;
-    }
     
     .inline-controls { margin-bottom: 10px; }
     #stage-list { margin-top: 2px; }
