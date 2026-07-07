@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Via Alpina Hike Replay</title>
+    <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="stage-banner" class="panel hidden">
+        <div class="unit-toggle-container">
+            <span class="unit-label">KM</span>
+            <label class="ios-switch">
+                <input type="checkbox" id="unit-toggle-checkbox">
+                <span class="ios-slider"></span>
+            </label>
+            <span class="unit-label">MI</span>
+        </div>
+
+        <div class="banner-header">
+            <h1 id="banner-stage-name">
+                <span id="glowing-dot"></span>
+                <span id="stage-name-text">Loading Stage...</span>
+            </h1>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span id="label-distance" class="stat-label">Total Distance</span>
+                <span id="stat-distance" class="stat-val">0.0 km</span>
+            </div>
+            <div class="stat-box">
+                <span id="label-ascent" class="stat-label">Total Ascent</span>
+                <span id="stat-ascent" class="stat-val">↗ 0m</span>
+            </div>
+            <div class="stat-box">
+                <span id="label-descent" class="stat-label">Total Descent</span>
+                <span id="stat-descent" class="stat-val">↘ 0m</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <svg id="elevation-chart" viewBox="0 0 400 60" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#09090b" stop-opacity="0.25"/>
+                        <stop offset="100%" stop-color="#09090b" stop-opacity="0.0"/>
+                    </linearGradient>
+                    <linearGradient id="progress-grad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--chart-line-color, #3b82f6)" stop-opacity="0.4"/>
+                        <stop offset="100%" stop-color="var(--chart-line-color, #3b82f6)" stop-opacity="0.1"/>
+                    </linearGradient>
+                </defs>
+                <path id="chart-bg-path" d="" fill="url(#chart-grad)" stroke="none"/>
+                <path id="chart-prog-fill" d="" fill="url(#progress-grad)" stroke="none"/>
+                <path id="chart-prog-path" d="" fill="none" stroke="var(--chart-line-color, #3b82f6)" stroke-width="1.5" stroke-linejoin="round"/>
+                <circle id="chart-pin" r="3.5" fill="var(--chart-line-color, #3b82f6)" stroke="#ffffff" stroke-width="1.5" style="display:none;"/>
+            </svg>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="control-panel" class="panel minimal-panel">
+        <div id="mobile-toggle-handle" class="mobile-toggle-handle"></div>
+
+        <div class="control-row inline-controls">
+            <button id="btn-play-pause" title="Play / Pause">▶</button>
+            <button id="btn-restart" title="Restart Track Simulation">🔄</button>
+            <div class="speed-slider-container">
+                <span class="slider-icon">⏩</span>
+                <input type="range" id="speed-range" min="10" max="120" value="120">
+            </div>
+        </div>
+
+        <ul id="stage-list"></ul>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

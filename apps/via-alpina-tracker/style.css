@@ -1,0 +1,475 @@
+/* ==========================================================================
+   1. CORE BASE CONFIGURATIONS, RESETS & ULTRA-CLEAN TYPOGRAPHY
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #f4f4f5;
+    color: #09090b;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* 🧪 ULTRA PREMIUM GLASSMORPHISM: Crystal-clear transparency & highly responsive depth blur */
+.panel {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 14px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
+    z-index: 10;
+    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+}
+
+/* ==========================================================================
+   2. HERO TELEMETRY BANNER (TOP FLOATING HUD)
+   ========================================================================== */
+#stage-banner {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 480px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#stage-banner.hidden {
+    transform: translateX(-50%) translateY(-16px);
+}
+
+.banner-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+#banner-stage-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #09090b;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* 🟢 PREMIUM DYNAMIC GLOWING ACTION INDICATOR */
+#glowing-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    display: none;
+}
+
+body.is-playing #glowing-dot {
+    display: inline-block;
+    animation: pulse-glow-sequence 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-sequence {
+    0% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+    }
+    70% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+    100% {
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+/* Telemetry Stats Matrix */
+.stats-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid rgba(9, 9, 11, 0.05);
+    padding-top: 8px;
+}
+
+.stat-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #71717a;
+    letter-spacing: 0.04em;
+}
+
+.stat-val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #09090b;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Inline SVG Elevation Profiles */
+.chart-container {
+    width: 100%;
+    height: 36px;
+    margin-top: 2px;
+}
+
+#elevation-chart {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+#chart-bg-path {
+    fill: rgba(9, 9, 11, 0.02);
+}
+
+#chart-prog-fill {
+    fill: url(#progress-grad);
+}
+
+#chart-prog-path {
+    fill: none;
+    stroke: var(--chart-line-color, #3b82f6);
+    stroke-width: 1.4; 
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#chart-pin {
+    fill: var(--chart-line-color, #3b82f6);
+    stroke: #ffffff;
+    stroke-width: 1.5;
+}
+
+/* ==========================================================================
+   3. iOS STANDARD SWITCH FRAMEWORK
+   ========================================================================== */
+.unit-toggle-container {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 1020;
+    user-select: none;
+}
+
+.unit-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #a1a1aa;
+    letter-spacing: 0.03em;
+    transition: color 0.2s ease;
+}
+
+.ios-switch {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 16px;
+}
+
+.ios-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ios-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(9, 9, 11, 0.08);
+    transition: background-color 0.2s ease;
+    border-radius: 20px;
+}
+
+.ios-slider::before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #ffffff;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ios-switch input:checked + .ios-slider {
+    background-color: #09090b;
+}
+
+.ios-switch input:checked + .ios-slider::before {
+    transform: translateX(16px);
+}
+
+/* ==========================================================================
+   4. CONTROL PANEL SIDEBAR (📌 FIXED TOP-LEFT DESKTOP HOOK)
+   ========================================================================== */
+.minimal-panel {
+    position: absolute;
+    top: 20px;
+    bottom: auto;
+    left: 20px;
+    width: 280px;
+    padding: 12px;
+    max-height: calc(100vh - 40px);
+    height: 460px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-toggle-handle {
+    display: none;
+}
+
+/* Unified Compact Button Control Row */
+.inline-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+#btn-play-pause, #btn-restart {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(9, 9, 11, 0.04);
+    color: #09090b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#btn-play-pause:hover, #btn-restart:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(9, 9, 11, 0.12);
+}
+
+/* Horizontal Speed Track Slider Well */
+.speed-slider-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(9, 9, 11, 0.03);
+    padding: 0 8px;
+    height: 32px;
+    border-radius: 8px;
+}
+
+.speed-slider-container input[type="range"] {
+    flex: 1;
+    margin: 0;
+    accent-color: #09090b;
+    cursor: pointer;
+    height: 2px;
+}
+
+.slider-icon {
+    font-size: 0.7 foolproof rem;
+    opacity: 0.4;
+}
+
+/* Scrollable Stage Selection List Container */
+#stage-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 2px;
+}
+
+#stage-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+#stage-list::-webkit-scrollbar-thumb {
+    background: rgba(9, 9, 11, 0.08);
+    border-radius: 2px;
+}
+
+#stage-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(9, 9, 11, 0.01);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #27272a;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Fluid Layout structure completely removes text compression errors on mobile hardware */
+.stage-item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    padding-right: 8px;
+}
+
+.stage-item-distance {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+#stage-list li:hover {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: rgba(9, 9, 11, 0.06);
+    color: #09090b;
+}
+
+#stage-list li.active-stage-item {
+    background: rgba(255, 255, 255, 0.85);
+    border-left: 3px solid var(--stage-color, #3b82f6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+    color: #09090b;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   5. 📱 MOBILE OPERATIVE LAYER SYSTEM (DRAWER CONSTRAINT ADJUSTMENTS)
+   ========================================================================== */
+@media (max-width: 640px) {
+    #stage-banner {
+        top: 10px;
+        width: calc(100% - 20px);
+        max-width: 100%;
+        padding: 10px 14px;
+        z-index: 9999 !important;
+    }
+    
+    .unit-toggle-container {
+        top: 10px;
+        right: 14px;
+    }
+
+    .stat-val { font-size: 0.85rem; }
+    .chart-container { height: 28px; }
+    #banner-stage-name { font-size: 0.85rem; max-width: 65%; }
+
+    /* Boosted dimensions cleanly space the drawer away from interactive layout sliders */
+    .minimal-panel {
+        position: fixed !important; 
+        top: auto !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        border-top: 1px solid rgba(9, 9, 11, 0.05);
+        padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 12px)) 16px !important;
+        
+        max-height: 105px; 
+        overflow: hidden; 
+        z-index: 9998 !important; 
+        pointer-events: auto !important; 
+        -webkit-tap-highlight-color: transparent;
+        
+        transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    .minimal-panel.expanded {
+        max-height: 50vh !important; 
+        overflow-y: auto !important; 
+    }
+
+    /* Clear isolated touch zone blueprints */
+    .mobile-toggle-handle {
+        display: block !important;
+        width: 100% !important; 
+        height: 16px !important; 
+        margin-bottom: 6px;
+        cursor: pointer;
+        position: relative;
+        z-index: 9999 !important;
+        touch-action: none; 
+    }
+
+    .mobile-toggle-handle::after {
+        content: '';
+        position: absolute;
+        top: 6px; 
+        left: 50%;
+        transform: translateX(-50%);
+        width: 32px; 
+        height: 4px; 
+        background: rgba(9, 9, 11, 0.15); 
+        border-radius: 2px;
+    }
+    
+    .inline-controls {
+        margin-bottom: 10px;
+    }
+    
+    #stage-list {
+        margin-top: 2px;
+    }
+
+    #stage-list li {
+        padding: 10px; 
+        margin-bottom: 4px;
+        font-size: 0.75rem;
+    }
+}
