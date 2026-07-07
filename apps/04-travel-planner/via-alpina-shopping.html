@@ -162,8 +162,8 @@
     </main>
 
     <!-- Add Item Modal -->
-    <div id="addItemModal" class="modal-overlay" onclick="closeAddItemModalOutside(event)">
-        <div class="modal-box" onclick="event.stopPropagation()">
+    <div id="addItemModal" class="modal-overlay">
+        <div class="modal-box">
             <div class="modal-header">
                 <span class="profile-title" style="font-size: var(--t-base); display: flex; align-items: center; gap: 8px;">
                     <i class="fa-solid fa-plus" style="color: var(--app-accent-bright);"></i> Add Item
@@ -360,12 +360,12 @@
             document.body.style.overflow = 'hidden';
         }
         function closeAddItemModal() { document.getElementById('addItemModal').style.display = 'none'; document.body.style.overflow = ''; }
-        function closeAddItemModalOutside(e) { if (e.target.id === 'addItemModal') closeAddItemModal(); }
-
+        
         document.addEventListener("DOMContentLoaded", () => { 
             // Synchronize the switcher visual state to look accurate immediately before data pull completes
             document.getElementById('prof-rishi').classList.toggle('active', currentUser === 'rishi');
             document.getElementById('prof-marion').classList.toggle('active', currentUser === 'marion');
+            setupBackdropDismiss('addItemModal', closeAddItemModal);
             fetchDataFromGitHub(); 
         });
 
