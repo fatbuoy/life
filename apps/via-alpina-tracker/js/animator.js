@@ -6,10 +6,9 @@ export class Animator {
         this.stages = [];
         this.currentIndex = 0;
         this.isPlaying = false;
-        this.speed = 100;
+        this.speed = 60; // Shifted default slider value center point
         this.animationFrameId = null;
         
-        // Dynamic playback timeline boundaries
         this.startBound = 0;
         this.endBound = 0;
     }
@@ -29,7 +28,6 @@ export class Animator {
     setBounds(start, end) {
         this.startBound = start;
         this.endBound = end;
-        // Clamp current index within the new scope bounds
         if (this.currentIndex < start || this.currentIndex > end) {
             this.currentIndex = start;
         }
@@ -57,8 +55,22 @@ export class Animator {
     animate() {
         if (!this.isPlaying) return;
 
-        // Scale frame step jumps cleanly using the speed slider values
-        const step = Math.ceil(this.speed / 3);
+        const isGlobalTimeline = (this.startBound === 0 && this.endBound === this.coordinates.length - 1);
+        let step = 1;
+
+        if (isGlobalTimeline) {
+            /* Optimized Cinematic Scaling Vector:
+               Ensures that at minimum slider configurations (10), playback steps coordinate-by-coordinate (1),
+               producing a perfectly smooth crawl, while scaling smoothly upwards when adjusted right.
+            */
+            const normalizedProgress = (this.speed - 10) / 110; // Maps 0.0 to 1.0
+            const maxGlobalStride = Math.max(4, Math.ceil(this.coordinates.length / 450));
+            step = Math.max(1, Math.round(1 + (normalizedProgress * maxGlobalStride)));
+        } else {
+            // Contextual pacing rules optimized for focused individual stage replays
+            step = Math.max(1, Math.round(this.speed / 25));
+        }
+
         this.currentIndex += step;
 
         if (this.currentIndex >= this.endBound) {
@@ -76,8 +88,6 @@ export class Animator {
         if (this.coordinates.length === 0) return;
         
         const activeStage = this.stages.find(s => index >= s.startIndex && index <= s.endIndex);
-        
-        // Determine whether to use isolation mode rendering based on timeline boundary locks
         const isGlobalTimeline = (this.startBound === 0 && this.endBound === this.coordinates.length - 1);
         const isolationIndex = isGlobalTimeline ? null : this.stages.indexOf(activeStage);
 

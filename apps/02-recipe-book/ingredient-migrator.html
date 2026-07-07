@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingredient Migrator — FatBoy's Kitchen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Sahani Suite base tokens (inlined — standalone tool) ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+    :root {
+      --bg: #f5f4f0; --white: #ffffff; --surface: #f8f7f3;
+      --text: #1a1a1a; --muted: #666; --faint: #999;
+      --border: #e0ddd7; --border2: #e8e6e0;
+      --r-sm: 6px; --r-md: 10px; --r-lg: 13px; --r-pill: 999px;
+      --c-success: #3b6d11; --c-warning: #ef9f27; --c-danger: #c0392b; --c-info: #185fa5;
+      --bg-success: #e2f0d6; --bg-warning: #faeeda; --bg-danger: #fde8e8; --bg-info: #deeaf7; --bg-neutral: #f0ede8;
+      /* App theme — kitchen green */
+      --app-primary: #1a3a1a; --app-primary2: #2a5a2a; --app-primary3: #3a8a3a;
+      --app-accent: #2d7a2d;
+      --app-on-primary: #fff; --app-on-primary2: #a8d4a8; --app-on-primary3: #7ab87a;
+    }
+    html { -webkit-text-size-adjust: 100% }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; padding-bottom: 60px; }
+    a { color: var(--app-accent) }
+
+    /* ── Header ── */
+    .header { background: var(--app-primary); padding: 12px 16px 10px; position: sticky; top: 0; z-index: 100; }
+    .header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .header-title { font-size: 17px; font-weight: 600; color: var(--app-on-primary); }
+    .header-sub { font-size: 10px; color: var(--app-on-primary3); margin-top: 1px; }
+    .header-right { display: flex; gap: 6px; align-items: center; }
+    .hbtn { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18); border-radius: var(--r-sm); color: var(--app-on-primary2); font-size: 11px; font-weight: 600; padding: 3px 11px; cursor: pointer; font-family: inherit; transition: background .15s; -webkit-tap-highlight-color: transparent; }
+    .hbtn:hover { background: rgba(255,255,255,.2); }
+    .hbtn.danger { border-color: rgba(255,80,80,.4); color: #ff9090; }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 14px; }
+    @media (min-width: 600px) { .container { padding: 0 20px; } }
+
+    /* ── Card ── */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px 16px; margin-bottom: 14px; overflow: hidden; }
+    .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+
+    /* ── Buttons ── */
+    .btn { padding: 7px 14px; border-radius: var(--r-md); font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .15s; border: none; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+    .btn-primary { background: var(--app-accent); color: #fff; }
+    .btn-primary:hover { opacity: .88; }
+    .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-secondary { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .btn-secondary:hover { border-color: #bbb; color: var(--text); }
+    .btn-secondary:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-danger { background: var(--bg-danger); color: var(--c-danger); border: 1px solid #f5c0c0; }
+    .btn-danger:hover { background: #fcdad7; }
+    .btn-sm { padding: 4px 9px; font-size: 11px; }
+    .btn-xs { padding: 2px 7px; font-size: 10px; border-radius: var(--r-sm); }
+
+    /* ── Progress / status ── */
+    .progress-bg { height: 6px; border-radius: 3px; background: #f0ede8; overflow: hidden; margin: 6px 0; }
+    .progress-fill { height: 100%; border-radius: 3px; background: var(--app-accent); transition: width .4s ease; }
+    .status-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .status-bar b { color: var(--text); }
+    .pill { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: var(--r-pill); }
+    .pill-success { background: var(--bg-success); color: var(--c-success); }
+    .pill-warning { background: var(--bg-warning); color: #633806; }
+    .pill-info { background: var(--bg-info); color: #0c447c; }
+    .pill-neutral { background: var(--bg-neutral); color: #666; }
+
+    /* ── Step wizard ── */
+    .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--app-accent); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-num.done { background: var(--c-success); }
+    .step-num.inactive { background: var(--border); color: var(--muted); }
+    .step-title { font-size: 14px; font-weight: 700; }
+    .step-sub { font-size: 11px; color: var(--muted); }
+
+    /* ── Input ── */
+    .input-field { width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 8px 12px; font-size: 13px; font-family: inherit; color: var(--text); outline: none; transition: border-color .15s; }
+    .input-field:focus { border-color: var(--app-accent); }
+    .input-sm { padding: 5px 9px; font-size: 12px; }
+
+    /* ── Review table ── */
+    .review-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+    .ing-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px 12px; }
+    .ing-card.conflict { border-color: #f0c080; background: #fffbf0; }
+    .ing-card.approved { border-color: #80d090; background: #f4fdf4; }
+    .ing-card.edited { border-color: #90b4e8; background: #f0f5ff; }
+    .ing-row { display: grid; grid-template-columns: 2fr 1.2fr 1fr 100px 36px; gap: 6px; align-items: center; }
+    @media (max-width: 600px) { .ing-row { grid-template-columns: 1fr 1fr; gap: 4px; } }
+    .ing-label { font-size: 10px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+    .raw-names { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.6; }
+    .raw-name-chip { display: inline-block; background: var(--bg-neutral); border-radius: 4px; padding: 0 5px; margin: 1px 2px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; }
+    .conflict-note { font-size: 10px; color: #8a4000; margin-top: 4px; font-style: italic; }
+    .recipe-count { font-size: 10px; color: var(--faint); margin-top: 3px; }
+
+    /* ── Select ── */
+    select.input-field { cursor: pointer; }
+
+    /* ── Stats row ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin-bottom: 14px; }
+    .stat-tile { background: var(--white); border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px 12px; }
+    .stat-label { font-size: 9.5px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+    .stat-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Log ── */
+    .log-box { background: #0d1f0d; border-radius: var(--r-md); padding: 10px 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7ab87a; max-height: 160px; overflow-y: auto; }
+    .log-line { margin-bottom: 2px; }
+    .log-line.err { color: #ff9090; }
+    .log-line.warn { color: #f5c842; }
+    .log-line.info { color: #a8d4a8; }
+    .log-line.muted { color: #456; }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+    .filter-pill { flex-shrink: 0; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--white); color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .12s; }
+    .filter-pill.active { background: var(--app-accent); color: #fff; border-color: var(--app-accent); }
+    .search-wrap { flex: 1; min-width: 160px; }
+
+    /* ── Spinner ── */
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    .spinner.dark { border: 2px solid rgba(0,0,0,.1); border-top-color: var(--app-accent); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Section divider ── */
+    .sec-lbl { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; margin-top: 16px; }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+    .empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .empty-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .empty-sub { font-size: 12px; }
+
+    /* ── Conflict chip ── */
+    .cf-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: var(--r-pill); background: #faeeda; color: #633806; }
+
+    /* ── Collapsible raw list ── */
+    details summary { cursor: pointer; font-size: 10px; color: var(--app-accent); font-weight: 600; user-select: none; margin-top: 4px; }
+    details summary::-webkit-details-marker { display: none; }
+
+    /* ── Toast ── */
+    #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a3a1a; color: #fff; padding: 9px 18px; border-radius: var(--r-pill); font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .2s; z-index: 9999; white-space: nowrap; pointer-events: none; }
+    #toast.show { opacity: 1; }
+
+    /* ── Batch progress ring ── */
+    .batch-info { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="header-row">
+      <div>
+        <div class="header-title">🌿 Ingredient Migrator</div>
+        <div class="header-sub">FatBoy's Kitchen · Phase 3A · One-off utility</div>
+      </div>
+      <div class="header-right">
+        <button class="hbtn" onclick="promptToken()">🔑 Token</button>
+        <span id="tokenStatus" style="font-size:10px;color:var(--app-on-primary3)"></span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="toast"></div>
+
+<div class="container" style="padding-top:16px">
+
+  <!-- ══ STEP 1: LOAD ══ -->
+  <div class="card" id="step1Card">
+    <div class="step-header">
+      <div class="step-num" id="s1num">1</div>
+      <div>
+        <div class="step-title">Load recipes.json from GitHub</div>
+        <div class="step-sub">Reads <code>fatbuoy/app-data</code> via your PAT · extracts all ingredient lines</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">GitHub repo path to <code>recipes.json</code></div>
+        <input class="input-field" id="repoPath" value="data/recipes.json" placeholder="data/recipes.json">
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Branch</div>
+        <input class="input-field" id="repoBranch" value="main" placeholder="main">
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Repo owner/name</div>
+        <input class="input-field" id="repoName" value="fatbuoy/app-data" placeholder="owner/repo">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-primary" id="loadBtn" onclick="loadRecipes()">
+        <span id="loadSpinner" style="display:none" class="spinner"></span>
+        Load recipes
+      </button>
+      <span id="loadStatus" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: EXTRACT + AI ══ -->
+  <div class="card" id="step2Card" style="opacity:.4;pointer-events:none">
+    <div class="step-header">
+      <div class="step-num inactive" id="s2num">2</div>
+      <div>
+        <div class="step-title">Extract ingredients &amp; AI-standardise</div>
+        <div class="step-sub">Claude suggests canonical names, preferred units, and categories in batches</div>
+      </div>
+    </div>
+
+    <div id="extractStats" class="stats-grid" style="display:none"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Batch size (lines per AI call)</div>
+        <select class="input-field" id="batchSize" style="width:120px">
+          <option value="40">40 lines</option>
+          <option value="60" selected>60 lines</option>
+          <option value="80">80 lines</option>
+          <option value="100">100 lines</option>
+        </select>
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn btn-primary" id="aiBtn" onclick="runAI()" disabled>
+        <span id="aiSpinner" style="display:none" class="spinner"></span>
+        Standardise with AI
+      </button>
+    </div>
+
+    <div id="aiProgress" style="display:none">
+      <div class="status-bar">
+        <span>Batch <b id="batchCurrent">0</b> of <b id="batchTotal">0</b></span>
+        <span class="batch-info" id="batchInfo"></span>
+      </div>
+      <div class="progress-bg"><div class="progress-fill" id="aiProgressFill" style="width:0%"></div></div>
+    </div>
+
+    <div id="aiLog" class="log-box" style="display:none;margin-top:10px"></div>
+  </div>
+
+  <!-- ══ STEP 3: REVIEW ══ -->
+  <div class="card" id="step3Card" style="opacity:.4;pointer-events:none">
+    <div class="step-header">
+      <div class="step-num inactive" id="s3num">3</div>
+      <div>
+        <div class="step-title">Review &amp; edit suggestions</div>
+        <div class="step-sub">Approve AI suggestions, fix conflicts, edit canonical names</div>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="reviewFilters" style="display:none">
+      <div class="search-wrap">
+        <input class="input-field input-sm" id="searchInput" placeholder="Search ingredients…" oninput="filterReview()">
+      </div>
+      <button class="filter-pill active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-pill" onclick="setFilter('conflict',this)">⚠ Conflicts</button>
+      <button class="filter-pill" onclick="setFilter('approved',this)">✓ Approved</button>
+      <button class="filter-pill" onclick="setFilter('pending',this)">Pending</button>
+      <button class="btn btn-sm btn-secondary" onclick="approveAll()" style="margin-left:auto">Approve all</button>
+    </div>
+
+    <div id="reviewStats" class="stats-grid" style="display:none;margin-bottom:12px"></div>
+
+    <div id="reviewGrid" class="review-grid">
+      <div class="empty">
+        <div class="empty-icon">🧄</div>
+        <div class="empty-title">No ingredients yet</div>
+        <div class="empty-sub">Complete Steps 1 &amp; 2 to populate this list</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: WRITE ══ -->
+  <div class="card" id="step4Card" style="opacity:.4;pointer-events:none">
+    <div class="step-header">
+      <div class="step-num inactive" id="s4num">4</div>
+      <div>
+        <div class="step-title">Write ingredients-db.json to GitHub</div>
+        <div class="step-sub">PUTs the approved ingredient catalogue to your repo</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+      <div style="flex:1;min-width:220px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Output path in repo</div>
+        <input class="input-field" id="outputPath" value="data/ingredients-db.json" placeholder="data/ingredients-db.json">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" id="writeBtn" onclick="writeToGitHub()" disabled>
+        <span id="writeSpinner" style="display:none" class="spinner"></span>
+        Write to GitHub
+      </button>
+      <button class="btn btn-secondary" id="downloadBtn" onclick="downloadJSON()" disabled>⬇ Download JSON</button>
+      <span id="writeStatus" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+
+    <div id="previewBox" style="display:none;margin-top:12px">
+      <div class="sec-lbl">Preview (first 5 entries)</div>
+      <pre id="previewPre" style="background:#0d1f0d;color:#7ab87a;border-radius:var(--r-md);padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;overflow-x:auto;max-height:200px"></pre>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   INGREDIENT MIGRATOR — Phase 3A
+   FatBoy's Kitchen · Sahani Suite
+═══════════════════════════════════════════════════════════ */
+
+'use strict';
+
+/* ── Config ── */
+const GITHUB_OWNER_REPO_DEFAULT = 'fatbuoy/app-data';
+const ANTHROPIC_MODEL = 'claude-sonnet-4-6';
+
+/* ── State ── */
+let recipesData   = null;   // parsed recipes.json
+let rawLines      = [];     // { rawName, rawCategory, rawUnit, recipeIds[] }
+let ingredients   = [];     // working list: { id, canonicalName, category, preferredUnit, altUnits, rawNames[], recipeIds[], status, conflictNote }
+let activeFilter  = 'all';
+let ghFileSha     = {};     // { [path]: sha } for PUT operations
+
+/* ── Canonical unit & category options ── */
+const UNIT_OPTIONS = ['g','kg','ml','l','tsp','tbsp','cup','count','pinch','to taste',''];
+const CAT_OPTIONS  = ['Grains/Flour','Lentils & Pulses','Vegetables','Fruit','Dairy','Protein','Nuts & Seeds','Oils & Fats','Spices (Whole/Seeds)','Spices (Ground/Powder)','Herbs','Condiments & Sauces','Sweeteners','Liquids','Baking','Other'];
+
+/* ══════════════════ TOKEN ══════════════════ */
+function promptToken() {
+  const curr = localStorage.getItem('gh_pat_token') || '';
+  const t = prompt('GitHub Personal Access Token (stored locally only):', curr);
+  if (t === null) return;
+  if (!t.trim()) { localStorage.removeItem('gh_pat_token'); toast('Token removed'); }
+  else           { localStorage.setItem('gh_pat_token', t.trim()); toast('Token saved'); }
+  updateTokenStatus();
+}
+
+function updateTokenStatus() {
+  const el = document.getElementById('tokenStatus');
+  if (el) el.textContent = localStorage.getItem('gh_pat_token') ? '✓ token set' : '✗ no token';
+}
+
+/* ══════════════════ STEP 1 — LOAD ══════════════════ */
+async function loadRecipes() {
+  const token = localStorage.getItem('gh_pat_token');
+  if (!token) { toast('Set your GitHub token first (🔑)'); return; }
+
+  const [owner, repo] = document.getElementById('repoName').value.trim().split('/');
+  const path   = document.getElementById('repoPath').value.trim();
+  const branch = document.getElementById('repoBranch').value.trim();
+
+  setLoading('loadBtn','loadSpinner',true);
+  document.getElementById('loadStatus').textContent = 'Fetching…';
+
+  try {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
+    const res = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+    if (!res.ok) throw new Error(`GitHub ${res.status}: ${res.statusText}`);
+    const meta = await res.json();
+    ghFileSha[path] = meta.sha;  // store for future PUTs
+
+    const binary  = atob(meta.content.replace(/\n/g,''));
+    const bytes   = Uint8Array.from(binary, c => c.charCodeAt(0));
+    recipesData   = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+
+    const count = recipesData.recipes?.length || 0;
+    document.getElementById('loadStatus').textContent = `✓ ${count} recipes loaded`;
+    document.getElementById('s1num').className = 'step-num done';
+
+    extractRawIngredients();
+    enableStep(2);
+    document.getElementById('aiBtn').disabled = false;
+    toast(`Loaded ${count} recipes`);
+  } catch(e) {
+    document.getElementById('loadStatus').textContent = `✗ ${e.message}`;
+    toast('Load failed — check token & repo path', true);
+    console.error(e);
+  }
+  setLoading('loadBtn','loadSpinner',false);
+}
+
+/* ══════════════════ STEP 2 — EXTRACT ══════════════════ */
+function extractRawIngredients() {
+  const lineMap = new Map(); // key = "name|category" → { rawName, rawCategory, units: Set, recipeIds: Set }
+
+  for (const recipe of (recipesData.recipes || [])) {
+    for (const group of (recipe.ingredients || [])) {
+      const cat = (group.category || 'Other').trim();
+      for (const item of (group.items || [])) {
+        const rawName = (item.name || '').trim();
+        const rawUnit = (item.unit || '').trim();
+        if (!rawName) continue;
+        const key = `${rawName.toLowerCase()}|${cat.toLowerCase()}`;
+        if (!lineMap.has(key)) {
+          lineMap.set(key, { rawName, rawCategory: cat, units: new Set(), recipeIds: new Set() });
+        }
+        const entry = lineMap.get(key);
+        if (rawUnit) entry.units.add(rawUnit);
+        entry.recipeIds.add(recipe.id);
+      }
+    }
+  }
+
+  rawLines = [...lineMap.values()].map(e => ({
+    rawName:     e.rawName,
+    rawCategory: e.rawCategory,
+    rawUnit:     [...e.units].join(' / ') || '',
+    recipeIds:   [...e.recipeIds],
+  }));
+
+  const totalRecipes = recipesData.recipes?.length || 0;
+  const totalLines   = rawLines.length;
+
+  document.getElementById('extractStats').style.display = 'grid';
+  document.getElementById('extractStats').innerHTML = `
+    <div class="stat-tile"><div class="stat-label">Recipes</div><div class="stat-value">${totalRecipes}</div></div>
+    <div class="stat-tile"><div class="stat-label">Unique lines</div><div class="stat-value">${totalLines}</div><div class="stat-sub">name + category combos</div></div>
+    <div class="stat-tile"><div class="stat-label">Raw categories</div><div class="stat-value">${new Set(rawLines.map(r=>r.rawCategory)).size}</div></div>
+    <div class="stat-tile"><div class="stat-label">AI batches</div><div class="stat-value">${Math.ceil(totalLines / parseInt(document.getElementById('batchSize').value))}</div><div class="stat-sub">at ${document.getElementById('batchSize').value} lines/batch</div></div>
+  `;
+}
+
+/* ══════════════════ STEP 2 — AI STANDARDISE ══════════════════ */
+async function runAI() {
+  const batchSize = parseInt(document.getElementById('batchSize').value);
+  const batches   = [];
+  for (let i = 0; i < rawLines.length; i += batchSize) {
+    batches.push(rawLines.slice(i, i + batchSize));
+  }
+
+  document.getElementById('aiProgress').style.display = 'block';
+  document.getElementById('aiLog').style.display      = 'block';
+  document.getElementById('batchTotal').textContent   = batches.length;
+  setLoading('aiBtn','aiSpinner',true);
+  document.getElementById('aiBtn').disabled = true;
+  clearLog();
+
+  ingredients = [];
+
+  for (let b = 0; b < batches.length; b++) {
+    document.getElementById('batchCurrent').textContent = b + 1;
+    document.getElementById('batchInfo').textContent    = `(${batches[b].length} lines)`;
+    document.getElementById('aiProgressFill').style.width = ((b / batches.length) * 100) + '%';
+    addLog(`Batch ${b+1}/${batches.length} — sending ${batches[b].length} lines to Claude…`);
+
+    try {
+      const result = await processBatch(batches[b], b);
+      ingredients.push(...result);
+      addLog(`Batch ${b+1} ✓ — ${result.length} ingredients processed`, 'info');
+    } catch(e) {
+      addLog(`Batch ${b+1} failed: ${e.message}`, 'err');
+      // Still add raw fallback entries so we don't lose data
+      for (const line of batches[b]) {
+        ingredients.push(makeFallback(line));
+      }
+    }
+    // Polite pause between batches
+    if (b < batches.length - 1) await sleep(800);
+  }
+
+  document.getElementById('aiProgressFill').style.width = '100%';
+  addLog(`✓ All done — ${ingredients.length} ingredients ready for review`, 'info');
+
+  setLoading('aiBtn','aiSpinner',false);
+  document.getElementById('s2num').className = 'step-num done';
+
+  deduplicateIngredients();
+  renderReview();
+  enableStep(3);
+  enableStep(4);
+  document.getElementById('writeBtn').disabled  = false;
+  document.getElementById('downloadBtn').disabled = false;
+  buildPreview();
+  toast('AI standardisation complete');
+}
+
+async function processBatch(lines, batchIdx) {
+  const linesJson = JSON.stringify(lines.map((l,i) => ({
+    idx: batchIdx * 1000 + i,
+    rawName: l.rawName,
+    rawCategory: l.rawCategory,
+    rawUnit: l.rawUnit,
+  })));
+
+  const systemPrompt = `You are a culinary ingredient database assistant. Your job is to standardise ingredient names from a home-cook recipe book.
+
+TASK: For each ingredient line, return a JSON object with:
+- idx: (same as input)
+- canonicalName: clean, title-case, singular form. E.g. "carrots" → "Carrot", "tomato puree" → "Tomato Purée"
+- category: one of exactly: ${CAT_OPTIONS.join(' | ')}
+- preferredUnit: one of exactly: ${UNIT_OPTIONS.join(' | ')} — choose the most practical unit for home cooking
+- conflict: boolean — true if the raw name is ambiguous, a duplicate under a different spelling, or the unit is inconsistent
+- conflictNote: brief explanation if conflict=true, else ""
+
+RULES:
+- Keep ingredient names concise but specific. "Paneer" not "Fresh Paneer Cheese".
+- For Indian spices, use common English name + transliteration in parens if helpful: "Cumin Seeds (Jeera)"
+- Prefer "g" for solids/powders over 10g, "tsp" for small spice amounts, "ml" for liquids
+- "count" for whole items where quantity is a number (garlic cloves, eggs, chillis)
+- "to taste" for salt, pepper, and other seasoning-only ingredients
+
+Return ONLY a valid JSON array of objects. No preamble, no markdown, no explanation.`;
+
+  const userMsg = `Standardise these ${lines.length} ingredient lines:\n${linesJson}`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(`API ${response.status}: ${err.error?.message || response.statusText}`);
+  }
+
+  const data  = await response.json();
+  const text  = data.content?.map(c => c.type === 'text' ? c.text : '').join('') || '';
+  const clean = text.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+
+  let parsed;
+  try { parsed = JSON.parse(clean); }
+  catch(e) { throw new Error('JSON parse failed: ' + clean.slice(0,120)); }
+
+  // Merge AI output back with raw input (recipeIds, rawNames)
+  return parsed.map(p => {
+    const lineIdx = p.idx % 1000;
+    const original = lines[lineIdx] || lines[0];
+    return {
+      id:            `ing_${String(ingredients.length + parsed.indexOf(p) + 1).padStart(4,'0')}`,
+      canonicalName: p.canonicalName || original.rawName,
+      category:      CAT_OPTIONS.includes(p.category) ? p.category : original.rawCategory,
+      preferredUnit: UNIT_OPTIONS.includes(p.preferredUnit) ? p.preferredUnit : '',
+      altUnits:      [],
+      rawNames:      [original.rawName],
+      recipeIds:     original.recipeIds,
+      conflict:      !!p.conflict,
+      conflictNote:  p.conflictNote || '',
+      status:        p.conflict ? 'conflict' : 'approved',
+      notes:         '',
+    };
+  });
+}
+
+function makeFallback(line) {
+  return {
+    id:            `ing_fall_${Math.random().toString(36).slice(2,7)}`,
+    canonicalName: line.rawName,
+    category:      line.rawCategory,
+    preferredUnit: '',
+    altUnits:      [],
+    rawNames:      [line.rawName],
+    recipeIds:     line.recipeIds,
+    conflict:      false,
+    conflictNote:  '',
+    status:        'pending',
+    notes:         '',
+  };
+}
+
+/* ── Post-AI deduplication: merge entries with same canonicalName ── */
+function deduplicateIngredients() {
+  const map = new Map(); // canonicalName.toLowerCase() → entry
+  for (const ing of ingredients) {
+    const key = ing.canonicalName.trim().toLowerCase();
+    if (!map.has(key)) {
+      map.set(key, { ...ing });
+    } else {
+      const existing = map.get(key);
+      // Merge rawNames and recipeIds
+      for (const n of ing.rawNames) if (!existing.rawNames.includes(n)) existing.rawNames.push(n);
+      for (const r of ing.recipeIds) if (!existing.recipeIds.includes(r)) existing.recipeIds.push(r);
+      // Escalate to conflict if units differ
+      if (ing.preferredUnit && existing.preferredUnit && ing.preferredUnit !== existing.preferredUnit) {
+        existing.conflict = true;
+        existing.conflictNote = (existing.conflictNote ? existing.conflictNote + ' · ' : '') +
+          `Unit conflict: "${existing.preferredUnit}" vs "${ing.preferredUnit}"`;
+        existing.status = 'conflict';
+        if (!existing.altUnits.includes(ing.preferredUnit)) existing.altUnits.push(ing.preferredUnit);
+      }
+    }
+  }
+  ingredients = [...map.values()];
+  // Re-assign clean sequential IDs
+  ingredients.forEach((ing, i) => { ing.id = `ing_${String(i+1).padStart(4,'0')}`; });
+}
+
+/* ══════════════════ STEP 3 — REVIEW ══════════════════ */
+let currentFilterFn = () => true;
+
+function filterReview() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderReview(q);
+}
+
+function setFilter(type, el) {
+  activeFilter = type;
+  document.querySelectorAll('#reviewFilters .filter-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  filterReview();
+}
+
+function renderReview(query = '') {
+  updateReviewStats();
+
+  let list = ingredients;
+  if (activeFilter === 'conflict') list = list.filter(i => i.status === 'conflict');
+  else if (activeFilter === 'approved') list = list.filter(i => i.status === 'approved');
+  else if (activeFilter === 'pending')  list = list.filter(i => i.status === 'pending');
+  if (query) list = list.filter(i => i.canonicalName.toLowerCase().includes(query) || i.rawNames.some(n => n.toLowerCase().includes(query)));
+
+  document.getElementById('reviewFilters').style.display = 'flex';
+
+  if (list.length === 0) {
+    document.getElementById('reviewGrid').innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No results</div><div class="empty-sub">Try a different filter or search term</div></div>`;
+    return;
+  }
+
+  document.getElementById('reviewGrid').innerHTML = list.map((ing, vi) => {
+    const actualIdx = ingredients.indexOf(ing);
+    const statusClass = ing.status === 'conflict' ? 'conflict' : ing.status === 'approved' ? 'approved' : ing.status === 'edited' ? 'edited' : '';
+    return `
+      <div class="ing-card ${statusClass}" id="icard_${actualIdx}">
+        <div class="ing-row">
+          <div>
+            <div class="ing-label">Canonical name</div>
+            <input class="input-field input-sm" value="${escHtml(ing.canonicalName)}"
+              oninput="updateField(${actualIdx},'canonicalName',this.value)"
+              style="font-weight:600">
+          </div>
+          <div>
+            <div class="ing-label">Category</div>
+            <select class="input-field input-sm" onchange="updateField(${actualIdx},'category',this.value)">
+              ${CAT_OPTIONS.map(c => `<option ${c===ing.category?'selected':''}>${escHtml(c)}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <div class="ing-label">Unit</div>
+            <select class="input-field input-sm" onchange="updateField(${actualIdx},'preferredUnit',this.value)">
+              ${UNIT_OPTIONS.map(u => `<option value="${u}" ${u===ing.preferredUnit?'selected':''}>${u||'(none)'}</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:14px">
+            <span class="pill ${ing.status==='conflict'?'pill-warning':ing.status==='approved'?'pill-success':'pill-neutral'}">${ing.status}</span>
+            <span class="recipe-count" style="font-size:9px;color:var(--faint)">${ing.recipeIds.length}r</span>
+          </div>
+          <div style="margin-top:14px">
+            <button class="btn btn-xs ${ing.status==='approved'?'btn-secondary':'btn-primary'}" onclick="toggleApprove(${actualIdx})">
+              ${ing.status==='approved'?'↩':'✓'}
+            </button>
+          </div>
+        </div>
+        ${ing.conflict && ing.conflictNote ? `<div class="conflict-note">⚠ ${escHtml(ing.conflictNote)}</div>` : ''}
+        <details>
+          <summary>▸ Raw names (${ing.rawNames.length}) · used in ${ing.recipeIds.length} recipe${ing.recipeIds.length!==1?'s':''}</summary>
+          <div class="raw-names">${ing.rawNames.map(n=>`<span class="raw-name-chip">${escHtml(n)}</span>`).join('')}</div>
+        </details>
+        ${ing.notes !== undefined ? `<div style="margin-top:6px"><input class="input-field input-sm" placeholder="Notes (optional)…" value="${escHtml(ing.notes||'')}" oninput="updateField(${actualIdx},'notes',this.value)" style="font-style:italic;color:var(--muted)"></div>` : ''}
+      </div>`;
+  }).join('');
+}
+
+function updateField(idx, field, value) {
+  if (!ingredients[idx]) return;
+  ingredients[idx][field] = value;
+  if (ingredients[idx].status !== 'conflict') ingredients[idx].status = 'edited';
+  const card = document.getElementById(`icard_${idx}`);
+  if (card) { card.className = 'ing-card edited'; }
+  updateReviewStats();
+  buildPreview();
+}
+
+function toggleApprove(idx) {
+  if (!ingredients[idx]) return;
+  ingredients[idx].status = ingredients[idx].status === 'approved' ? 'pending' : 'approved';
+  ingredients[idx].conflict = false;
+  renderReview(document.getElementById('searchInput').value.toLowerCase());
+  buildPreview();
+}
+
+function approveAll() {
+  ingredients.forEach(i => { if (i.status !== 'approved') { i.status = 'approved'; i.conflict = false; } });
+  renderReview(document.getElementById('searchInput').value.toLowerCase());
+  buildPreview();
+  toast('All approved');
+}
+
+function updateReviewStats() {
+  const total    = ingredients.length;
+  const approved = ingredients.filter(i => i.status === 'approved').length;
+  const conflict = ingredients.filter(i => i.status === 'conflict').length;
+  const edited   = ingredients.filter(i => i.status === 'edited').length;
+  const pending  = total - approved - conflict - edited;
+
+  document.getElementById('reviewStats').style.display = 'grid';
+  document.getElementById('reviewStats').innerHTML = `
+    <div class="stat-tile"><div class="stat-label">Total</div><div class="stat-value">${total}</div><div class="stat-sub">unique ingredients</div></div>
+    <div class="stat-tile"><div class="stat-label">✓ Approved</div><div class="stat-value" style="color:var(--c-success)">${approved}</div></div>
+    <div class="stat-tile"><div class="stat-label">⚠ Conflicts</div><div class="stat-value" style="color:var(--c-warning)">${conflict}</div><div class="stat-sub">need manual check</div></div>
+    <div class="stat-tile"><div class="stat-label">✎ Edited</div><div class="stat-value" style="color:var(--c-info)">${edited}</div></div>
+    <div class="stat-tile"><div class="stat-label">Pending</div><div class="stat-value" style="color:var(--muted)">${pending}</div></div>
+  `;
+}
+
+/* ══════════════════ STEP 4 — WRITE ══════════════════ */
+function buildOutputJSON() {
+  return {
+    meta: {
+      app:         'fatbuoy-recipes',
+      version:     1,
+      count:       ingredients.length,
+      generated:   new Date().toISOString().slice(0,10),
+      source:      'ingredient-migrator.html · Phase 3A',
+    },
+    ingredients: ingredients.map(ing => ({
+      id:            ing.id,
+      name:          ing.canonicalName,
+      category:      ing.category,
+      preferredUnit: ing.preferredUnit,
+      alternateUnits: ing.altUnits || [],
+      notes:         ing.notes || '',
+      recipeCount:   ing.recipeIds.length,
+    }))
+  };
+}
+
+function buildPreview() {
+  const data  = buildOutputJSON();
+  const first = { ...data, ingredients: data.ingredients.slice(0,5) };
+  document.getElementById('previewBox').style.display  = 'block';
+  document.getElementById('previewPre').textContent    = JSON.stringify(first, null, 2) + '\n…';
+}
+
+async function writeToGitHub() {
+  const token = localStorage.getItem('gh_pat_token');
+  if (!token) { toast('Set your GitHub token first (🔑)'); return; }
+
+  const [owner, repo] = document.getElementById('repoName').value.trim().split('/');
+  const outputPath    = document.getElementById('outputPath').value.trim();
+  const branch        = document.getElementById('repoBranch').value.trim();
+
+  setLoading('writeBtn','writeSpinner',true);
+  document.getElementById('writeStatus').textContent = 'Writing…';
+
+  try {
+    const payload  = buildOutputJSON();
+    const content  = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const url      = `https://api.github.com/repos/${owner}/${repo}/contents/${outputPath}`;
+
+    // Check if file already exists (need SHA for update)
+    let sha = ghFileSha[outputPath] || '';
+    if (!sha) {
+      const check = await fetch(url, { headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+      if (check.ok) sha = (await check.json()).sha || '';
+    }
+
+    const body = { message: `[Migrator] Write ingredients-db.json — ${payload.meta.count} ingredients`, content, branch };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.message || res.statusText); }
+
+    const result  = await res.json();
+    ghFileSha[outputPath] = result.content?.sha || '';
+
+    document.getElementById('writeStatus').textContent = `✓ Written — ${payload.meta.count} ingredients`;
+    document.getElementById('s4num').className = 'step-num done';
+    toast(`ingredients-db.json written to ${owner}/${repo}`);
+  } catch(e) {
+    document.getElementById('writeStatus').textContent = `✗ ${e.message}`;
+    toast('Write failed: ' + e.message, true);
+    console.error(e);
+  }
+  setLoading('writeBtn','writeSpinner',false);
+}
+
+function downloadJSON() {
+  const data = buildOutputJSON();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a'); a.href = url; a.download = 'ingredients-db.json'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Downloaded ingredients-db.json');
+}
+
+/* ══════════════════ HELPERS ══════════════════ */
+function enableStep(n) {
+  const card = document.getElementById(`step${n}Card`);
+  if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+  const num  = document.getElementById(`s${n}num`);
+  if (num && num.className.includes('inactive')) { num.className = 'step-num'; }
+}
+
+function setLoading(btnId, spinnerId, on) {
+  const btn = document.getElementById(btnId);
+  const sp  = document.getElementById(spinnerId);
+  if (btn) btn.disabled = on;
+  if (sp)  sp.style.display = on ? 'inline-block' : 'none';
+}
+
+function addLog(msg, type='muted') {
+  const box  = document.getElementById('aiLog');
+  const line = document.createElement('div');
+  line.className = `log-line ${type}`;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+function clearLog() { document.getElementById('aiLog').innerHTML = ''; }
+
+function toast(msg, isErr = false) {
+  const el = document.getElementById('toast');
+  el.textContent   = msg;
+  el.style.background = isErr ? '#5a1a1a' : '#1a3a1a';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ══════════════════ INIT ══════════════════ */
+updateTokenStatus();
+</script>
+</body>
+</html>

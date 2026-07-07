@@ -1,0 +1,2932 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spend Analyser — Sahani Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   SPEND ANALYSER — styles
+   Inherits Sahani Suite base.css token system.
+   App theme: navy (same as Hub default — Spend is a core finance app).
+   Dark mode override: maps base.css surfaces to dark equivalents.
+══════════════════════════════════════════════════════════════════ */
+
+/* ── §1  BASE.CSS NEUTRAL TOKENS (inlined — no external file dep) ── */
+:root {
+  /* Surfaces */
+  --bg:       #f5f4f0;
+  --white:    #ffffff;
+  --surface:  #f8f7f3;
+
+  /* Text */
+  --text:     #1a1a1a;
+  --muted:    #666666;
+  --faint:    #999999;
+
+  /* Borders */
+  --border:   #e0ddd7;
+  --border2:  #e8e6e0;
+
+  /* Radii */
+  --r-sm: 6px;   --r-md: 10px;   --r-lg: 13px;   --r-pill: 999px;
+
+  /* Spacing */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px;
+
+  /* Type scale */
+  --t-xs:9.5px; --t-sm:11px; --t-base:13px; --t-md:14px;
+  --t-lg:17px;  --t-xl:20px; --t-2xl:26px;
+
+  /* Status colours — never override */
+  --c-success:#3b6d11; --c-warning:#ef9f27; --c-danger:#c0392b;
+  --c-info:#185fa5;    --c-neutral:#888780; --c-purple:#7f77dd; --c-teal:#20a080;
+  --bg-success:#e2f0d6; --bg-warning:#faeeda; --bg-danger:#fde8e8;
+  --bg-info:#deeaf7;    --bg-neutral:#f0ede8; --bg-purple:#eeedfe; --bg-teal:#e0f5f0;
+
+  /* ── §2  APP THEME — Spend Analyser uses Hub navy ── */
+  --app-primary:   #0c2340;
+  --app-primary2:  #1a3a5c;
+  --app-primary3:  #2d5a8a;
+  --app-accent:    #185fa5;
+  --app-on-primary:   #ffffff;
+  --app-on-primary2:  #a8cfed;
+  --app-on-primary3:  #7fa8cc;
+
+  /* ── Spend Analyser local aliases (keep JS chart code working) ── */
+  --accent:    var(--app-accent);
+  --accent2:   #0e4d8a;
+  --accent-dim:rgba(24,95,165,0.10);
+  --green:     var(--c-success);
+  --green-dim: rgba(59,109,17,0.10);
+  --red:       var(--c-danger);
+  --red-dim:   rgba(192,57,43,0.10);
+  --yellow:    var(--c-warning);
+  --yellow-dim:rgba(239,159,39,0.12);
+  --purple:    var(--c-purple);
+  --teal:      var(--c-teal);
+  --text2:     var(--muted);
+  --text3:     var(--faint);
+  /* for card backgrounds — map to base.css names */
+  --surface2:  var(--surface);
+  --surface3:  #f0ede8;
+  /* chart canvas helpers */
+  --grid-line: #e8e5df;
+  --grid-label:#999999;
+  --pie-hole:  #ffffff;
+  /* legacy radius shorthand */
+  --r: var(--r-sm);
+}
+
+/* ── DARK MODE — spend analyser dark stays its own palette ─────── */
+[data-theme="dark"] {
+  --bg:        #0f1117;
+  --white:     #1a1d27;
+  --surface:   #21253a;
+  --surface2:  #21253a;
+  --surface3:  #2a2f47;
+  --border:    #2e3455;
+  --border2:   #3d4568;
+  --text:      #e2e8f0;
+  --muted:     #94a3b8;
+  --faint:     #64748b;
+  --text2:     #94a3b8;
+  --text3:     #64748b;
+  --app-primary:   #1a1d27;
+  --app-primary2:  #21253a;
+  --app-primary3:  #2e3455;
+  --app-accent:    #6c8ef5;
+  --app-on-primary:   #e2e8f0;
+  --app-on-primary2:  #94a3b8;
+  --app-on-primary3:  #64748b;
+  --accent:    #6c8ef5;
+  --accent2:   #4a6cf7;
+  --accent-dim:rgba(108,142,245,0.12);
+  --green:     #3ecf8e;
+  --green-dim: rgba(62,207,142,0.12);
+  --red:       #f56565;
+  --red-dim:   rgba(245,101,101,0.12);
+  --yellow:    #f6c90e;
+  --yellow-dim:rgba(246,201,14,0.12);
+  --purple:    #a78bfa;
+  --teal:      #2dd4bf;
+  --grid-line: #2e3455;
+  --grid-label:#64748b;
+  --pie-hole:  #1a1d27;
+}
+
+/* ── §3  RESET ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--text);
+  font-size:13px; line-height:1.5; min-height:100vh;
+}
+canvas{display:block}
+a{color:var(--app-accent)}
+
+/* ── §5  HEADER — base.css pattern ──────────────────────────────── */
+.header{
+  background:var(--app-primary);
+  padding:0 20px; display:flex; align-items:center;
+  justify-content:space-between; height:52px; position:sticky; top:0; z-index:100;
+}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-right{display:flex;align-items:center;gap:8px}
+
+.header-home{
+  color:var(--app-on-primary3);font-size:17px;line-height:1;
+  text-decoration:none;transition:color .15s;padding:2px 4px;
+}
+.header-home:hover{color:var(--app-on-primary);text-decoration:none}
+
+.header-title{
+  font-size:15px;font-weight:700;color:var(--app-on-primary);letter-spacing:-0.3px;
+}
+.header-badge{
+  padding:2px 9px;
+  background:var(--app-primary2); border:1px solid var(--app-primary3);
+  border-radius:var(--r-pill);
+  font-size:10px;color:var(--app-on-primary2);font-weight:500;
+}
+.header-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r-sm);color:var(--app-on-primary2);
+  font-size:11px;font-weight:500;padding:4px 10px;cursor:pointer;
+  font-family:inherit;-webkit-tap-highlight-color:transparent;transition:background .15s;
+}
+.header-btn:hover{background:rgba(255,255,255,.15)}
+.header-btn.active{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.35);color:var(--app-on-primary)}
+
+/* Theme toggle — on-navy */
+#themeToggle{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r-sm);padding:4px 10px;cursor:pointer;
+  font-size:13px;color:var(--app-on-primary2);line-height:1;
+  transition:all .15s;font-family:inherit;
+}
+#themeToggle:hover{background:rgba(255,255,255,.15);color:var(--app-on-primary)}
+
+
+/* ── NET TICKER ──────────────────────────────────────────────────── */
+.net-ticker{
+  background:var(--surface2);border-bottom:1px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+}
+.nt-item{display:flex;align-items:baseline;gap:6px}
+.nt-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.nt-value{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.5px}
+.nt-sub{font-size:11px;color:var(--text3)}
+.nt-div{width:1px;height:28px;background:var(--border);flex-shrink:0}
+.pos{color:var(--green)} .neg{color:var(--red)} .neu{color:var(--accent)}
+.nt-badge{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-sm);
+  text-transform:uppercase;letter-spacing:.05em;margin-left:6px;
+}
+.nt-badge.pos{background:var(--green-dim);color:var(--green)}
+.nt-badge.neg{background:var(--red-dim);color:var(--red)}
+
+/* ── §20 NAV TABS — base.css .app-nav pattern ───────────────────── */
+.nav{
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;overflow-x:auto;scrollbar-width:none;padding:0 20px;
+  position:sticky;top:52px;z-index:90;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{
+  background:none;border:none;padding:12px 16px;
+  color:var(--text3);font-size:11px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;
+  cursor:pointer;font-family:inherit;flex-shrink:0;
+  border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-btn:hover{color:var(--text2)}
+.nav-btn.active{color:var(--app-accent);border-bottom-color:var(--app-accent)}
+
+/* ── §4  LAYOUT ──────────────────────────────────────────────────── */
+.main{max-width:1200px;margin:0 auto;padding:20px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:900px){.grid-4{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:600px){.grid-4{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr}}
+
+/* ── §6  CARDS — base.css .card pattern ─────────────────────────── */
+.card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:16px;margin-bottom:16px;overflow:hidden;
+}
+.card-sm{padding:12px 14px}
+.card-title{
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title select,.card-title button{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-sm);
+  border:1px solid var(--border2);background:var(--surface);color:var(--text2);
+  cursor:pointer;font-family:inherit;
+}
+.card-title select:focus{outline:none;border-color:var(--app-accent)}
+
+/* ── §7  KPI TILES — base.css .kpi-tile pattern ─────────────────── */
+.kpi{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:14px 16px;
+}
+.kpi-label{font-size:var(--t-xs);font-weight:600;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-0.5px;line-height:1}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px}
+.kpi-delta{font-size:10px;font-weight:600;margin-top:6px;display:inline-block;padding:2px 7px;border-radius:var(--r-sm)}
+.kpi-delta.pos{background:var(--green-dim);color:var(--green)}
+.kpi-delta.neg{background:var(--red-dim);color:var(--red)}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────── */
+.btn{
+  padding:8px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;
+  font-family:inherit;cursor:pointer;transition:all .15s;border:none;
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-primary{background:var(--app-accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{border-color:var(--app-accent);color:var(--app-accent)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px 6px;border-radius:var(--r-sm);font-size:14px;transition:color .15s}
+.btn-icon:hover{color:var(--app-accent)}
+
+/* Header ghost buttons inherit on-navy style */
+.header-right .btn-ghost{
+  background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);
+  color:var(--app-on-primary2);
+}
+.header-right .btn-ghost:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);color:#fff}
+#dataStatus{font-size:10px;color:var(--app-on-primary3)}
+
+/* ── UPLOAD ZONE ─────────────────────────────────────────────────── */
+.upload-zone{
+  background:var(--surface);border:2px dashed var(--border2);
+  border-radius:var(--r-lg);padding:28px;text-align:center;cursor:pointer;transition:all .2s;
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--app-accent);background:var(--accent-dim)}
+.upload-zone input[type=file]{display:none}
+.upload-zone-icon{font-size:28px;margin-bottom:8px;display:block}
+.upload-zone-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.upload-zone-sub{font-size:11px;color:var(--text3)}
+
+/* ── §12 TABLES ──────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{
+  background:var(--surface);color:var(--text3);padding:8px 12px;
+  text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;white-space:nowrap;border-bottom:1px solid var(--border);
+}
+thead th.num{text-align:right}
+tbody td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+tbody td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--surface)}
+tfoot td{
+  padding:8px 12px;background:var(--surface3);
+  font-weight:700;font-size:12px;border-top:1px solid var(--border2);color:var(--text);
+}
+tfoot td.num{text-align:right;font-variant-numeric:tabular-nums}
+.num-pos{color:var(--green)} .num-neg{color:var(--red)} .num-warn{color:var(--yellow)}
+.variance-bar{display:inline-block;height:4px;border-radius:2px;background:var(--border2);width:60px;vertical-align:middle;margin-right:6px;position:relative;overflow:hidden}
+.variance-bar span{position:absolute;left:0;top:0;height:100%;border-radius:2px}
+
+/* ── §9  PILLS — base.css pattern ───────────────────────────────── */
+.pill{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:var(--r-pill);letter-spacing:.04em;white-space:nowrap}
+.pill-green,.pill-success{background:var(--bg-success);color:var(--c-success)}
+.pill-red,.pill-danger{background:var(--bg-danger);color:var(--c-danger)}
+.pill-yellow,.pill-warning{background:var(--bg-warning);color:#633806}
+.pill-blue,.pill-info{background:var(--bg-info);color:#0c447c}
+.pill-purple{background:var(--bg-purple);color:#3c3489}
+.pill-accent{background:var(--app-primary2);color:var(--app-on-primary2)}
+
+/* ── FILTER BAR ──────────────────────────────────────────────────── */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-bar select,.filter-bar input{
+  background:var(--white);border:1px solid var(--border2);border-radius:var(--r-sm);
+  color:var(--text);padding:6px 10px;font-size:12px;font-family:inherit;cursor:pointer;
+}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--app-accent)}
+.filter-label{font-size:11px;font-weight:600;color:var(--text3)}
+
+/* ── §14 YEAR PILLS — base.css .period-btn pattern ──────────────── */
+.year-strip{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.year-pill{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-pill);
+  border:1.5px solid var(--border2);background:transparent;color:var(--text3);
+  cursor:pointer;font-family:inherit;transition:all .12s;-webkit-tap-highlight-color:transparent;
+}
+.year-pill:hover{border-color:var(--app-accent);color:var(--app-accent)}
+.year-pill.active{background:var(--app-primary);border-color:var(--app-primary);color:var(--app-on-primary)}
+.year-pill.all{border-color:var(--border2)}
+
+/* ── §13 CATEGORY / MERCHANT ROWS — base.css .row-item pattern ──── */
+.cat-row{
+  display:flex;align-items:center;padding:10px 14px;
+  border-bottom:1px solid var(--border);cursor:pointer;gap:12px;transition:background .1s;
+}
+.cat-row:hover{background:var(--surface)}
+.cat-row:last-child{border-bottom:none}
+.cat-row-name{flex:1;font-size:13px;font-weight:600;color:var(--text)}
+.cat-row-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.cat-row-amount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.cat-row-bar{width:80px;height:4px;background:var(--border2);border-radius:2px;overflow:hidden;flex-shrink:0}
+.cat-row-bar span{display:block;height:100%;border-radius:2px;transition:width .4s}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+.merchant-row{display:flex;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--border)}
+.merchant-row:last-child{border-bottom:none}
+.merchant-rank{font-size:11px;font-weight:700;color:var(--text3);width:22px;text-align:right;flex-shrink:0}
+.merchant-name{flex:1;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.merchant-cat{font-size:10px;color:var(--text3);margin-top:1px}
+.merchant-count{font-size:10px;color:var(--text3);width:40px;text-align:center;flex-shrink:0}
+.merchant-amount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;width:90px;text-align:right;flex-shrink:0}
+
+/* ── BREADCRUMB ──────────────────────────────────────────────────── */
+.breadcrumb{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.breadcrumb span{font-size:12px;color:var(--text3)}
+.breadcrumb a{font-size:12px;color:var(--app-accent);cursor:pointer;text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:var(--border2)}
+
+/* ── §15 CANVAS CHARTS ───────────────────────────────────────────── */
+.chart-container{position:relative;width:100%}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);cursor:pointer}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.legend-line{width:16px;height:2px;flex-shrink:0}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────── */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:12px;display:block}
+.empty-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:12px;line-height:1.6}
+
+/* ── §18 TOOLTIP — base.css pattern (navy bg) ───────────────────── */
+#chartTooltip{
+  position:fixed;pointer-events:none;
+  background:var(--app-primary);color:var(--app-on-primary);
+  border:1px solid var(--app-primary3);border-radius:var(--r-md);
+  padding:9px 12px;font-size:11px;font-family:'Inter',sans-serif;
+  z-index:9999;opacity:0;transition:opacity .1s;white-space:nowrap;
+  line-height:1.7;box-shadow:0 4px 16px rgba(0,0,0,.35);min-width:140px;
+}
+#chartTooltip.visible{opacity:1}
+.tt-title{font-size:9.5px;font-weight:600;color:var(--app-on-primary3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.tt-row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.tt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tt-label{color:var(--app-on-primary2);flex:1}
+.tt-val{font-weight:600;color:var(--app-on-primary);font-variant-numeric:tabular-nums}
+
+/* ── FX CURRENCY BADGES ──────────────────────────────────────────── */
+.ccy-badge{display:inline-block;font-size:9px;font-weight:800;padding:1px 5px;border-radius:3px;letter-spacing:.05em}
+.ccy-CHF{background:rgba(239,159,39,.15);color:var(--yellow)}
+.ccy-EUR{background:rgba(24,95,165,.15);color:var(--accent)}
+.ccy-GBP{background:rgba(59,109,17,.15);color:var(--green)}
+.ccy-USD{background:rgba(32,160,128,.15);color:var(--teal)}
+.ccy-INR{background:rgba(127,119,221,.15);color:var(--purple)}
+.ccy-OTHER{background:rgba(148,163,184,.15);color:var(--text2)}
+
+/* ── §8  PROGRESS ────────────────────────────────────────────────── */
+.progress-bg{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:2px;transition:width .5s}
+
+/* ── §17 PRIVACY MODE ────────────────────────────────────────────── */
+body.privacy .num-private{filter:blur(5px);user-select:none;pointer-events:none;transition:filter .2s}
+
+/* ── §19 PASSWORD MODAL ──────────────────────────────────────────── */
+.pw-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
+.pw-modal{background:var(--white);border-radius:var(--r-lg);padding:24px 20px;width:100%;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.pw-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.pw-sub{font-size:11px;color:var(--muted);margin-bottom:16px}
+.pw-input{width:100%;border:1.5px solid var(--border);border-radius:var(--r-md);padding:9px 12px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border-color .15s}
+.pw-input:focus{border-color:var(--app-accent)}
+.pw-error{font-size:11px;color:var(--c-danger);margin-top:6px;min-height:16px}
+.pw-actions{display:flex;gap:8px;margin-top:16px}
+.pw-btn{flex:1;padding:8px;border-radius:var(--r-md);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s;border:none}
+.pw-btn-cancel{background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.pw-btn-confirm{background:var(--app-primary);color:var(--app-on-primary)}
+.pw-btn-confirm:hover{background:var(--app-primary2)}
+
+/* ── GITHUB SYNC PANEL ───────────────────────────────────────────── */
+.sync-panel{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:16px;margin-bottom:16px;
+}
+.sync-panel h3{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.sync-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.sync-field label{font-size:11px;font-weight:600;color:var(--text3)}
+.sync-field input{
+  background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-sm);
+  color:var(--text);padding:6px 10px;font-size:12px;font-family:inherit;
+}
+.sync-field input:focus{outline:none;border-color:var(--app-accent)}
+.sync-status{font-size:11px;color:var(--text3);margin-top:6px}
+
+/* ── SCROLLBAR ───────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ── MISC ────────────────────────────────────────────────────────── */
+.section-title{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.06em}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.two-col{grid-template-columns:1fr}}
+.mono{font-family:'SF Mono','Fira Mono','Consolas',monospace}
+.text-right{text-align:right}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <a class="header-home" href="../index.html" title="Sahani Suite home">⌂</a>
+    <span class="header-title">📊 Spend Analyser</span>
+    <span class="header-badge">Sahani Suite</span>
+  </div>
+  <div class="header-right">
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="btn btn-ghost btn-sm" onclick="showImport()">⬆ Load Data</button>
+    <button class="btn btn-ghost btn-sm" onclick="showDataManager()" id="manageBtn" style="display:none">🗄 Manage</button>
+    <span id="dataStatus">No data loaded</span>
+  </div>
+</header>
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- ── IMPORT PANEL ──────────────────────────────────────────── -->
+  <div id="importPanel">
+    <div style="max-width:580px;margin:32px auto">
+
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:36px;margin-bottom:10px">📊</div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">Spend Analyser</h2>
+        <p style="font-size:13px;color:var(--text3)">All processing is local — no data leaves your browser.</p>
+      </div>
+
+      <!-- Actuals card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Actuals ledger</div>
+          <div id="actualsDbInfo" style="font-size:11px;color:var(--text3)"></div>
+        </div>
+
+        <!-- Upload target -->
+        <label class="upload-zone" id="actualsZone" for="actualsInput">
+          <span class="upload-zone-icon">📄</span>
+          <div class="upload-zone-title">Click or drag to load Actuals CSV</div>
+          <div class="upload-zone-sub">Consolidated ledger export (17 or 18 columns)</div>
+          <input type="file" id="actualsInput" accept=".csv">
+        </label>
+
+        <!-- Status row — hidden until file loaded -->
+        <div id="actualsStatus" style="display:none;margin-top:10px">
+          <div id="actualsLoaded" style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:8px"></div>
+          <!-- Shown only when DB already has data -->
+          <div id="actualsChoices" style="display:none;gap:8px;flex-wrap:wrap">
+            <span style="font-size:11px;color:var(--text3);align-self:center">Stored data exists — choose:</span>
+            <button class="btn btn-primary btn-sm" onclick="commitActuals('replace')">Replace all</button>
+            <button class="btn btn-ghost btn-sm" onclick="commitActuals('merge')">Merge new rows</button>
+          </div>
+          <div id="actualsResult" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+        </div>
+
+        <!-- Clear link — shown only when data stored -->
+        <div id="actualsClearRow" style="display:none;margin-top:10px">
+          <button onclick="clearStore('actuals')" style="background:none;border:none;font-size:11px;color:var(--red);cursor:pointer;padding:0;font-family:inherit">🗑 Clear stored actuals</button>
+        </div>
+      </div>
+
+      <!-- Budget card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Budget <span style="font-size:11px;font-weight:400;color:var(--text3)">(optional)</span></div>
+          <div id="budgetDbInfo" style="font-size:11px;color:var(--text3)"></div>
+        </div>
+
+        <label class="upload-zone" id="budgetZone" for="budgetInput">
+          <span class="upload-zone-icon">📋</span>
+          <div class="upload-zone-title">Click or drag to load Budget CSV</div>
+          <div class="upload-zone-sub">Same schema · Source = "Budget" · always replaces</div>
+          <input type="file" id="budgetInput" accept=".csv">
+        </label>
+
+        <div id="budgetStatus" style="display:none;margin-top:10px">
+          <div id="budgetLoaded" style="font-size:12px;font-weight:600;color:var(--green)"></div>
+        </div>
+
+        <div id="budgetClearRow" style="display:none;margin-top:10px">
+          <button onclick="clearStore('budget')" style="background:none;border:none;font-size:11px;color:var(--red);cursor:pointer;padding:0;font-family:inherit">🗑 Clear stored budget</button>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center">
+        <button class="btn btn-primary" onclick="startAnalysis()" id="startBtn" style="display:none;padding:10px 28px;font-size:14px">
+          View Analysis →
+        </button>
+        <div id="importError" style="margin-top:10px;font-size:12px;color:var(--red);display:none"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD TAB ─────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-dashboard">
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div class="year-strip" id="dashYearStrip"></div>
+    </div>
+    <div class="grid-4" id="dashKpis"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Spend by Category
+          <select id="dashCatGroupFilter" onchange="renderDashboard()">
+            <option value="">All groups</option>
+          </select>
+        </div>
+        <div id="dashCatList"></div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Top Overspent Categories
+            <span id="dashBudgetTag" class="pill pill-blue" style="display:none">vs Budget</span>
+          </div>
+          <div id="dashOverspent"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Monthly Spend Overview</div>
+          <div class="chart-container">
+            <canvas id="dashMiniChart" height="120"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MONTHLY TAB ───────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-monthly">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div class="year-strip" id="monthlyYearStrip"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="filter-label">Category:</span>
+        <select id="monthlyCatFilter" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit" onchange="renderMonthly()">
+          <option value="">All Expense Categories</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Monthly Spend
+        <div class="chart-legend" id="monthlyLegend"></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="monthlyChart" height="280"></canvas>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="card-title">Month-by-Month Table</div>
+      <div class="tbl-wrap">
+        <table id="monthlyTable">
+          <thead><tr id="monthlyTableHead"></tr></thead>
+          <tbody id="monthlyTableBody"></tbody>
+          <tfoot id="monthlyTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CATEGORY DRILLDOWN TAB ────────────────────────────────── -->
+  <div class="tab-panel" id="tab-category">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div class="year-strip" id="catYearStrip"></div>
+    </div>
+    <div class="breadcrumb" id="catBreadcrumb">
+      <a onclick="drillCategory(null,null)">All Categories</a>
+    </div>
+    <div class="grid-2">
+      <div class="card" id="catListCard">
+        <div class="card-title" id="catListTitle">Expense Categories</div>
+        <div id="catList"></div>
+      </div>
+      <div>
+        <div class="card" id="catDetailCard" style="display:none">
+          <div class="card-title" id="catDetailTitle">Sub-Categories</div>
+          <div id="catDetailList"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" id="catChartTitle">Category Trend</div>
+          <div class="chart-container">
+            <canvas id="catTrendChart" height="180"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TREND TAB ─────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-trend">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="filter-label">Category:</span>
+        <select id="trendCatFilter" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit" onchange="renderTrend()">
+          <option value="">Top 8 categories</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="filter-label">Group by:</span>
+        <select id="trendGroupBy" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit" onchange="renderTrend()">
+          <option value="annual">Annual</option>
+          <option value="monthly">Monthly (all years)</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Year-over-Year Trend
+        <div class="chart-legend" id="trendLegend"></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="trendChart" height="300"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Annual Summary by Category</div>
+      <div class="tbl-wrap">
+        <table id="trendTable">
+          <thead><tr id="trendTableHead"></tr></thead>
+          <tbody id="trendTableBody"></tbody>
+          <tfoot id="trendTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FX TAB ────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-fx">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div class="year-strip" id="fxYearStrip"></div>
+    </div>
+    <div class="grid-4" id="fxKpis"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Spend by Currency (CHF equiv)</div>
+        <div class="chart-container"><canvas id="fxPieChart" height="240"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Currency Exposure by Month</div>
+        <div class="chart-container"><canvas id="fxBarChart" height="240"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Currency Breakdown</div>
+      <div class="tbl-wrap">
+        <table id="fxTable">
+          <thead><tr>
+            <th>Currency</th>
+            <th class="num">Orig Amount</th>
+            <th class="num">CHF Equiv</th>
+            <th class="num">Avg FX Rate</th>
+            <th class="num">Transactions</th>
+            <th class="num">% of Total</th>
+          </tr></thead>
+          <tbody id="fxTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MERCHANTS TAB ─────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-merchants">
+    <div class="filter-bar">
+      <div class="year-strip" id="merchantYearStrip"></div>
+      <select id="merchantCatFilter" onchange="renderMerchants()">
+        <option value="">All Categories</option>
+      </select>
+      <input type="text" id="merchantSearch" placeholder="Search merchants…" oninput="renderMerchants()" style="flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:6px 10px;font-size:12px;font-family:inherit">
+      <select id="merchantLimit" onchange="renderMerchants()">
+        <option value="25">Top 25</option>
+        <option value="50">Top 50</option>
+        <option value="100">Top 100</option>
+        <option value="0">All</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="card-title" id="merchantTitle">Top Merchants</div>
+      <div id="merchantList"></div>
+    </div>
+  </div>
+
+  <!-- ── INSIGHTS TAB ──────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-insights">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <div class="year-strip" id="insightsYearStrip"></div>
+    </div>
+
+    <!-- Recurring vs Variable -->
+    <div class="section-title" style="margin-bottom:14px">Recurring vs Variable Spend</div>
+    <div class="grid-4" id="insightsRecurringKpis"></div>
+    <div class="grid-2" style="margin-bottom:4px">
+      <div class="card">
+        <div class="card-title">Likely Recurring Expenses
+          <span class="pill pill-blue" id="recurringNote"></span>
+        </div>
+        <div id="insightsRecurringList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spend Composition</div>
+        <div class="chart-container"><canvas id="insightsRecurringChart" height="200"></canvas></div>
+        <div id="insightsRecurringLegend" style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+    <!-- Anomalies -->
+    <div class="section-title" style="margin:20px 0 14px">Anomalies & Outliers</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Unusual Transactions
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">2.5σ above merchant avg</span>
+        </div>
+        <div id="insightsAnomalyList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spike Months
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">months >2σ above year avg</span>
+        </div>
+        <div id="insightsSpikeList"></div>
+      </div>
+    </div>
+
+    <!-- Calendar patterns -->
+    <div class="section-title" style="margin:20px 0 14px">Calendar Patterns</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Spend by Day of Week</div>
+        <div class="chart-container"><canvas id="insightsDowChart" height="180"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spend by Day of Month
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">avg per occurrence</span>
+        </div>
+        <div class="chart-container"><canvas id="insightsDomChart" height="180"></canvas></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Seasonal Patterns — Average by Month <span style="font-size:10px;font-weight:400;color:var(--text3)">(across all years)</span></div>
+        <div class="chart-container"><canvas id="insightsSeasonChart" height="180"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Month-end Effect
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">first vs last 5 days vs mid-month</span>
+        </div>
+        <div id="insightsMonthEndList"></div>
+        <div class="chart-container" style="margin-top:12px"><canvas id="insightsMonthEndChart" height="140"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Year-on-year growth -->
+    <div class="section-title" style="margin:20px 0 14px">Growth & Drift</div>
+    <div class="card">
+      <div class="card-title">Category Growth Rate Year-on-Year
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">% change vs prior year · last 3 complete years</span>
+      </div>
+      <div class="tbl-wrap"><table id="insightsGrowthTable">
+        <thead><tr id="insightsGrowthHead"></tr></thead>
+        <tbody id="insightsGrowthBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ── BUDGET PLANNER TAB ─────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-budget-planner">
+    <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:700;color:var(--text)">Planning year:</span>
+        <select id="budgetPlanYear" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit" onchange="renderBudgetPlanner()"></select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="resetBudgetPlan()">↺ Reset from actuals</button>
+        <button class="btn btn-primary btn-sm" onclick="saveBudgetPlan()">💾 Save plan</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportBudgetPlanCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <div class="grid-4" id="budgetPlanKpis"></div>
+
+    <div class="card">
+      <div class="card-title">Category Budgets
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">Click any amount to edit · auto-saves on blur</span>
+      </div>
+      <div class="tbl-wrap">
+        <table id="budgetPlanTable">
+          <thead><tr>
+            <th>Category</th>
+            <th>Sub-Category</th>
+            <th class="num">Last Year</th>
+            <th class="num">3yr Avg</th>
+            <th class="num">Suggested</th>
+            <th class="num" style="min-width:120px">Your Budget</th>
+            <th class="num">vs Last Year</th>
+          </tr></thead>
+          <tbody id="budgetPlanBody"></tbody>
+          <tfoot id="budgetPlanFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monthly Distribution
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">based on historical monthly weights</span>
+      </div>
+      <div class="chart-container"><canvas id="budgetPlanChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+
+<!-- TOOLTIP -->
+<div id="chartTooltip"></div>
+
+<!-- utils.js — shared Sahani Suite utilities -->
+<script src="../shared/utils.js"></script>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════════ */
+const S = {
+  actuals: [],
+  budget: [],
+  years: [],
+  selectedYear: null,
+  catDrillLevel: 0,
+  catDrillGroup: null,
+  catDrillCat: null,
+  fxSelectedYear: null,
+  merchantSelectedYear: null,
+  dashSelectedYear: null,
+  monthlySelectedYear: null,
+  catSelectedYear: null,
+  insightsSelectedYear: null,
+  hiddenSeries: new Set(),
+  budgetPlan: {},
+  budgetPlanYear: null,
+};
+
+const CCY_COLORS = {
+  CHF:'#ef9f27', EUR:'#185fa5', GBP:'#3b6d11', USD:'#20a080', INR:'#7f77dd'
+};
+const CAT_COLORS = [
+  '#185fa5','#3b6d11','#c0392b','#ef9f27','#7f77dd','#20a080',
+  '#d08030','#b55fa0','#0e7a6a','#5548b0','#0e6088','#6b8c3a',
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   PARSE CSV
+══════════════════════════════════════════════════════════════════ */
+function parseCSV(text) {
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = text.trim().split('\n');
+  if (!lines.length) return [];
+  const headers = splitCSVLine(lines[0]).map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = splitCSVLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] !== undefined ? vals[idx].trim() : ''; });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function splitCSVLine(line) {
+  const result = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else { inQ = !inQ; } }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else cur += c;
+  }
+  result.push(cur);
+  return result;
+}
+
+function serialToDate(serial) {
+  const d = new Date((serial - 25569) * 86400000);
+  return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+}
+
+function enrichRow(row) {
+  const serial = parseFloat(row['Date']);
+  if (!isNaN(serial) && serial > 0) {
+    const dt = serialToDate(serial);
+    row._year = dt.year; row._month = dt.month;
+  } else {
+    row._year = 0; row._month = 0;
+  }
+  row._amount = parseFloat(row['Amount']) || 0;
+  row._origAmount = parseFloat(row[' Orig Ccy '] || row['Orig Ccy'] || 0);
+  row._fx = parseFloat(row['FX']) || 1;
+  row._group = (row['Group'] || '').trim();
+  row._category = (row['Category'] || '').trim();
+  row._subcat = (row['Sub-Category'] || '').trim();
+  row._ccy = (row['Ccy'] || 'CHF').trim();
+  row._source = (row['Source'] || '').trim();
+  const canonical = (row['Canonical Merchant'] || '').trim();
+  const raw = (row['Recipient / Order issuer'] || '').trim();
+  row._merchant = canonical || raw;
+  row._merchantRaw = raw;
+  return row;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   THEME TOGGLE
+══════════════════════════════════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('sa_theme', isDark ? 'light' : 'dark');
+  const active = document.querySelector('.tab-panel.active');
+  if (active) {
+    const id = active.id.replace('tab-', '');
+    const r = { dashboard:renderDashboard, monthly:renderMonthly, category:renderCategory,
+                 trend:renderTrend, fx:renderFX, merchants:renderMerchants };
+    if (r[id]) r[id]();
+  }
+}
+(function() {
+  const saved = localStorage.getItem('sa_theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   INDEXEDDB — local cache (offline-first, all data stays on device)
+══════════════════════════════════════════════════════════════════ */
+const DB_NAME = 'SahaniSpendAnalyser';
+const DB_VER  = 1;
+let _db = null;
+
+const DB = {
+  open() {
+    return new Promise((resolve, reject) => {
+      if (_db) { resolve(_db); return; }
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('actuals')) db.createObjectStore('actuals');
+        if (!db.objectStoreNames.contains('budget'))  db.createObjectStore('budget');
+        if (!db.objectStoreNames.contains('meta'))    db.createObjectStore('meta');
+      };
+      req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+      req.onerror   = e => reject(e.target.error);
+    });
+  },
+  async save(store, rows) {
+    const db = await DB.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction([store, 'meta'], 'readwrite');
+      tx.objectStore(store).put(JSON.stringify(rows), 'rows');
+      tx.objectStore('meta').put(Date.now(), store + '_updated');
+      tx.oncomplete = resolve;
+      tx.onerror = e => reject(e.target.error);
+    });
+  },
+  async load(store) {
+    const db = await DB.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(store, 'readonly');
+      const req = tx.objectStore(store).get('rows');
+      req.onsuccess = e => {
+        try { resolve(e.target.result ? JSON.parse(e.target.result) : []); }
+        catch { resolve([]); }
+      };
+      req.onerror = e => reject(e.target.error);
+    });
+  },
+  async loadMeta(key) {
+    const db = await DB.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('meta', 'readonly');
+      const req = tx.objectStore('meta').get(key);
+      req.onsuccess = e => resolve(e.target.result || null);
+      req.onerror   = e => reject(e.target.error);
+    });
+  },
+  async saveMeta(key, val) {
+    const db = await DB.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('meta', 'readwrite');
+      tx.objectStore('meta').put(val, key);
+      tx.oncomplete = resolve;
+      tx.onerror = e => reject(e.target.error);
+    });
+  },
+  async clear(store) {
+    const db = await DB.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction([store, 'meta'], 'readwrite');
+      tx.objectStore(store).delete('rows');
+      tx.objectStore('meta').delete(store + '_updated');
+      tx.oncomplete = resolve;
+      tx.onerror = e => reject(e.target.error);
+    });
+  },
+};
+
+/** Dedup key for actuals: Date + Account name + Orig Ccy + Recipient */
+function dedupKey(row) {
+  return [
+    row['Date'] || '',
+    (row['Account name'] || '').trim(),
+    (row[' Orig Ccy '] || row['Orig Ccy'] || '').toString().trim(),
+    (row['Recipient / Order issuer'] || '').trim(),
+  ].join('|');
+}
+
+/** Merge newRows into existing, skipping duplicates. Returns merged array + stats. */
+function mergeRows(existing, incoming) {
+  const seen = new Set(existing.map(dedupKey));
+  let added = 0;
+  const merged = [...existing];
+  incoming.forEach(r => {
+    const k = dedupKey(r);
+    if (!seen.has(k)) { merged.push(r); seen.add(k); added++; }
+  });
+  return { merged, added, skipped: incoming.length - added };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LOAD DATA — FILE PICKERS & IMPORT FLOW
+══════════════════════════════════════════════════════════════════ */
+
+// Staging area: parsed but not yet committed when DB already has data
+let _stagedActuals = null;
+let _stagedBudget  = null;
+
+function _wireFilePicker(inputId, onParsed) {
+  const input = document.getElementById(inputId);
+  input.addEventListener('change', () => {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const rows = parseCSV(e.target.result).map(enrichRow);
+        onParsed(rows, file.name);
+      } catch(err) { showImportError('Parse error: ' + err.message); }
+    };
+    reader.readAsText(file);
+  });
+}
+
+_wireFilePicker('actualsInput', async (rows, fname) => {
+  _stagedActuals = rows;
+  document.getElementById('actualsZone').style.borderColor = 'var(--green)';
+  document.getElementById('actualsStatus').style.display = 'block';
+
+  // Check if DB already has data
+  const existing = await DB.load('actuals');
+
+  if (existing.length === 0) {
+    // First load — auto-save immediately, no choices needed
+    await DB.save('actuals', rows);
+    S.actuals = rows;
+    document.getElementById('actualsLoaded').textContent = `✓ ${rows.length.toLocaleString()} rows loaded from ${fname}`;
+    document.getElementById('actualsChoices').style.display = 'none';
+    _stagedActuals = null;
+    await refreshDbInfo();
+    checkReadyToStart();
+  } else {
+    // Data exists — show replace/merge choice
+    document.getElementById('actualsLoaded').textContent = `✓ ${rows.length.toLocaleString()} rows parsed — choose action:`;
+    document.getElementById('actualsChoices').style.display = 'flex';
+  }
+});
+
+_wireFilePicker('budgetInput', async (rows, fname) => {
+  const budgetRows = rows.filter(r => r._group === 'Expense');
+  _stagedBudget = budgetRows;
+  document.getElementById('budgetZone').style.borderColor = 'var(--accent)';
+  document.getElementById('budgetStatus').style.display = 'block';
+
+  // Budget always replaces — auto-save immediately
+  await DB.save('budget', budgetRows);
+  S.budget = budgetRows;
+  document.getElementById('budgetLoaded').textContent = `✓ ${budgetRows.length.toLocaleString()} budget rows loaded from ${fname}`;
+  _stagedBudget = null;
+  await refreshDbInfo();
+});
+
+async function commitActuals(mode) {
+  if (!_stagedActuals) return;
+  const choicesEl = document.getElementById('actualsChoices');
+  const resultEl  = document.getElementById('actualsResult');
+  let finalRows;
+
+  if (mode === 'replace') {
+    finalRows = _stagedActuals;
+    resultEl.textContent = `Replaced with ${finalRows.length.toLocaleString()} rows.`;
+  } else {
+    const existing = await DB.load('actuals');
+    const { merged, added, skipped } = mergeRows(existing, _stagedActuals);
+    finalRows = merged;
+    resultEl.textContent = `Merged: ${added.toLocaleString()} new rows added, ${skipped.toLocaleString()} duplicates skipped.`;
+  }
+
+  await DB.save('actuals', finalRows);
+  S.actuals = finalRows;
+  _stagedActuals = null;
+  choicesEl.style.display = 'none';
+  document.getElementById('actualsLoaded').textContent = `✓ ${finalRows.length.toLocaleString()} rows stored`;
+  await refreshDbInfo();
+  checkReadyToStart();
+}
+
+async function clearStore(store) {
+  if (!confirm(`Clear all stored ${store} data? This cannot be undone.`)) return;
+  await DB.clear(store);
+  if (store === 'actuals') {
+    S.actuals = [];
+    document.getElementById('actualsStatus').style.display = 'none';
+    document.getElementById('actualsZone').style.borderColor = '';
+    document.getElementById('startBtn').style.display = 'none';
+    document.getElementById('actualsClearRow').style.display = 'none';
+  } else {
+    S.budget = [];
+    document.getElementById('budgetStatus').style.display = 'none';
+    document.getElementById('budgetZone').style.borderColor = '';
+    document.getElementById('budgetClearRow').style.display = 'none';
+  }
+  await refreshDbInfo();
+}
+
+async function refreshDbInfo() {
+  const aUpdated = await DB.loadMeta('actuals_updated');
+  const bUpdated = await DB.loadMeta('budget_updated');
+  const fmtDate  = ts => ts ? new Date(ts).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '';
+
+  const aEl    = document.getElementById('actualsDbInfo');
+  const bEl    = document.getElementById('budgetDbInfo');
+  const aClear = document.getElementById('actualsClearRow');
+  const bClear = document.getElementById('budgetClearRow');
+
+  if (aEl) aEl.textContent = S.actuals.length
+    ? `${S.actuals.length.toLocaleString()} rows stored · ${fmtDate(aUpdated)}`
+    : 'nothing stored';
+  if (aClear) aClear.style.display = S.actuals.length ? 'block' : 'none';
+
+  if (bEl) bEl.textContent = S.budget.length
+    ? `${S.budget.length.toLocaleString()} rows · ${fmtDate(bUpdated)}`
+    : '';
+  if (bClear) bClear.style.display = S.budget.length ? 'block' : 'none';
+}
+
+function checkReadyToStart() {
+  const btn = document.getElementById('startBtn');
+  if (btn) btn.style.display = S.actuals.length > 0 ? 'inline-flex' : 'none';
+}
+
+function showImportError(msg) {
+  const el = document.getElementById('importError');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function showImport() {
+  document.getElementById('importPanel').style.display = 'block';
+  document.getElementById('mainNav').style.display = 'none';
+  document.getElementById('netTicker').style.display = 'none';
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  refreshDbInfo();
+}
+
+function showDataManager() { showImport(); }
+
+function startAnalysis() {
+  if (!S.actuals.length) return;
+
+  const years = [...new Set(S.actuals.filter(r => r._year > 0).map(r => r._year))].sort();
+  S.years = years;
+  S.selectedYear       = Math.max(...years);
+  S.dashSelectedYear   = S.selectedYear;
+  S.monthlySelectedYear= S.selectedYear;
+  S.catSelectedYear    = S.selectedYear;
+  S.fxSelectedYear     = S.selectedYear;
+  S.merchantSelectedYear = S.selectedYear;
+  S.insightsSelectedYear = S.selectedYear;
+  S.budgetPlanYear     = S.selectedYear + 1;
+
+  document.getElementById('importPanel').style.display = 'none';
+  document.getElementById('mainNav').style.display = 'flex';
+  document.getElementById('netTicker').style.display = 'flex';
+  document.getElementById('manageBtn').style.display = 'inline-flex';
+  document.getElementById('dataStatus').textContent =
+    `${S.actuals.length.toLocaleString()} rows · ${years[0]}–${years[years.length-1]}`;
+
+  // Reset filter dropdowns (safe to call multiple times)
+  ['monthlyCatFilter','trendCatFilter','merchantCatFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    while (el.options.length > 1) el.remove(1);
+  });
+  const dashG = document.getElementById('dashCatGroupFilter');
+  while (dashG.options.length > 1) dashG.remove(1);
+
+  populateFilters();
+  switchTab('dashboard');
+}
+
+/* ── Boot: load from IndexedDB on startup ──────────────────────── */
+(async function bootFromDB() {
+  try {
+    const [actuals, budget] = await Promise.all([DB.load('actuals'), DB.load('budget')]);
+    S.actuals = actuals;
+    S.budget  = budget;
+    await refreshDbInfo();
+    if (actuals.length) {
+      checkReadyToStart();
+      startAnalysis();   // go straight to dashboard
+    }
+  } catch (err) {
+    console.warn('IndexedDB boot failed:', err);
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════════
+   HELPERS — DATA FILTERS
+══════════════════════════════════════════════════════════════════ */
+// Expenses only, exclude Internal Transfer sub-category
+function getExpenses(rows, year) {
+  return rows.filter(r =>
+    r._source === 'Actuals' &&
+    r._group === 'Expense' &&
+    r._subcat !== 'Internal Transfer' &&
+    r._subcat !== 'Intra-account transfers' &&
+    (year == null || r._year === year)
+  );
+}
+
+function getBudget(year) {
+  return S.budget.filter(r => year == null || r._year === year);
+}
+
+function sumAmount(rows) {
+  return rows.reduce((s, r) => s + r._amount, 0);
+}
+
+function groupBy(arr, fn) {
+  const m = {};
+  arr.forEach(r => { const k = fn(r); (m[k] = m[k] || []).push(r); });
+  return m;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FORMATTERS
+   fmtCHF is app-specific (CHF prefix). fmtNum/fmtPct wrap utils.js.
+══════════════════════════════════════════════════════════════════ */
+function fmtCHF(n, decimals=0) {
+  if (!isFinite(n)) return '—';
+  return "CHF\u00a0" + Math.abs(n).toLocaleString('de-CH', {minimumFractionDigits:decimals,maximumFractionDigits:decimals});
+}
+// fmtNum + fmtPct delegate to utils.js fmt()/fmtPct()
+function fmtNum(n) { return fmt(n); }   // utils fmt() uses de-CH locale
+// fmtPct override: guard against non-finite (utils version doesn't)
+const _utilsFmtPct = fmtPct;
+function fmtPct(ratio) { return isFinite(ratio) ? _utilsFmtPct(ratio) : '—'; }
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ══════════════════════════════════════════════════════════════════
+   TOOLTIP
+══════════════════════════════════════════════════════════════════ */
+let _tt = null;
+function getTT() { if (!_tt) _tt = document.getElementById('chartTooltip'); return _tt; }
+function showTT(e, title, rows) {
+  const tt = getTT();
+  tt.innerHTML = `<div class="tt-title">${title}</div>` +
+    rows.map(r => `<div class="tt-row">
+      ${r.color ? `<div class="tt-dot" style="background:${r.color}"></div>` : ''}
+      <span class="tt-label">${r.label}</span>
+      <span class="tt-val">${r.prefix||''}${fmt(Math.round(r.val))}${r.suffix||''}</span>
+    </div>`).join('');
+  tt.classList.add('visible');
+  moveTT(e);
+}
+function moveTT(e) {
+  const tt = getTT();
+  const x = e.clientX, y = e.clientY;
+  const w = tt.offsetWidth || 180, h = tt.offsetHeight || 80;
+  tt.style.left = (x + 14 + w > window.innerWidth ? x - w - 10 : x + 14) + 'px';
+  tt.style.top  = (y - 10 + h > window.innerHeight ? y - h - 10 : y - 10) + 'px';
+}
+function hideTT() { getTT().classList.remove('visible'); }
+
+/* ══════════════════════════════════════════════════════════════════
+   POPULATE FILTERS
+══════════════════════════════════════════════════════════════════ */
+function populateFilters() {
+  const expenses = getExpenses(S.actuals, null);
+  const cats = [...new Set(expenses.map(r => r._category))].sort();
+
+  // Monthly cat filter
+  const monthlyCatSel = document.getElementById('monthlyCatFilter');
+  cats.forEach(c => { monthlyCatSel.add(new Option(c, c)); });
+
+  // Trend cat filter
+  const trendCatSel = document.getElementById('trendCatFilter');
+  cats.forEach(c => { trendCatSel.add(new Option(c, c)); });
+
+  // Merchant cat filter
+  const merchantCatSel = document.getElementById('merchantCatFilter');
+  cats.forEach(c => { merchantCatSel.add(new Option(c, c)); });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   YEAR STRIPS (shared factory)
+══════════════════════════════════════════════════════════════════ */
+function renderYearStrip(containerId, selectedYear, onSelect) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+
+  // "All" button
+  const all = document.createElement('button');
+  all.className = 'year-pill all' + (selectedYear === null ? ' active' : '');
+  all.textContent = 'All';
+  all.onclick = () => onSelect(null);
+  el.appendChild(all);
+
+  S.years.forEach(y => {
+    const b = document.createElement('button');
+    b.className = 'year-pill' + (y === selectedYear ? ' active' : '');
+    b.textContent = y;
+    b.onclick = () => onSelect(y);
+    el.appendChild(b);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NET TICKER UPDATE
+══════════════════════════════════════════════════════════════════ */
+function updateTicker(year) {
+  const expenses = getExpenses(S.actuals, year);
+  const ytdSpend = sumAmount(expenses);
+  const budget = getBudget(year);
+  const ytdBudget = sumAmount(budget);
+  const variance = ytdBudget > 0 ? ytdBudget - ytdSpend : null;
+
+  document.getElementById('tickerSpend').textContent = fmtCHF(ytdSpend);
+  document.getElementById('tickerYear').textContent = year || 'All years';
+  document.getElementById('tickerYearSub').textContent = year ? '' : `(${S.years[0]}–${S.years[S.years.length-1]})`;
+
+  if (ytdBudget > 0) {
+    document.getElementById('tickerBudget').textContent = fmtCHF(ytdBudget);
+    document.getElementById('tickerVariance').textContent = fmtCHF(Math.abs(variance));
+    document.getElementById('tickerVariance').className = 'nt-value ' + (variance >= 0 ? 'pos' : 'neg');
+    const badge = document.getElementById('tickerBadge');
+    badge.textContent = variance >= 0 ? '▼ Under' : '▲ Over';
+    badge.className = 'nt-badge ' + (variance >= 0 ? 'pos' : 'neg');
+  } else {
+    document.getElementById('tickerBudget').textContent = '—';
+    document.getElementById('tickerVariance').textContent = '—';
+    document.getElementById('tickerVariance').className = 'nt-value neu';
+    document.getElementById('tickerBadge').textContent = '';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TAB SWITCH
+══════════════════════════════════════════════════════════════════ */
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabName).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    const btns = document.querySelectorAll('.nav-btn');
+    const names = ['dashboard','monthly','category','trend','fx','merchants','insights','budget-planner'];
+    const idx = names.indexOf(tabName);
+    if (idx >= 0) btns[idx].classList.add('active');
+  }
+
+  const yr = {
+    dashboard: S.dashSelectedYear,
+    monthly: S.monthlySelectedYear,
+    category: S.catSelectedYear,
+    fx: S.fxSelectedYear,
+    merchants: S.merchantSelectedYear,
+    insights: S.insightsSelectedYear,
+    trend: null,
+    'budget-planner': null,
+  }[tabName];
+  updateTicker(yr !== undefined ? yr : null);
+
+  const renderers = {
+    dashboard: renderDashboard,
+    monthly: renderMonthly,
+    category: renderCategory,
+    trend: renderTrend,
+    fx: renderFX,
+    merchants: renderMerchants,
+    insights: renderInsights,
+    'budget-planner': renderBudgetPlanner,
+  };
+  if (renderers[tabName]) renderers[tabName]();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════════════════════════ */
+function renderDashboard() {
+  const year = S.dashSelectedYear;
+  updateTicker(year);
+
+  renderYearStrip('dashYearStrip', year, y => { S.dashSelectedYear = y; renderDashboard(); });
+
+  const expenses = getExpenses(S.actuals, year);
+  const budget = getBudget(year);
+  const totalSpend = sumAmount(expenses);
+  const totalBudget = sumAmount(budget);
+  const txCount = expenses.length;
+
+  // KPIs
+  const kpiEl = document.getElementById('dashKpis');
+  const budgetStr = totalBudget > 0
+    ? `Budget: ${fmtCHF(totalBudget)} · ${fmtPct(totalSpend/totalBudget)} used`
+    : 'No budget loaded';
+
+  // Average monthly spend
+  const monthCounts = [...new Set(expenses.map(r => r._year * 100 + r._month))].length;
+  const avgMonthly = monthCounts > 0 ? totalSpend / monthCounts : 0;
+
+  // Largest single expense
+  const largest = expenses.reduce((best, r) => r._amount > (best?._amount||0) ? r : best, null);
+
+  kpiEl.innerHTML = `
+    <div class="kpi">
+      <div class="kpi-label">Total Spend</div>
+      <div class="kpi-value" style="color:var(--accent)">${fmtCHF(totalSpend)}</div>
+      <div class="kpi-sub">${budgetStr}</div>
+      ${totalBudget > 0 ? `<div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,totalSpend/totalBudget*100).toFixed(1)}%;background:${totalSpend>totalBudget?'var(--red)':'var(--green)'}"></div></div>` : ''}
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Transactions</div>
+      <div class="kpi-value">${fmtNum(txCount)}</div>
+      <div class="kpi-sub">Avg ${fmtCHF(totalSpend/Math.max(1,txCount))} per tx</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg Monthly</div>
+      <div class="kpi-value" style="color:var(--yellow)">${fmtCHF(avgMonthly)}</div>
+      <div class="kpi-sub">Over ${monthCounts} months with data</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Largest Expense</div>
+      <div class="kpi-value" style="color:var(--red);font-size:16px">${largest ? fmtCHF(largest._amount) : '—'}</div>
+      <div class="kpi-sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${largest ? (largest._merchant||'—').substring(0,30) : ''}</div>
+    </div>
+  `;
+
+  // Category list
+  const catGroup = document.getElementById('dashCatGroupFilter');
+  if (catGroup.options.length === 1) {
+    const cats = [...new Set(expenses.map(r => r._category))].sort();
+    cats.forEach(c => catGroup.add(new Option(c, c)));
+  }
+  const filterCat = catGroup.value;
+  const filtered = filterCat ? expenses.filter(r => r._category === filterCat) : expenses;
+  const catGroups = groupBy(filtered, r => r._category);
+  const catTotals = Object.entries(catGroups)
+    .map(([k, v]) => ({ cat: k, amount: sumAmount(v), count: v.length }))
+    .sort((a, b) => b.amount - a.amount);
+  const maxAmt = catTotals[0]?.amount || 1;
+
+  document.getElementById('dashCatList').innerHTML = catTotals.map((c, i) => `
+    <div class="cat-row" onclick="drillToCat('${c.cat.replace(/'/g,"\\'")}')">
+      <div class="cat-dot" style="background:${CAT_COLORS[i % CAT_COLORS.length]}"></div>
+      <div style="flex:1;min-width:0">
+        <div class="cat-row-name">${c.cat}</div>
+        <div class="cat-row-sub">${fmtNum(c.count)} transactions</div>
+      </div>
+      <div class="cat-row-bar"><span style="width:${(c.amount/maxAmt*100).toFixed(1)}%;background:${CAT_COLORS[i % CAT_COLORS.length]}"></span></div>
+      <div class="cat-row-amount" style="color:${CAT_COLORS[i % CAT_COLORS.length]}">${fmtCHF(c.amount)}</div>
+    </div>
+  `).join('');
+
+  // Overspent
+  renderOverspent(expenses, budget);
+
+  // Mini chart
+  drawDashMiniChart(expenses, budget, year);
+}
+
+function renderOverspent(expenses, budget) {
+  const hasBudget = budget.length > 0;
+  document.getElementById('dashBudgetTag').style.display = hasBudget ? 'inline-block' : 'none';
+
+  let html = '';
+  if (hasBudget) {
+    const catExp = groupBy(expenses, r => r._category);
+    const catBud = groupBy(budget, r => r._category);
+    const allCats = new Set([...Object.keys(catExp), ...Object.keys(catBud)]);
+    const rows = [];
+    allCats.forEach(cat => {
+      const actual = sumAmount(catExp[cat] || []);
+      const budg = sumAmount(catBud[cat] || []);
+      if (budg > 0) rows.push({ cat, actual, budg, over: actual - budg });
+    });
+    rows.sort((a, b) => b.over - a.over);
+    const top = rows.slice(0, 6);
+    html = top.map(r => `
+      <div class="cat-row">
+        <div style="flex:1;min-width:0">
+          <div class="cat-row-name">${r.cat}</div>
+          <div class="cat-row-sub">Budget ${fmtCHF(r.budg)}</div>
+        </div>
+        <div>
+          <span class="pill ${r.over > 0 ? 'pill-red' : 'pill-green'}">${r.over > 0 ? '▲' : '▼'} ${fmtCHF(Math.abs(r.over))}</span>
+          <div style="font-size:10px;color:var(--text3);text-align:right;margin-top:2px">${fmtCHF(r.actual)} actual</div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    // No budget — show top categories instead
+    const catTotals = Object.entries(groupBy(expenses, r => r._category))
+      .map(([k,v]) => ({cat:k, amount:sumAmount(v)}))
+      .sort((a,b) => b.amount-a.amount).slice(0,6);
+    html = catTotals.map(r => `
+      <div class="cat-row">
+        <div style="flex:1"><div class="cat-row-name">${r.cat}</div></div>
+        <div class="cat-row-amount">${fmtCHF(r.amount)}</div>
+      </div>
+    `).join('');
+    document.querySelector('#dashOverspent .card-title') && null;
+  }
+  document.getElementById('dashOverspent').innerHTML = html || '<div class="empty" style="padding:20px"><span class="empty-sub">No data</span></div>';
+}
+
+function drawDashMiniChart(expenses, budget, year) {
+  const canvas = document.getElementById('dashMiniChart');
+  const months = MONTHS;
+
+  const byMonth = Array(12).fill(0);
+  expenses.forEach(r => { if(r._month >= 1 && r._month <= 12) byMonth[r._month-1] += r._amount; });
+
+  const budByMonth = Array(12).fill(0);
+  budget.forEach(r => { if(r._month >= 1 && r._month <= 12) budByMonth[r._month-1] += r._amount; });
+
+  const hasBudget = budget.length > 0;
+  drawBarLineChart(canvas, months, byMonth, hasBudget ? budByMonth : null,
+    { barColor:'#185fa5', lineColor:'#ef9f27', height:120, prefix:'CHF ' });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MONTHLY TAB
+══════════════════════════════════════════════════════════════════ */
+function renderMonthly() {
+  const year = S.monthlySelectedYear;
+  updateTicker(year);
+  renderYearStrip('monthlyYearStrip', year, y => { S.monthlySelectedYear = y; renderMonthly(); });
+
+  const catFilter = document.getElementById('monthlyCatFilter').value;
+  let expenses = getExpenses(S.actuals, year);
+  if (catFilter) expenses = expenses.filter(r => r._category === catFilter);
+
+  const byMonth = Array(12).fill(0);
+  expenses.forEach(r => { if(r._month >= 1 && r._month <= 12) byMonth[r._month-1] += r._amount; });
+
+  const budget = getBudget(year);
+  const budFiltered = catFilter ? budget.filter(r => r._category === catFilter) : budget;
+  const budByMonth = Array(12).fill(0);
+  budFiltered.forEach(r => { if(r._month >= 1 && r._month <= 12) budByMonth[r._month-1] += r._amount; });
+
+  const hasBudget = budget.length > 0;
+
+  // Legend
+  const legendEl = document.getElementById('monthlyLegend');
+  legendEl.innerHTML = `
+    <div class="legend-item"><div class="legend-dot" style="background:#185fa5"></div>Actual Spend</div>
+    ${hasBudget ? '<div class="legend-item"><div class="legend-line" style="background:#ef9f27;height:2px;border-top:2px dashed #ef9f27"></div>Budget</div>' : ''}
+  `;
+
+  const canvas = document.getElementById('monthlyChart');
+  drawBarLineChart(canvas, MONTHS, byMonth, hasBudget ? budByMonth : null,
+    { barColor:'#185fa5', lineColor:'#ef9f27', height:280 });
+
+  // Table
+  buildMonthlyTable(byMonth, budByMonth, hasBudget);
+}
+
+function buildMonthlyTable(actuals, budgets, hasBudget) {
+  const head = document.getElementById('monthlyTableHead');
+  const body = document.getElementById('monthlyTableBody');
+  const foot = document.getElementById('monthlyTableFoot');
+
+  head.innerHTML = `<th>Month</th><th class="num">Actual</th>` +
+    (hasBudget ? `<th class="num">Budget</th><th class="num">Variance</th><th class="num">%</th>` : '');
+
+  let totalAct = 0, totalBud = 0;
+  body.innerHTML = MONTHS.map((m, i) => {
+    const act = actuals[i]; const bud = budgets[i];
+    totalAct += act; if (hasBudget) totalBud += bud;
+    const vari = hasBudget ? bud - act : 0;
+    const pct = hasBudget && bud > 0 ? act/bud : null;
+    return `<tr>
+      <td>${m}</td>
+      <td class="num">${act > 0 ? fmtCHF(act) : '—'}</td>
+      ${hasBudget ? `
+        <td class="num">${bud > 0 ? fmtCHF(bud) : '—'}</td>
+        <td class="num ${vari >= 0 ? 'num-pos' : 'num-neg'}">${bud > 0 || act > 0 ? fmtCHF(Math.abs(vari)) : '—'}</td>
+        <td class="num ${pct != null ? (pct > 1 ? 'num-neg' : 'num-pos') : ''}">${pct != null ? fmtPct(pct) : '—'}</td>
+      ` : ''}
+    </tr>`;
+  }).join('');
+
+  const totalVari = totalBud - totalAct;
+  foot.innerHTML = `<tr>
+    <td>Total</td>
+    <td class="num">${fmtCHF(totalAct)}</td>
+    ${hasBudget ? `
+      <td class="num">${fmtCHF(totalBud)}</td>
+      <td class="num ${totalVari >= 0 ? 'num-pos' : 'num-neg'}">${fmtCHF(Math.abs(totalVari))}</td>
+      <td class="num">${totalBud > 0 ? fmtPct(totalAct/totalBud) : '—'}</td>
+    ` : ''}
+  </tr>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CATEGORY DRILLDOWN TAB
+══════════════════════════════════════════════════════════════════ */
+let _catColorMap = {};
+
+function renderCategory() {
+  const year = S.catSelectedYear;
+  updateTicker(year);
+  renderYearStrip('catYearStrip', year, y => { S.catSelectedYear = y; renderCategory(); });
+  drillCategory(S.catDrillCat, year);
+}
+
+function drillCategory(cat, year) {
+  if (year === undefined) year = S.catSelectedYear;
+  S.catDrillCat = cat;
+
+  const expenses = getExpenses(S.actuals, year);
+  const breadcrumb = document.getElementById('catBreadcrumb');
+
+  if (!cat) {
+    breadcrumb.innerHTML = '<span style="color:var(--text2)">All Categories</span>';
+    document.getElementById('catDetailCard').style.display = 'none';
+    document.getElementById('catListTitle').textContent = 'Expense Categories';
+
+    // Group by category
+    const catTotals = Object.entries(groupBy(expenses, r => r._category))
+      .map(([k, v]) => ({ cat: k, amount: sumAmount(v), count: v.length }))
+      .sort((a, b) => b.amount - a.amount);
+
+    catTotals.forEach((c, i) => { _catColorMap[c.cat] = CAT_COLORS[i % CAT_COLORS.length]; });
+    const maxAmt = catTotals[0]?.amount || 1;
+
+    document.getElementById('catList').innerHTML = catTotals.map(c => `
+      <div class="cat-row" onclick="drillCategory('${c.cat.replace(/'/g,"\\'")}')">
+        <div class="cat-dot" style="background:${_catColorMap[c.cat]}"></div>
+        <div style="flex:1;min-width:0">
+          <div class="cat-row-name">${c.cat}</div>
+          <div class="cat-row-sub">${fmtNum(c.count)} transactions</div>
+        </div>
+        <div class="cat-row-bar"><span style="width:${(c.amount/maxAmt*100).toFixed(1)}%;background:${_catColorMap[c.cat]}"></span></div>
+        <div class="cat-row-amount" style="color:${_catColorMap[c.cat]}">${fmtCHF(c.amount)}</div>
+      </div>
+    `).join('');
+
+    // Trend chart — all categories
+    drawCategoryTrendChart(null, year);
+
+  } else {
+    breadcrumb.innerHTML = `
+      <a onclick="drillCategory(null)">All Categories</a>
+      <span class="sep">›</span>
+      <span style="color:var(--text2)">${cat}</span>
+    `;
+
+    const catExpenses = expenses.filter(r => r._category === cat);
+    document.getElementById('catListTitle').textContent = cat + ' · Sub-Categories';
+    document.getElementById('catDetailCard').style.display = 'block';
+    document.getElementById('catDetailTitle').textContent = cat + ' · Merchants';
+
+    // Sub-categories
+    const subTotals = Object.entries(groupBy(catExpenses, r => r._subcat))
+      .map(([k, v]) => ({ sub: k, amount: sumAmount(v), count: v.length }))
+      .sort((a, b) => b.amount - a.amount);
+    const maxAmt = subTotals[0]?.amount || 1;
+    const color = _catColorMap[cat] || '#185fa5';
+
+    document.getElementById('catList').innerHTML = subTotals.map(s => `
+      <div class="cat-row" style="cursor:default">
+        <div style="flex:1;min-width:0">
+          <div class="cat-row-name">${s.sub || '(unset)'}</div>
+          <div class="cat-row-sub">${fmtNum(s.count)} transactions</div>
+        </div>
+        <div class="cat-row-bar"><span style="width:${(s.amount/maxAmt*100).toFixed(1)}%;background:${color}"></span></div>
+        <div class="cat-row-amount" style="color:${color}">${fmtCHF(s.amount)}</div>
+      </div>
+    `).join('');
+
+    // Top merchants
+    const merchantTotals = Object.entries(groupBy(catExpenses, r => r._merchant))
+      .map(([k, v]) => ({ name: k, amount: sumAmount(v), count: v.length }))
+      .sort((a, b) => b.amount - a.amount).slice(0, 15);
+
+    document.getElementById('catDetailList').innerHTML = merchantTotals.map((m, i) => `
+      <div class="merchant-row">
+        <span class="merchant-rank">${i+1}</span>
+        <div style="flex:1;min-width:0">
+          <div class="merchant-name">${m.name || '—'}</div>
+        </div>
+        <span class="merchant-count">${m.count}×</span>
+        <span class="merchant-amount" style="color:${color}">${fmtCHF(m.amount)}</span>
+      </div>
+    `).join('');
+
+    drawCategoryTrendChart(cat, year);
+  }
+}
+
+function drawCategoryTrendChart(cat, activeYear) {
+  const canvas = document.getElementById('catTrendChart');
+  document.getElementById('catChartTitle').textContent = cat ? `${cat} — Monthly Trend` : 'All Expense — Monthly Trend';
+
+  let expenses = getExpenses(S.actuals, activeYear);
+  if (cat) expenses = expenses.filter(r => r._category === cat);
+
+  const byMonth = Array(12).fill(0);
+  expenses.forEach(r => { if (r._month >= 1 && r._month <= 12) byMonth[r._month-1] += r._amount; });
+
+  const color = cat ? (_catColorMap[cat] || '#185fa5') : '#185fa5';
+  drawBarLineChart(canvas, MONTHS, byMonth, null, { barColor: color, height: 180 });
+}
+
+function drillToCat(cat) {
+  switchTab('category');
+  S.catDrillCat = cat;
+  drillCategory(cat);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TREND TAB
+══════════════════════════════════════════════════════════════════ */
+function renderTrend() {
+  updateTicker(null);
+  const catFilter = document.getElementById('trendCatFilter').value;
+  const groupBy_ = document.getElementById('trendGroupBy').value;
+
+  const expenses = getExpenses(S.actuals, null);
+
+  if (groupBy_ === 'annual') {
+    renderAnnualTrend(expenses, catFilter);
+  } else {
+    renderMonthlyMultiYearTrend(expenses, catFilter);
+  }
+}
+
+function renderAnnualTrend(expenses, catFilter) {
+  const years = S.years;
+
+  // Determine categories to show
+  let cats;
+  if (catFilter) {
+    cats = [catFilter];
+  } else {
+    // Top 8 categories by total
+    cats = Object.entries(groupBy(expenses, r => r._category))
+      .map(([k, v]) => ({ cat: k, total: sumAmount(v) }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 8).map(c => c.cat);
+  }
+
+  // Build datasets: one dataset per category, values per year
+  const datasets = cats.map((cat, i) => ({
+    label: cat,
+    color: CAT_COLORS[i % CAT_COLORS.length],
+    data: years.map(y => sumAmount(expenses.filter(r => r._category === cat && r._year === y))),
+  }));
+
+  // Legend
+  const legendEl = document.getElementById('trendLegend');
+  legendEl.innerHTML = datasets.map(d => `
+    <div class="legend-item" style="opacity:${S.hiddenSeries.has(d.label)?0.3:1}" onclick="toggleTrendSeries('${d.label.replace(/'/g,"\\'")}')">
+      <div class="legend-dot" style="background:${d.color}"></div>${d.label}
+    </div>
+  `).join('');
+
+  const visDatasets = datasets.filter(d => !S.hiddenSeries.has(d.label));
+  const canvas = document.getElementById('trendChart');
+  drawMultiLineChart(canvas, years.map(String), visDatasets, { height: 300 });
+
+  // Table
+  buildTrendTable(years, cats, expenses);
+}
+
+function renderMonthlyMultiYearTrend(expenses, catFilter) {
+  const years = S.years.slice(-5); // last 5 years
+  const labels = MONTHS;
+
+  let filtered = catFilter ? expenses.filter(r => r._category === catFilter) : expenses;
+
+  const datasets = years.map((y, i) => ({
+    label: String(y),
+    color: CAT_COLORS[i % CAT_COLORS.length],
+    data: MONTHS.map((_, mi) => sumAmount(filtered.filter(r => r._year === y && r._month === mi+1))),
+  }));
+
+  const legendEl = document.getElementById('trendLegend');
+  legendEl.innerHTML = datasets.map(d => `
+    <div class="legend-item" style="opacity:${S.hiddenSeries.has(d.label)?0.3:1}" onclick="toggleTrendSeries('${d.label}')">
+      <div class="legend-dot" style="background:${d.color}"></div>${d.label}
+    </div>
+  `).join('');
+
+  const visDatasets = datasets.filter(d => !S.hiddenSeries.has(d.label));
+  const canvas = document.getElementById('trendChart');
+  drawMultiLineChart(canvas, labels, visDatasets, { height: 300 });
+
+  // Simple annual table
+  const cats = catFilter ? [catFilter] :
+    Object.entries(groupBy(expenses, r => r._category))
+      .map(([k,v]) => ({cat:k,total:sumAmount(v)}))
+      .sort((a,b)=>b.total-a.total).slice(0,8).map(c=>c.cat);
+  buildTrendTable(S.years, cats, expenses);
+}
+
+function toggleTrendSeries(label) {
+  if (S.hiddenSeries.has(label)) S.hiddenSeries.delete(label);
+  else S.hiddenSeries.add(label);
+  renderTrend();
+}
+
+function buildTrendTable(years, cats, expenses) {
+  const head = document.getElementById('trendTableHead');
+  const body = document.getElementById('trendTableBody');
+  const foot = document.getElementById('trendTableFoot');
+
+  head.innerHTML = '<th>Category</th>' + years.map(y => `<th class="num">${y}</th>`).join('') + '<th class="num">Total</th>';
+
+  const yearTotals = years.map(() => 0);
+  let grandTotal = 0;
+
+  body.innerHTML = cats.map((cat, ci) => {
+    const vals = years.map(y => sumAmount(expenses.filter(r => r._category === cat && r._year === y)));
+    const total = vals.reduce((s, v) => s + v, 0);
+    vals.forEach((v, i) => yearTotals[i] += v);
+    grandTotal += total;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:6px">
+        <div class="cat-dot" style="background:${CAT_COLORS[ci%CAT_COLORS.length]}"></div>${cat}
+      </div></td>
+      ${vals.map(v => `<td class="num">${v > 0 ? fmtCHF(v) : '—'}</td>`).join('')}
+      <td class="num" style="color:var(--accent)">${fmtCHF(total)}</td>
+    </tr>`;
+  }).join('');
+
+  foot.innerHTML = `<tr>
+    <td>Total</td>
+    ${yearTotals.map(v => `<td class="num">${fmtCHF(v)}</td>`).join('')}
+    <td class="num">${fmtCHF(grandTotal)}</td>
+  </tr>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FX TAB
+══════════════════════════════════════════════════════════════════ */
+function renderFX() {
+  const year = S.fxSelectedYear;
+  updateTicker(year);
+  renderYearStrip('fxYearStrip', year, y => { S.fxSelectedYear = y; renderFX(); });
+
+  const expenses = getExpenses(S.actuals, year);
+  const byCcy = groupBy(expenses, r => r._ccy);
+  const totalCHF = sumAmount(expenses);
+
+  // KPI tiles
+  const ccys = Object.keys(byCcy).sort();
+  document.getElementById('fxKpis').innerHTML = ccys.map(ccy => {
+    const rows = byCcy[ccy];
+    const chfTotal = sumAmount(rows);
+    const origTotal = rows.reduce((s, r) => s + Math.abs(r._origAmount), 0);
+    return `<div class="kpi">
+      <div class="kpi-label"><span class="ccy-badge ccy-${ccy}">${ccy}</span></div>
+      <div class="kpi-value" style="font-size:18px">${fmtCHF(chfTotal)}</div>
+      <div class="kpi-sub">${fmtPct(chfTotal/totalCHF)} of spend</div>
+      <div class="kpi-sub" style="margin-top:2px">Orig: ${Math.round(origTotal).toLocaleString('de-CH')} ${ccy}</div>
+    </div>`;
+  }).join('');
+
+  // Pie chart (canvas)
+  drawFXPieChart(byCcy, totalCHF);
+
+  // Bar chart by month + currency
+  drawFXBarChart(expenses, year);
+
+  // Table
+  const tbody = document.getElementById('fxTableBody');
+  tbody.innerHTML = ccys.map(ccy => {
+    const rows = byCcy[ccy];
+    const chfTotal = sumAmount(rows);
+    const origTotal = rows.reduce((s, r) => s + Math.abs(r._origAmount), 0);
+    const avgFX = origTotal > 0 ? chfTotal / origTotal : 1;
+    return `<tr>
+      <td><span class="ccy-badge ccy-${ccy}">${ccy}</span></td>
+      <td class="num">${Math.round(origTotal).toLocaleString('de-CH')} ${ccy}</td>
+      <td class="num">${fmtCHF(chfTotal)}</td>
+      <td class="num">${avgFX.toFixed(4)}</td>
+      <td class="num">${fmtNum(rows.length)}</td>
+      <td class="num">${fmtPct(chfTotal/totalCHF)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function drawFXPieChart(byCcy, total) {
+  const canvas = document.getElementById('fxPieChart');
+  const DPR = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth || 400;
+  const H = 240;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+  ctx.clearRect(0, 0, W, H);
+
+  const ccys = Object.keys(byCcy).sort();
+  const vals = ccys.map(c => sumAmount(byCcy[c]));
+  const colors = ccys.map(c => CCY_COLORS[c] || '#8899aa');
+
+  const cx = W / 2, cy = H / 2, radius = Math.min(cx, cy) - 20;
+  let startAngle = -Math.PI / 2;
+
+  const segments = [];
+  vals.forEach((v, i) => {
+    const angle = (v / total) * Math.PI * 2;
+    const endAngle = startAngle + angle;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+    // Gap
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f6f8';
+    ctx.strokeStyle = bgColor; ctx.lineWidth = 2; ctx.stroke();
+
+    // Label
+    const midAngle = startAngle + angle / 2;
+    const lx = cx + Math.cos(midAngle) * radius * 0.65;
+    const ly = cy + Math.sin(midAngle) * radius * 0.65;
+    if (v / total > 0.05) {
+      ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.round(10*DPR)/DPR}px Inter,sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ccys[i], lx, ly - 6);
+      ctx.font = `${Math.round(9*DPR)/DPR}px Inter,sans-serif`;
+      ctx.fillText(fmtPct(v/total), lx, ly + 7);
+    }
+
+    segments.push({ ccy: ccys[i], val: v, color: colors[i], startAngle, endAngle });
+    startAngle = endAngle;
+  });
+
+  // Donut hole
+  const pieHole = getComputedStyle(document.documentElement).getPropertyValue('--pie-hole').trim() || '#ffffff';
+  const pieText = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#111827';
+  const pieText3 = getComputedStyle(document.documentElement).getPropertyValue('--text3').trim() || '#9ca3af';
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius * 0.45, 0, Math.PI * 2);
+  ctx.fillStyle = pieHole; ctx.fill();
+  ctx.fillStyle = pieText; ctx.font = `bold 13px Inter,sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(fmtCHF(total), cx, cy - 7);
+  ctx.fillStyle = pieText3; ctx.font = '10px Inter,sans-serif';
+  ctx.fillText('Total Spend', cx, cy + 8);
+
+  canvas.onmousemove = e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (W / rect.width);
+    const my = (e.clientY - rect.top) * (H / rect.height);
+    const dx = mx - cx, dy = my - cy;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < radius * 0.45 || dist > radius) { hideTT(); return; }
+    let angle = Math.atan2(dy, dx);
+    if (angle < -Math.PI/2) angle += Math.PI * 2;
+    const seg = segments.find(s => angle >= s.startAngle && angle <= s.endAngle);
+    if (seg) showTT(e, seg.ccy, [{ label: 'CHF equiv', val: seg.val, color: seg.color }]);
+    else hideTT();
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+function drawFXBarChart(expenses, year) {
+  const canvas = document.getElementById('fxBarChart');
+  const ccys = [...new Set(expenses.map(r => r._ccy))];
+  const colors = ccys.map(c => CCY_COLORS[c] || '#8899aa');
+
+  const datasets = ccys.map((ccy, i) => ({
+    label: ccy, color: colors[i],
+    data: MONTHS.map((_, mi) => sumAmount(expenses.filter(r => r._ccy === ccy && r._month === mi+1))),
+  }));
+
+  drawStackedBarChart(canvas, MONTHS, datasets, { height: 240 });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MERCHANTS TAB
+══════════════════════════════════════════════════════════════════ */
+function renderMerchants() {
+  const year = S.merchantSelectedYear;
+  updateTicker(year);
+  renderYearStrip('merchantYearStrip', year, y => { S.merchantSelectedYear = y; renderMerchants(); });
+
+  const catFilter = document.getElementById('merchantCatFilter').value;
+  const search = document.getElementById('merchantSearch').value.toLowerCase();
+  const limit = parseInt(document.getElementById('merchantLimit').value) || 9999;
+
+  let expenses = getExpenses(S.actuals, year);
+  if (catFilter) expenses = expenses.filter(r => r._category === catFilter);
+  if (search) expenses = expenses.filter(r => r._merchant.toLowerCase().includes(search));
+
+  const merchantTotals = Object.entries(groupBy(expenses, r => r._merchant))
+    .map(([name, rows]) => ({
+      name, amount: sumAmount(rows), count: rows.length,
+      cat: rows[0]?._category || '—',
+      subcat: rows[0]?._subcat || '',
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  const total = merchantTotals.reduce((s, m) => s + m.amount, 0);
+  const shown = limit ? merchantTotals.slice(0, limit) : merchantTotals;
+
+  document.getElementById('merchantTitle').textContent =
+    `Top Merchants · ${fmtNum(shown.length)} shown · ${fmtCHF(total)} total`;
+
+  const maxAmt = shown[0]?.amount || 1;
+
+  document.getElementById('merchantList').innerHTML = shown.map((m, i) => `
+    <div class="merchant-row">
+      <span class="merchant-rank">${i+1}</span>
+      <div class="cat-row-bar"><span style="width:${(m.amount/maxAmt*100).toFixed(1)}%;background:${CAT_COLORS[(shown.indexOf(m))%CAT_COLORS.length]}"></span></div>
+      <div style="flex:1;min-width:0">
+        <div class="merchant-name">${m.name || '(unnamed)'}</div>
+        <div class="merchant-cat">${m.cat}${m.subcat ? ' · ' + m.subcat : ''}</div>
+      </div>
+      <span class="merchant-count">${m.count}×</span>
+      <span class="merchant-amount">${fmtCHF(m.amount)}</span>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CANVAS CHART LIBRARY
+══════════════════════════════════════════════════════════════════ */
+
+/** Shared: prepare canvas DPR & context */
+function prepCanvas(canvas, H) {
+  const DPR = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth || 600;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+  ctx.clearRect(0, 0, W, H);
+  return { ctx, W, H, DPR };
+}
+
+function drawGridY(ctx, W, PAD, cH, mx, steps=5) {
+  const style = getComputedStyle(document.documentElement);
+  const gridLine  = style.getPropertyValue('--grid-line').trim()  || '#e2e6ec';
+  const gridLabel = style.getPropertyValue('--grid-label').trim() || '#9ca3af';
+  for (let i = 0; i <= steps; i++) {
+    const y = PAD.t + cH - (i / steps) * cH;
+    ctx.strokeStyle = gridLine; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(W - PAD.r, y); ctx.stroke();
+    ctx.fillStyle = gridLabel; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(fmtCHF((i / steps) * mx), PAD.l - 4, y + 3);
+  }
+}
+
+/** Bar chart with optional line overlay */
+function drawBarLineChart(canvas, labels, barData, lineData, opts={}) {
+  const H = opts.height || 200;
+  const { ctx, W } = prepCanvas(canvas, H);
+  const PAD = { t: 14, r: 14, b: 22, l: 74 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+  const n = labels.length;
+
+  const allVals = [...barData, ...(lineData || [])].filter(v => v > 0);
+  if (!allVals.length) return;
+  const mx = Math.max(...allVals) * 1.12;
+
+  drawGridY(ctx, W, PAD, cH, mx);
+
+  const barW = (cW / n) * 0.65;
+  const barGap = cW / n;
+
+  // Bars
+  barData.forEach((v, i) => {
+    if (v <= 0) return;
+    const bh = (v / mx) * cH;
+    const x = PAD.l + i * barGap + (barGap - barW) / 2;
+    const y = PAD.t + cH - bh;
+    ctx.fillStyle = opts.barColor || '#185fa5';
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, bh, [3, 3, 0, 0]);
+    ctx.fill();
+  });
+
+  // Line
+  if (lineData) {
+    const pts = lineData.map((v, i) => ({
+      x: PAD.l + i * barGap + barGap / 2,
+      y: PAD.t + cH - (Math.max(0, v) / mx) * cH, v
+    }));
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = opts.lineColor || '#ef9f27';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+    ctx.setLineDash([]);
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+      ctx.fillStyle = opts.lineColor || '#ef9f27'; ctx.fill();
+    });
+  }
+
+  // X labels
+  const xlStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-label').trim() || '#9ca3af';
+  ctx.fillStyle = xlStyle; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    ctx.fillText(l, PAD.l + i * barGap + barGap / 2, H - 4);
+  });
+
+  // Tooltip
+  canvas._chartData = { barData, lineData, labels, PAD, cW, n, barGap, barW };
+  canvas.onmousemove = e => {
+    const d = canvas._chartData; if (!d) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx2 = (e.clientX - rect.left) / rect.width * W;
+    const i = Math.floor((mx2 - d.PAD.l) / d.barGap);
+    if (i < 0 || i >= d.n) { hideTT(); return; }
+    const rows = [{ label: 'Actual', val: d.barData[i], color: opts.barColor || '#185fa5' }];
+    if (d.lineData && d.lineData[i] > 0) rows.push({ label: 'Budget', val: d.lineData[i], color: opts.lineColor || '#ef9f27' });
+    showTT(e, d.labels[i], rows.filter(r => r.val > 0));
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+/** Multi-line chart for trend tab */
+function drawMultiLineChart(canvas, labels, datasets, opts={}) {
+  const H = opts.height || 300;
+  const { ctx, W } = prepCanvas(canvas, H);
+  const PAD = { t: 14, r: 14, b: 22, l: 74 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+  const n = labels.length;
+
+  const allVals = datasets.flatMap(d => d.data).filter(v => v > 0);
+  if (!allVals.length) {
+    const noDataColor = getComputedStyle(document.documentElement).getPropertyValue('--text3').trim() || '#9ca3af';
+    ctx.fillStyle = noDataColor; ctx.textAlign='center';
+    ctx.font='12px Inter,sans-serif'; ctx.fillText('No data', W/2, H/2); return;
+  }
+  const mx = Math.max(...allVals) * 1.12;
+
+  drawGridY(ctx, W, PAD, cH, mx);
+
+  const toX = i => PAD.l + (i / (n - 1 || 1)) * cW;
+  const toY = v => PAD.t + cH - (Math.max(0, v) / mx) * cH;
+
+  const allPts = datasets.map(d => d.data.map((v, i) => ({ x: toX(i), y: toY(v), v, label: labels[i], series: d.label, color: d.color })));
+
+  datasets.forEach((d, di) => {
+    const pts = allPts[di];
+    ctx.beginPath();
+    pts.forEach((p, i) => {
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else {
+        const prev = pts[i-1];
+        ctx.bezierCurveTo((prev.x+p.x)/2, prev.y, (prev.x+p.x)/2, p.y, p.x, p.y);
+      }
+    });
+    ctx.strokeStyle = d.color; ctx.lineWidth = 2; ctx.setLineDash([]); ctx.stroke();
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+      ctx.fillStyle = d.color; ctx.fill();
+    });
+  });
+
+  // X labels
+  const xlStyleM = getComputedStyle(document.documentElement).getPropertyValue('--grid-label').trim() || '#9ca3af';
+  ctx.fillStyle = xlStyleM; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => ctx.fillText(l, toX(i), H - 4));
+
+  canvas._trendPts = allPts; canvas._trendLabels = labels;
+  canvas.onmousemove = e => {
+    if (!canvas._trendPts || !canvas._trendPts.length) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx2 = (e.clientX - rect.left) / rect.width * W;
+    const firstPts = canvas._trendPts[0];
+    let nearI = 0, nearD = Infinity;
+    firstPts.forEach((p, i) => { const d = Math.abs(p.x - mx2); if (d < nearD) { nearD = d; nearI = i; } });
+    const rows = canvas._trendPts.map(s => s[nearI]).filter(p => p && p.v > 0)
+      .map(p => ({ label: p.series, val: p.v, color: p.color })).sort((a,b)=>b.val-a.val);
+    if (rows.length) showTT(e, canvas._trendLabels[nearI], rows);
+    else hideTT();
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+/** Stacked bar chart */
+function drawStackedBarChart(canvas, labels, datasets, opts={}) {
+  const H = opts.height || 200;
+  const { ctx, W } = prepCanvas(canvas, H);
+  const PAD = { t: 14, r: 14, b: 22, l: 74 };
+  const cW = W - PAD.l - PAD.r, cH = H - PAD.t - PAD.b;
+  const n = labels.length;
+
+  // Stacked max
+  const stackTotals = labels.map((_, i) => datasets.reduce((s, d) => s + (d.data[i] || 0), 0));
+  const mx = Math.max(...stackTotals, 1) * 1.12;
+
+  drawGridY(ctx, W, PAD, cH, mx);
+
+  const barW = (cW / n) * 0.65;
+  const barGap = cW / n;
+
+  labels.forEach((l, i) => {
+    let bottom = PAD.t + cH;
+    datasets.forEach(d => {
+      const v = d.data[i] || 0;
+      if (v <= 0) return;
+      const bh = (v / mx) * cH;
+      const x = PAD.l + i * barGap + (barGap - barW) / 2;
+      ctx.fillStyle = d.color;
+      ctx.beginPath();
+      ctx.roundRect(x, bottom - bh, barW, bh, bottom === PAD.t + cH ? [3,3,0,0] : 0);
+      ctx.fill();
+      bottom -= bh;
+    });
+  });
+
+  const xlStyleS = getComputedStyle(document.documentElement).getPropertyValue('--grid-label').trim() || '#9ca3af';
+  ctx.fillStyle = xlStyleS; ctx.font = '9px Inter,sans-serif'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => ctx.fillText(l, PAD.l + i * barGap + barGap / 2, H - 4));
+
+  canvas._stackData = { labels, datasets, PAD, n, barGap };
+  canvas.onmousemove = e => {
+    const d = canvas._stackData; if (!d) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx2 = (e.clientX - rect.left) / rect.width * W;
+    const i = Math.floor((mx2 - d.PAD.l) / d.barGap);
+    if (i < 0 || i >= d.n) { hideTT(); return; }
+    const rows = d.datasets.map(ds => ({ label: ds.label, val: ds.data[i]||0, color: ds.color })).filter(r=>r.val>0);
+    showTT(e, d.labels[i], rows);
+  };
+  canvas.onmouseleave = hideTT;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DRAG-AND-DROP FILE LOADING
+══════════════════════════════════════════════════════════════════ */
+['actualsZone', 'budgetZone'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag'); });
+  el.addEventListener('dragleave', () => el.classList.remove('drag'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.classList.remove('drag');
+    const file = e.dataTransfer.files[0]; if (!file) return;
+    const inputId = id === 'actualsZone' ? 'actualsInput' : 'budgetInput';
+    // Inject file into the hidden input, then fire change event
+    const dt = new DataTransfer(); dt.items.add(file);
+    const input = document.getElementById(inputId);
+    input.files = dt.files;
+    input.dispatchEvent(new Event('change'));
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   RESIZE
+══════════════════════════════════════════════════════════════════ */
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => {
+    const active = document.querySelector('.tab-panel.active');
+    if (!active) return;
+    const id = active.id.replace('tab-', '');
+    const renderers = {
+      dashboard: renderDashboard, monthly: renderMonthly, category: renderCategory,
+      trend: renderTrend, fx: renderFX, merchants: renderMerchants,
+      insights: renderInsights, 'budget-planner': renderBudgetPlanner,
+    };
+    if (renderers[id]) renderers[id]();
+  }, 200);
+});
+/* ══════════════════════════════════════════════════════════════════
+   INSIGHTS TAB
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Stats helpers ───────────────────────────────────────────────── */
+function mean(arr) { return arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : 0; }
+function stddev(arr) {
+  if (arr.length < 2) return 0;
+  const m = mean(arr);
+  return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/(arr.length-1));
+}
+
+function renderInsights() {
+  const year = S.insightsSelectedYear;
+  updateTicker(year);
+  renderYearStrip('insightsYearStrip', year, y => { S.insightsSelectedYear = y; renderInsights(); });
+
+  const expenses = getExpenses(S.actuals, year);
+  const allExpenses = getExpenses(S.actuals, null);
+
+  _renderRecurring(expenses, year);
+  _renderAnomalies(expenses);
+  _renderCalendarPatterns(expenses);
+  _renderGrowthTable(allExpenses);
+}
+
+/* ── Recurring vs Variable ───────────────────────────────────────── */
+function _renderRecurring(expenses, year) {
+  // A merchant is "recurring" if it appears in >= 3 distinct months in the selected period
+  const byMerchant = groupBy(expenses, r => r._merchant);
+  const recurring = [], variable = [];
+  let recurringTotal = 0, variableTotal = 0;
+
+  Object.entries(byMerchant).forEach(([name, rows]) => {
+    const months = new Set(rows.map(r => r._year * 100 + r._month));
+    const total = sumAmount(rows);
+    const entry = { name, total, count: rows.length, months: months.size,
+                    avg: total / months.size, cat: rows[0]._category };
+    if (months.size >= 3) { recurring.push(entry); recurringTotal += total; }
+    else { variable.push(entry); variableTotal += total; }
+  });
+
+  recurring.sort((a,b) => b.total - a.total);
+  const grandTotal = recurringTotal + variableTotal;
+  const recPct = grandTotal > 0 ? recurringTotal / grandTotal : 0;
+
+  // KPIs
+  document.getElementById('insightsRecurringKpis').innerHTML = `
+    <div class="kpi">
+      <div class="kpi-label">Recurring</div>
+      <div class="kpi-value" style="color:var(--accent)">${fmtCHF(recurringTotal)}</div>
+      <div class="kpi-sub">${fmtPct(recPct)} of total · ${recurring.length} merchants</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Variable</div>
+      <div class="kpi-value" style="color:var(--yellow)">${fmtCHF(variableTotal)}</div>
+      <div class="kpi-sub">${fmtPct(1-recPct)} of total · ${variable.length} merchants</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Fixed floor / month</div>
+      <div class="kpi-value" style="font-size:18px">${fmtCHF(recurringTotal / 12)}</div>
+      <div class="kpi-sub">Min committed monthly spend</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Recurring merchants</div>
+      <div class="kpi-value" style="font-size:20px">${recurring.length}</div>
+      <div class="kpi-sub">Appearing in 3+ months</div>
+    </div>
+  `;
+
+  document.getElementById('recurringNote').textContent = `${recurring.length} merchants · 3+ months`;
+
+  // List
+  document.getElementById('insightsRecurringList').innerHTML = recurring.slice(0, 15).map(m => `
+    <div class="merchant-row">
+      <div style="flex:1;min-width:0">
+        <div class="merchant-name">${m.name || '(unnamed)'}</div>
+        <div class="merchant-cat">${m.cat} · ${m.months} months · avg ${fmtCHF(m.avg)}/mo</div>
+      </div>
+      <span class="pill pill-blue" style="margin-right:8px">${m.months}mo</span>
+      <span class="merchant-amount" style="color:var(--accent)">${fmtCHF(m.total)}</span>
+    </div>
+  `).join('') || '<div class="empty" style="padding:20px"><span class="empty-sub">Not enough data for recurring detection</span></div>';
+
+  // Donut: recurring vs variable
+  const canvas = document.getElementById('insightsRecurringChart');
+  _drawDonut(canvas, [
+    { label: 'Recurring', value: recurringTotal, color: '#185fa5' },
+    { label: 'Variable',  value: variableTotal,  color: '#ef9f27' },
+  ], 200);
+
+  document.getElementById('insightsRecurringLegend').innerHTML = `
+    <div class="legend-item"><div class="legend-dot" style="background:#185fa5"></div>Recurring (${fmtPct(recPct)})</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef9f27"></div>Variable (${fmtPct(1-recPct)})</div>
+  `;
+}
+
+/* ── Anomalies ───────────────────────────────────────────────────── */
+function _renderAnomalies(expenses) {
+  // Per-merchant anomalies: tx > mean + 2.5*sd
+  const byMerchant = groupBy(expenses, r => r._merchant);
+  const anomalies = [];
+
+  Object.entries(byMerchant).forEach(([name, rows]) => {
+    if (rows.length < 3) return; // need enough history
+    const amounts = rows.map(r => r._amount);
+    const m = mean(amounts), sd = stddev(amounts);
+    const threshold = m + 2.5 * sd;
+    rows.forEach(r => {
+      if (r._amount > threshold && r._amount > m * 2) {
+        anomalies.push({
+          merchant: name, amount: r._amount, mean: m, sd,
+          zScore: sd > 0 ? (r._amount - m) / sd : 0,
+          date: `${r._year}-${String(r._month).padStart(2,'0')}-${String(r._day||1).padStart(2,'0')}`,
+          cat: r._category, subcat: r._subcat,
+        });
+      }
+    });
+  });
+  anomalies.sort((a,b) => b.zScore - a.zScore);
+
+  document.getElementById('insightsAnomalyList').innerHTML = anomalies.slice(0, 12).map(a => `
+    <div class="merchant-row">
+      <div style="flex:1;min-width:0">
+        <div class="merchant-name">${a.merchant || '(unnamed)'}</div>
+        <div class="merchant-cat">${a.cat} · avg ${fmtCHF(a.mean)} · z=${a.zScore.toFixed(1)}σ</div>
+      </div>
+      <span class="pill pill-red" style="margin-right:8px">${a.zScore.toFixed(1)}σ</span>
+      <span class="merchant-amount" style="color:var(--red)">${fmtCHF(a.amount)}</span>
+    </div>
+  `).join('') || '<div style="padding:14px;font-size:12px;color:var(--text3)">No significant anomalies detected</div>';
+
+  // Spike months: months where total > mean_month + 2*sd_month
+  const monthTotals = {};
+  expenses.forEach(r => {
+    const k = `${r._year}-${String(r._month).padStart(2,'0')}`;
+    monthTotals[k] = (monthTotals[k] || 0) + r._amount;
+  });
+  const vals = Object.values(monthTotals);
+  const mMean = mean(vals), mSd = stddev(vals);
+  const spikes = Object.entries(monthTotals)
+    .filter(([,v]) => v > mMean + 2 * mSd)
+    .map(([k,v]) => ({ month: k, total: v, z: mSd > 0 ? (v - mMean) / mSd : 0 }))
+    .sort((a,b) => b.z - a.z);
+
+  document.getElementById('insightsSpikeList').innerHTML = spikes.slice(0, 10).map(s => `
+    <div class="merchant-row">
+      <div style="flex:1">
+        <div class="merchant-name">${s.month}</div>
+        <div class="merchant-cat">${s.z.toFixed(1)}σ above average · avg ${fmtCHF(mMean)}/mo</div>
+      </div>
+      <span class="pill pill-red" style="margin-right:8px">${s.z.toFixed(1)}σ</span>
+      <span class="merchant-amount" style="color:var(--red)">${fmtCHF(s.total)}</span>
+    </div>
+  `).join('') || '<div style="padding:14px;font-size:12px;color:var(--text3)">No spike months detected</div>';
+}
+
+/* ── Calendar patterns ───────────────────────────────────────────── */
+function _renderCalendarPatterns(expenses) {
+  const DOW_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Day of week — derive from serial
+  const dowTotals = Array(7).fill(0);
+  const dowCounts = Array(7).fill(0);
+  expenses.forEach(r => {
+    const serial = parseFloat(r['Date']);
+    if (!isNaN(serial)) {
+      const dow = Math.floor(serial + 1) % 7; // Excel day 0 = Sun offset
+      dowTotals[dow] += r._amount;
+      dowCounts[dow]++;
+    }
+  });
+  const dowAvg = dowTotals.map((t, i) => dowCounts[i] > 0 ? t / dowCounts[i] : 0);
+
+  drawBarLineChart(
+    document.getElementById('insightsDowChart'),
+    DOW_NAMES, dowAvg, null,
+    { barColor: '#185fa5', height: 180 }
+  );
+
+  // Day of month (1–31)
+  const domTotals = Array(31).fill(0);
+  const domCounts = Array(31).fill(0);
+  expenses.forEach(r => {
+    const serial = parseFloat(r['Date']);
+    if (!isNaN(serial)) {
+      const d = new Date((serial - 25569) * 86400000);
+      const day = d.getUTCDate() - 1; // 0-indexed
+      domTotals[day] += r._amount;
+      domCounts[day]++;
+    }
+  });
+  const domAvg = domTotals.map((t, i) => domCounts[i] > 0 ? t / domCounts[i] : 0);
+  const domLabels = Array.from({length:31}, (_,i) => String(i+1));
+
+  drawBarLineChart(
+    document.getElementById('insightsDomChart'),
+    domLabels, domAvg, null,
+    { barColor: '#3b6d11', height: 180 }
+  );
+
+  // Seasonal — avg spend per calendar month across all years in the selected period
+  const monthSums = Array(12).fill(0);
+  const monthYearSets = Array.from({length:12}, () => new Set());
+  expenses.forEach(r => {
+    if (r._month >= 1 && r._month <= 12) {
+      monthSums[r._month-1] += r._amount;
+      monthYearSets[r._month-1].add(r._year);
+    }
+  });
+  const seasonAvg = monthSums.map((s, i) => monthYearSets[i].size > 0 ? s / monthYearSets[i].size : 0);
+
+  drawBarLineChart(
+    document.getElementById('insightsSeasonChart'),
+    MONTHS, seasonAvg, null,
+    { barColor: '#7f77dd', height: 180 }
+  );
+
+  // Month-end effect: first 5 days vs last 5 days vs days 6–25
+  let startTotal=0, startN=0, endTotal=0, endN=0, midTotal=0, midN=0;
+  expenses.forEach(r => {
+    const serial = parseFloat(r['Date']);
+    if (!isNaN(serial)) {
+      const d = new Date((serial - 25569) * 86400000);
+      const day = d.getUTCDate();
+      // Last 5 days: need days-in-month — approximate with day >= 26
+      if (day <= 5)        { startTotal += r._amount; startN++; }
+      else if (day >= 26)  { endTotal   += r._amount; endN++; }
+      else                 { midTotal   += r._amount; midN++; }
+    }
+  });
+  const startAvg = startN > 0 ? startTotal/startN : 0;
+  const endAvg   = endN   > 0 ? endTotal/endN     : 0;
+  const midAvg   = midN   > 0 ? midTotal/midN     : 0;
+
+  document.getElementById('insightsMonthEndList').innerHTML = `
+    <div class="merchant-row">
+      <div style="flex:1"><div class="merchant-name">Month-start (days 1–5)</div><div class="merchant-cat">${startN} transactions</div></div>
+      <span class="merchant-amount">${fmtCHF(startAvg)} avg/tx</span>
+    </div>
+    <div class="merchant-row">
+      <div style="flex:1"><div class="merchant-name">Mid-month (days 6–25)</div><div class="merchant-cat">${midN} transactions</div></div>
+      <span class="merchant-amount">${fmtCHF(midAvg)} avg/tx</span>
+    </div>
+    <div class="merchant-row">
+      <div style="flex:1"><div class="merchant-name">Month-end (days 26+)</div><div class="merchant-cat">${endN} transactions</div></div>
+      <span class="merchant-amount">${fmtCHF(endAvg)} avg/tx</span>
+    </div>
+  `;
+
+  drawBarLineChart(
+    document.getElementById('insightsMonthEndChart'),
+    ['Start (1–5)', 'Mid (6–25)', 'End (26+)'],
+    [startAvg, midAvg, endAvg], null,
+    { barColor: '#d08030', height: 140 }
+  );
+}
+
+/* ── Growth table ────────────────────────────────────────────────── */
+function _renderGrowthTable(allExpenses) {
+  const years = S.years.slice(-4); // last 4 years for 3 YoY comparisons
+  if (years.length < 2) {
+    document.getElementById('insightsGrowthTable').innerHTML = '<thead></thead><tbody><tr><td style="padding:12px;color:var(--text3)">Need at least 2 years of data</td></tr></tbody>';
+    return;
+  }
+
+  const cats = [...new Set(allExpenses.map(r => r._category))].sort();
+
+  // Build YoY pairs
+  const pairs = [];
+  for (let i = 1; i < years.length; i++) pairs.push([years[i-1], years[i]]);
+
+  const head = document.getElementById('insightsGrowthHead');
+  head.innerHTML = '<th>Category</th>' +
+    years.map(y => `<th class="num">${y}</th>`).join('') +
+    pairs.map(([a,b]) => `<th class="num">${a}→${b}</th>`).join('') +
+    '<th class="num">CAGR</th>';
+
+  const body = document.getElementById('insightsGrowthBody');
+  body.innerHTML = cats.map(cat => {
+    const yearVals = years.map(y => sumAmount(allExpenses.filter(r => r._category === cat && r._year === y)));
+    const yoyPcts  = pairs.map(([a,b], i) => {
+      const va = yearVals[i], vb = yearVals[i+1];
+      return va > 0 ? (vb - va) / va : null;
+    });
+    // CAGR from first to last year
+    const first = yearVals[0], last = yearVals[yearVals.length-1];
+    const n = years.length - 1;
+    const cagr = first > 0 && last > 0 ? Math.pow(last/first, 1/n) - 1 : null;
+    if (yearVals.every(v => v === 0)) return '';
+    return `<tr>
+      <td style="font-weight:600">${cat}</td>
+      ${yearVals.map(v => `<td class="num">${v > 0 ? fmtCHF(v) : '—'}</td>`).join('')}
+      ${yoyPcts.map(p => p === null ? '<td class="num">—</td>' :
+        `<td class="num ${p > 0.1 ? 'num-neg' : p < -0.05 ? 'num-pos' : ''}">${p > 0 ? '+' : ''}${Math.round(p*100)}%</td>`).join('')}
+      <td class="num ${cagr !== null && cagr > 0.05 ? 'num-neg' : cagr !== null && cagr < 0 ? 'num-pos' : ''}">${cagr !== null ? (cagr > 0 ? '+' : '') + Math.round(cagr*100) + '%' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Donut chart helper ──────────────────────────────────────────── */
+function _drawDonut(canvas, segments, H=200) {
+  const { ctx, W } = prepCanvas(canvas, H);
+  const cx = W/2, cy = H/2, radius = Math.min(cx, cy) - 16;
+  const total = segments.reduce((s,seg) => s + seg.value, 0);
+  if (!total) return;
+
+  let startAngle = -Math.PI/2;
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--pie-hole').trim() || '#fff';
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#111';
+  const text3Color = getComputedStyle(document.documentElement).getPropertyValue('--text3').trim() || '#999';
+
+  segments.forEach(seg => {
+    const angle = (seg.value / total) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, startAngle, startAngle + angle);
+    ctx.closePath(); ctx.fillStyle = seg.color; ctx.fill();
+    const gapColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f6f8';
+    ctx.strokeStyle = gapColor; ctx.lineWidth = 2; ctx.stroke();
+    startAngle += angle;
+  });
+
+  // Hole
+  ctx.beginPath(); ctx.arc(cx, cy, radius * 0.55, 0, Math.PI*2);
+  ctx.fillStyle = bgColor; ctx.fill();
+
+  // Centre label
+  ctx.fillStyle = textColor; ctx.font = 'bold 13px Inter,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(fmtCHF(total), cx, cy - 7);
+  ctx.fillStyle = text3Color; ctx.font = '10px Inter,sans-serif';
+  ctx.fillText('total spend', cx, cy + 8);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BUDGET PLANNER TAB
+══════════════════════════════════════════════════════════════════ */
+const BP_KEY = 'budgetPlan';
+
+async function _loadBudgetPlan() {
+  try {
+    const stored = await DB.load('budget');  // reuse budget store meta
+    // Budget plan is stored separately under meta key
+    const db = await DB.open();
+    return new Promise(resolve => {
+      const tx = db.transaction('meta', 'readonly');
+      const req = tx.objectStore('meta').get(BP_KEY);
+      req.onsuccess = e => {
+        try { resolve(e.target.result ? JSON.parse(e.target.result) : {}); }
+        catch { resolve({}); }
+      };
+      req.onerror = () => resolve({});
+    });
+  } catch { return {}; }
+}
+
+async function _saveBudgetPlan(plan) {
+  const db = await DB.open();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('meta', 'readwrite');
+    tx.objectStore('meta').put(JSON.stringify(plan), BP_KEY);
+    tx.oncomplete = resolve;
+    tx.onerror = e => reject(e.target.error);
+  });
+}
+
+function _budgetPlanKey(cat, sub) { return `${cat}||${sub}`; }
+
+function _getSuggestedBudget(cat, sub, allExpenses, planYear) {
+  // Suggested = rolling 3yr avg of (cat+sub), bumped 5% for inflation
+  const rows = allExpenses.filter(r =>
+    r._category === cat && r._subcat === sub && r._year < planYear && r._year >= planYear - 3
+  );
+  if (!rows.length) return 0;
+  const years = [...new Set(rows.map(r => r._year))];
+  const yearly = years.map(y => sumAmount(rows.filter(r => r._year === y)));
+  return mean(yearly) * 1.05;
+}
+
+async function renderBudgetPlanner() {
+  const expenses = getExpenses(S.actuals, null);
+
+  // Populate year selector
+  const planSel = document.getElementById('budgetPlanYear');
+  if (planSel.options.length === 0) {
+    const maxYear = Math.max(...S.years);
+    for (let y = maxYear + 1; y >= maxYear - 1; y--) {
+      planSel.add(new Option(y, y));
+    }
+    planSel.value = S.budgetPlanYear;
+  }
+  const planYear = parseInt(planSel.value) || S.budgetPlanYear;
+  S.budgetPlanYear = planYear;
+  const lastYear = planYear - 1;
+
+  // Load saved plan
+  if (!Object.keys(S.budgetPlan).length) {
+    S.budgetPlan = await _loadBudgetPlan();
+  }
+
+  // Build cat/subcat list
+  const lastYearExpenses = getExpenses(S.actuals, lastYear);
+  const catSubMap = {};
+  expenses.forEach(r => {
+    const k = _budgetPlanKey(r._category, r._subcat);
+    if (!catSubMap[k]) catSubMap[k] = { cat: r._category, sub: r._subcat };
+  });
+
+  const rows = Object.values(catSubMap).sort((a,b) =>
+    a.cat.localeCompare(b.cat) || a.sub.localeCompare(b.sub)
+  );
+
+  let totalLastYear=0, totalSuggested=0, totalPlan=0;
+
+  const tbody = document.getElementById('budgetPlanBody');
+  let currentCat = null;
+  let catLastTotal=0, catPlanTotal=0;
+  const trs = [];
+
+  rows.forEach(({cat, sub}) => {
+    const k = _budgetPlanKey(cat, sub);
+    const lastYrAmt = sumAmount(lastYearExpenses.filter(r => r._category===cat && r._subcat===sub));
+    const suggested = _getSuggestedBudget(cat, sub, expenses, planYear);
+    const planned   = S.budgetPlan[k] !== undefined ? S.budgetPlan[k] :
+                      (suggested > 0 ? Math.round(suggested) : Math.round(lastYrAmt));
+
+    totalLastYear   += lastYrAmt;
+    totalSuggested  += suggested;
+    totalPlan       += planned;
+
+    const delta = lastYrAmt > 0 ? (planned - lastYrAmt) / lastYrAmt : null;
+    const deltaHtml = delta === null ? '—' :
+      `<span class="${delta > 0.05 ? 'num-neg' : delta < -0.02 ? 'num-pos' : ''}">${delta > 0 ? '+' : ''}${Math.round(delta*100)}%</span>`;
+
+    trs.push(`<tr>
+      <td style="font-weight:600;color:var(--text2)">${cat}</td>
+      <td>${sub || '(unset)'}</td>
+      <td class="num">${lastYrAmt > 0 ? fmtCHF(lastYrAmt) : '—'}</td>
+      <td class="num" style="color:var(--text3)">${suggested > 0 ? fmtCHF(suggested) : '—'}</td>
+      <td class="num" style="color:var(--text3)">${suggested > 0 ? fmtCHF(suggested) : fmtCHF(lastYrAmt)}</td>
+      <td class="num">
+        <input type="number" value="${Math.round(planned)}"
+          data-key="${k.replace(/"/g,'&quot;')}"
+          style="width:110px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;
+                 padding:3px 6px;font-size:12px;color:var(--text);text-align:right;font-family:inherit"
+          onchange="updateBudgetPlanCell(this)"
+          onfocus="this.select()">
+      </td>
+      <td class="num">${deltaHtml}</td>
+    </tr>`);
+  });
+
+  tbody.innerHTML = trs.join('');
+
+  // Footer
+  const totalDelta = totalLastYear > 0 ? (totalPlan - totalLastYear) / totalLastYear : null;
+  document.getElementById('budgetPlanFoot').innerHTML = `<tr>
+    <td colspan="2">Total</td>
+    <td class="num">${fmtCHF(totalLastYear)}</td>
+    <td class="num">${fmtCHF(totalSuggested)}</td>
+    <td class="num">${fmtCHF(totalSuggested)}</td>
+    <td class="num" style="font-size:14px;color:var(--accent)">${fmtCHF(totalPlan)}</td>
+    <td class="num">${totalDelta !== null ? (totalDelta>0?'+':'')+Math.round(totalDelta*100)+'%' : '—'}</td>
+  </tr>`;
+
+  // KPI tiles
+  document.getElementById('budgetPlanKpis').innerHTML = `
+    <div class="kpi">
+      <div class="kpi-label">Plan Total ${planYear}</div>
+      <div class="kpi-value" style="color:var(--accent)">${fmtCHF(totalPlan)}</div>
+      <div class="kpi-sub">Your planned budget</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Last Year (${lastYear})</div>
+      <div class="kpi-value" style="font-size:18px">${fmtCHF(totalLastYear)}</div>
+      <div class="kpi-sub">Actual spend</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">3yr Avg Suggested</div>
+      <div class="kpi-value" style="font-size:18px;color:var(--text2)">${fmtCHF(totalSuggested)}</div>
+      <div class="kpi-sub">+5% inflation uplift</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">vs Last Year</div>
+      <div class="kpi-value" style="font-size:20px;color:${totalPlan > totalLastYear ? 'var(--red)' : 'var(--green)'}">
+        ${totalLastYear > 0 ? (totalPlan>totalLastYear?'+':'') + Math.round((totalPlan-totalLastYear)/totalLastYear*100)+'%' : '—'}
+      </div>
+      <div class="kpi-sub">${fmtCHF(Math.abs(totalPlan - totalLastYear))} ${totalPlan > totalLastYear ? 'more' : 'less'}</div>
+    </div>
+  `;
+
+  // Monthly distribution chart (apply historical monthly weights to plan total)
+  _drawBudgetMonthlyChart(expenses, totalPlan, lastYear);
+}
+
+function updateBudgetPlanCell(input) {
+  const key = input.getAttribute('data-key');
+  const val = parseFloat(input.value) || 0;
+  S.budgetPlan[key] = val;
+  // Debounced auto-save
+  clearTimeout(S._bpSaveTimer);
+  S._bpSaveTimer = setTimeout(() => _saveBudgetPlan(S.budgetPlan), 800);
+  // Refresh KPIs
+  renderBudgetPlanner();
+}
+
+async function saveBudgetPlan() {
+  await _saveBudgetPlan(S.budgetPlan);
+  _syncToast('💾 Budget plan saved', 'success');
+}
+
+function resetBudgetPlan() {
+  if (!confirm('Reset all budget values to actuals-based suggestions?')) return;
+  S.budgetPlan = {};
+  renderBudgetPlanner();
+}
+
+function exportBudgetPlanCSV() {
+  const planYear = S.budgetPlanYear;
+  const expenses = getExpenses(S.actuals, null);
+  const catSubMap = {};
+  expenses.forEach(r => {
+    const k = _budgetPlanKey(r._category, r._subcat);
+    if (!catSubMap[k]) catSubMap[k] = { cat: r._category, sub: r._subcat };
+  });
+
+  const rows = [['Category','Sub-Category','Budget Amount','Year']];
+  Object.values(catSubMap).sort((a,b)=>a.cat.localeCompare(b.cat)||a.sub.localeCompare(b.sub)).forEach(({cat,sub}) => {
+    const k = _budgetPlanKey(cat, sub);
+    const lastYrAmt = sumAmount(getExpenses(S.actuals, planYear-1).filter(r=>r._category===cat&&r._subcat===sub));
+    const suggested = _getSuggestedBudget(cat, sub, expenses, planYear);
+    const planned = S.budgetPlan[k] !== undefined ? S.budgetPlan[k] : (suggested > 0 ? Math.round(suggested) : Math.round(lastYrAmt));
+    if (planned > 0) rows.push([cat, sub, planned, planYear]);
+  });
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `budget-plan-${planYear}.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function _drawBudgetMonthlyChart(expenses, planTotal, lastYear) {
+  // Use last year's monthly weights to distribute plan total
+  const lastYrExp = expenses.filter(r => r._year === lastYear);
+  const lastYrMonthly = Array(12).fill(0);
+  lastYrExp.forEach(r => { if (r._month>=1&&r._month<=12) lastYrMonthly[r._month-1] += r._amount; });
+  const lastYrTotal = lastYrMonthly.reduce((s,v)=>s+v,0);
+
+  const planMonthly = lastYrTotal > 0
+    ? lastYrMonthly.map(v => v / lastYrTotal * planTotal)
+    : Array(12).fill(planTotal / 12);
+
+  drawBarLineChart(
+    document.getElementById('budgetPlanChart'),
+    MONTHS, planMonthly, null,
+    { barColor: '#185fa5', height: 200 }
+  );
+}
+
+/* Expose _syncToast for saveBudgetPlan toast */
+function _syncToast(message, type='info') {
+  document.getElementById('_syncToast')?.remove();
+  if (!document.getElementById('_syncToastStyle')) {
+    const s = document.createElement('style'); s.id='_syncToastStyle';
+    s.textContent=`@keyframes _stIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}@keyframes _stOut{from{opacity:1}to{opacity:0}}`;
+    document.head.appendChild(s);
+  }
+  const cols = { success:{bg:'#162a16',border:'#3b6d11'}, error:{bg:'#2a1616',border:'#c0392b'}, info:{bg:'#0c1a2a',border:'#185fa5'} };
+  const {bg,border} = cols[type]||cols.info;
+  const el = document.createElement('div'); el.id='_syncToast';
+  el.style.cssText=`position:fixed;bottom:20px;right:16px;z-index:99999;background:${bg};border:1px solid ${border};border-radius:10px;padding:10px 14px;font-size:12px;color:#fff;font-family:Inter,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.45);animation:_stIn .2s ease forwards`;
+  el.innerHTML=`<div style="font-weight:600">${message}</div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{el.style.animation='_stOut .3s ease forwards';},2500);
+  setTimeout(()=>el.remove(),2820);
+}
+</script>
+</body>
+</html>

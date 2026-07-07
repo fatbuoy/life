@@ -26,7 +26,6 @@ const gpxFiles = [
     'Stage 21 - Caux to Montreux.gpx'
 ];
 
-// 🧠 UNIT RUNTIME STORAGE STATE
 let isMetric = true;
 
 const mapManager = new MapManager('map');
@@ -36,8 +35,6 @@ const btnPlayPause = document.getElementById('btn-play-pause');
 const btnRestart = document.getElementById('btn-restart');
 const speedRange = document.getElementById('speed-range');
 const stageList = document.getElementById('stage-list');
-
-// Target the verified checkbox toggle node hook
 const unitToggleCheckbox = document.getElementById('unit-toggle-checkbox');
 
 const stageBanner = document.getElementById('stage-banner');
@@ -51,9 +48,10 @@ const labelAscent = document.getElementById('label-ascent');
 const labelDescent = document.getElementById('label-descent');
 
 const chartBgPath = document.getElementById('chart-bg-path');
+const chartBaseLine = document.getElementById('chart-base-line');
 const chartProgFill = document.getElementById('chart-prog-fill');
 const chartProgPath = document.getElementById('chart-prog-path');
-const chartPin = document.getElementById('chart-pin');
+const chartHikerMarker = document.getElementById('chart-hiker-marker');
 const elevationChart = document.getElementById('elevation-chart');
 
 const controlPanel = document.getElementById('control-panel');
@@ -65,7 +63,6 @@ let combinedCoordinates = [];
 let isolationActiveIdx = null;
 let lastActiveStageId = null;
 
-// 🧠 CONVERSION UTIL WORKERS
 function formatDistance(km) {
     if (isMetric) return `${km.toFixed(1)} km`;
     const miles = km * 0.621371;
@@ -115,7 +112,8 @@ async function autoLoadGpxFolder() {
                 coordinates: stageData.coordinates,
                 startIndex: globalIndexOffset,
                 endIndex: globalIndexOffset + ptCount - 1,
-                id: `stage-item-${loadedStages.length}`
+                id: `stage-item-${loadedStages.length}`,
+                color: mapManager.colors[loadedStages.length % mapManager.colors.length]
             });
 
             stageData.coordinates.forEach((coord) => {
@@ -156,7 +154,6 @@ async function autoLoadGpxFolder() {
         buildSvgChartProfile(globalCumulativeMetrics.map(p => p.elevation));
 
         stageBanner.classList.remove('hidden');
-        // Initial state update to display totals before play is clicked
         updateUIProgress(0, globalCumulativeMetrics.length, loadedStages[0]);
     }
 }
@@ -175,19 +172,16 @@ function renderStageList(stages) {
         
         li.addEventListener('click', () => {
             animator.pause();
-            btnPlayPause.textContent = "▶";
+            btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
             document.body.classList.remove('is-playing');
             controlPanel.classList.remove('expanded');
             
             if (isolationActiveIdx === idx) {
-                // Deselect active stage -> reset back to complete overview path cleanly
                 isolationActiveIdx = null;
                 animator.setBounds(0, combinedCoordinates.length - 1);
                 animator.currentIndex = 0; 
-                
                 mapManager.fitToRoute(combinedCoordinates);
                 
-                // Triggers structural layer state color resets inside map engine
                 if (typeof mapManager.clearSelection === 'function') {
                     mapManager.clearSelection();
                 } else {
@@ -216,6 +210,7 @@ function renderStageList(stages) {
 function buildSvgChartProfile(elevations, highlightColor = '#3b82f6') {
     if (elevations.length === 0) return;
     elevationChart.style.setProperty('--chart-line-color', highlightColor);
+    if (chartHikerMarker) chartHikerMarker.style.setProperty('--chart-line-color', highlightColor);
 
     const minEle = Math.min(...elevations);
     const maxEle = Math.max(...elevations);
@@ -234,14 +229,17 @@ function buildSvgChartProfile(elevations, highlightColor = '#3b82f6') {
 
     const closedBgPath = `${pathString} L ${width} 60 L 0 60 Z`;
     chartBgPath.setAttribute('d', closedBgPath);
+    
+    if (chartBaseLine) chartBaseLine.setAttribute('d', pathString);
     chartProgPath.setAttribute('d', pathString);
-    if (chartProgFill) chartProgFill.setAttribute('d', ''); // Reset tracking area
+    if (chartProgFill) chartProgFill.setAttribute('d', '');
     
     elevationChart.dataset.minEle = minEle;
     elevationChart.dataset.maxEle = maxEle;
     elevationChart.dataset.pointsCount = pointsCount;
 }
 
+/* Updated UI Progress Thumb Positioner using percentages to eliminate squishing distortion */
 function updateSvgProgressThumb(globalIndex, singleStageElevations = null) {
     const width = 400;
     const height = 50;
@@ -249,14 +247,16 @@ function updateSvgProgressThumb(globalIndex, singleStageElevations = null) {
     const maxEle = parseFloat(elevationChart.dataset.maxEle);
     const eleRange = (maxEle - minEle) || 1;
 
+    let currentX = 0;
+    let currentY = 0;
+
     if (singleStageElevations) {
         const x = (globalIndex / (singleStageElevations.length - 1)) * width;
         const ele = singleStageElevations[globalIndex][2];
         const y = height - ((ele - minEle) / eleRange) * (height - 5) + 5;
         
-        chartPin.style.display = 'block';
-        chartPin.setAttribute('cx', x.toFixed(1));
-        chartPin.setAttribute('cy', y.toFixed(1));
+        currentX = x;
+        currentY = y;
         
         const fullPathD = chartBgPath.getAttribute('d').split(' L')[0]; 
         const pathCommands = fullPathD.match(/[ML]\s[^ML]+/g) || [];
@@ -272,7 +272,6 @@ function updateSvgProgressThumb(globalIndex, singleStageElevations = null) {
         }
     } else {
         const totalPoints = parseInt(elevationChart.dataset.pointsCount);
-        
         const fullPathD = chartBgPath.getAttribute('d').split(' L')[0]; 
         const pathCommands = fullPathD.match(/[ML]\s[^ML]+/g) || [];
         
@@ -284,18 +283,20 @@ function updateSvgProgressThumb(globalIndex, singleStageElevations = null) {
 
         if (subPathD) {
             chartProgPath.setAttribute('d', subPathD);
-            
             const lastCoord = pathCommands[targetCount - 1].replace(/[ML]\s/, "").split(" ");
-            const currentX = parseFloat(lastCoord[0]);
+            currentX = parseFloat(lastCoord[0]);
+            currentY = parseFloat(lastCoord[1]);
             
-            // Render closed gradient profile tracking vector perfectly along the path
             const closedProgPath = `${subPathD} L ${currentX.toFixed(1)} 60 L 0 60 Z`;
             if (chartProgFill) chartProgFill.setAttribute('d', closedProgPath);
-
-            chartPin.style.display = 'block';
-            chartPin.setAttribute('cx', lastCoord[0]);
-            chartPin.setAttribute('cy', lastCoord[1]);
         }
+    }
+
+    // Positions the un-distorted vector Hiker Icon precisely over the line coordinate grid
+    if (chartHikerMarker) {
+        chartHikerMarker.style.display = 'block';
+        chartHikerMarker.style.left = `${(currentX / width) * 100}%`;
+        chartHikerMarker.style.top = `${(currentY / 60) * 100}%`;
     }
 }
 
@@ -329,9 +330,8 @@ function updateUIProgress(current, total, activeStage) {
         labelAscent.textContent = "Total Ascent";
         labelDescent.textContent = "Total Descent";
 
-        // Route overview at starting boundary context configuration options
         if (current === 0 && !animator.isPlaying) {
-            stageNameText.textContent = "Full Via Alpina Route";
+            stageNameText.textContent = "Marion & Rishi do Via Alpina!";
             
             const totalDistanceAllStages = loadedStages.reduce((sum, s) => sum + s.distance, 0);
             const totalAscentAllStages = loadedStages.reduce((sum, s) => sum + s.ascent, 0);
@@ -345,7 +345,8 @@ function updateUIProgress(current, total, activeStage) {
             lastActiveStageId = null;
             
             if (chartProgFill) chartProgFill.setAttribute('d', '');
-            chartPin.style.display = 'none';
+            if (chartProgPath) chartProgPath.setAttribute('d', ''); 
+            if (chartHikerMarker) chartHikerMarker.style.display = 'none';
         } else {
             stageNameText.textContent = activeStage.name;
             
@@ -368,7 +369,7 @@ function updateUIProgress(current, total, activeStage) {
     }
 
     if (current === animator.endBound) {
-        btnPlayPause.textContent = "▶";
+        btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
         document.body.classList.remove('is-playing');
     }
 }
@@ -381,17 +382,69 @@ function calculateHaversine(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
+/* ==========================================================================
+   INTERACTIVE SCRUBBING & MAP BINDING CONTROLLER WIRES
+   ========================================================================== */
+
+// 1. Chart Click Scrubbing Execution
+const chartContainer = document.querySelector('.chart-container');
+if (chartContainer) {
+    chartContainer.addEventListener('click', (e) => {
+        if (combinedCoordinates.length === 0) return;
+        
+        const rect = chartContainer.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+        
+        const totalTargetPoints = animator.endBound - animator.startBound;
+        const targetIndex = animator.startBound + Math.round(percentage * totalTargetPoints);
+        
+        animator.currentIndex = Math.max(animator.startBound, Math.min(animator.endBound, targetIndex));
+        animator.triggerUIUpdate(animator.currentIndex);
+    });
+}
+
+// 2. Map Canvas Feature Click Scrubbing Execution
+mapManager.map.on('load', () => {
+    mapManager.map.on('click', (e) => {
+        if (combinedCoordinates.length === 0) return;
+        
+        const clickedLngLat = e.lngLat;
+        let closestIndex = animator.startBound;
+        let minDistanceSq = Infinity;
+        
+        // Fast bounding coordinate approximation loop mapping vector distance spaces
+        for (let i = animator.startBound; i <= animator.endBound; i++) {
+            const coord = combinedCoordinates[i];
+            const dLng = coord[0] - clickedLngLat.lng;
+            const dLat = coord[1] - clickedLngLat.lat;
+            const distSq = (dLng * dLng) + (dLat * dLat);
+            
+            if (distSq < minDistanceSq) {
+                minDistanceSq = distSq;
+                closestIndex = i;
+            }
+        }
+        
+        // Ensure accuracy within click target ranges (~3-5km geometric footprint)
+        if (minDistanceSq < 0.015) {
+            animator.currentIndex = closestIndex;
+            animator.triggerUIUpdate(closestIndex);
+        }
+    });
+});
+
 btnPlayPause.addEventListener('click', () => {
     if (animator.isPlaying) {
         animator.pause();
-        btnPlayPause.textContent = "▶";
+        btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
         document.body.classList.remove('is-playing');
     } else {
         if (isolationActiveIdx !== null && animator.currentIndex >= animator.endBound) {
             animator.currentIndex = loadedStages[isolationActiveIdx].startIndex;
         }
         animator.start();
-        btnPlayPause.textContent = "⏸";
+        btnPlayPause.innerHTML = '<i class="fa-solid fa-pause"></i>';
         document.body.classList.add('is-playing');
     }
 });
@@ -407,7 +460,7 @@ btnRestart.addEventListener('click', () => {
         animator.stop();
         updateUIProgress(0, globalCumulativeMetrics.length, loadedStages[0]);
     }
-    btnPlayPause.textContent = "▶";
+    btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
 });
 
 speedRange.addEventListener('input', (e) => {

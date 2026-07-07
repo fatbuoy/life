@@ -28,14 +28,14 @@ body, html {
     z-index: 1;
 }
 
-/* 🧪 ULTRA PREMIUM GLASSMORPHISM: Crystal-clear transparency & highly responsive depth blur */
+/* ULTRA PREMIUM GLASSMORPHISM */
 .panel {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(25px) saturate(150%);
+    -webkit-backdrop-filter: blur(25px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 14px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.01);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
     z-index: 10;
     transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -55,11 +55,11 @@ body, html {
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 480px;
-    padding: 12px 16px;
+    max-width: 640px;
+    padding: 14px 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
 #stage-banner.hidden {
@@ -73,7 +73,7 @@ body, html {
 }
 
 #banner-stage-name {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 600;
     letter-spacing: -0.01em;
     color: #09090b;
@@ -82,7 +82,6 @@ body, html {
     width: 100%;
 }
 
-/* 🟢 PREMIUM DYNAMIC GLOWING ACTION INDICATOR */
 #glowing-dot {
     display: inline-block;
     width: 7px;
@@ -100,27 +99,17 @@ body.is-playing #glowing-dot {
 }
 
 @keyframes pulse-glow-sequence {
-    0% {
-        transform: scale(0.9);
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
-    }
-    70% {
-        transform: scale(1.15);
-        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
-    }
-    100% {
-        transform: scale(0.9);
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-    }
+    0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
-/* Telemetry Stats Matrix */
 .stats-grid {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1px solid rgba(9, 9, 11, 0.05);
-    padding-top: 8px;
+    border-top: 1px solid rgba(9, 9, 11, 0.06);
+    padding-top: 10px;
 }
 
 .stat-box {
@@ -130,25 +119,28 @@ body.is-playing #glowing-dot {
 }
 
 .stat-label {
-    font-size: 0.58rem;
+    font-size: 0.62rem;
     font-weight: 600;
     text-transform: uppercase;
     color: #71717a;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
 }
 
 .stat-val {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #09090b;
     font-variant-numeric: tabular-nums;
 }
 
-/* Inline SVG Elevation Profiles */
+/* Chart Container & HTML Overlay Pin Context Elements */
 .chart-container {
+    position: relative;
     width: 100%;
-    height: 36px;
-    margin-top: 2px;
+    height: 52px;
+    margin-top: 4px;
+    cursor: col-resize;
 }
 
 #elevation-chart {
@@ -157,55 +149,50 @@ body.is-playing #glowing-dot {
     overflow: visible;
 }
 
-#chart-bg-path {
-    fill: rgba(9, 9, 11, 0.02);
-}
-
-#chart-prog-fill {
-    fill: url(#progress-grad);
-}
-
-#chart-prog-path {
-    fill: none;
-    stroke: var(--chart-line-color, #3b82f6);
-    stroke-width: 1.4; 
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-#chart-pin {
-    fill: var(--chart-line-color, #3b82f6);
-    stroke: #ffffff;
-    stroke-width: 1.5;
+/* Deformation Resistant HTML Hiker Style Blueprint */
+#chart-hiker-marker {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -85%);
+    color: var(--chart-line-color, #3b82f6);
+    font-size: 15px;
+    z-index: 15;
+    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 4px rgba(0,0,0,0.15);
+    transition: color 0.15s ease;
 }
 
 /* ==========================================================================
-   3. iOS STANDARD SWITCH FRAMEWORK
+   3. iOS PREMIUM METRIC SWITCH ACCENT CONTROLS
    ========================================================================== */
 .unit-toggle-container {
     position: absolute;
-    top: 12px;
-    right: 16px;
+    top: 14px;
+    right: 20px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     z-index: 1020;
     user-select: none;
 }
 
 .unit-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #a1a1aa;
+    font-size: 0.65rem;
+    font-weight: 600;
     letter-spacing: 0.03em;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
 }
+
+#unit-label-km { color: #09090b; font-weight: 700; }
+#unit-label-mi { color: #a1a1aa; }
+
+.unit-toggle-container:has(input:checked) #unit-label-km { color: #a1a1aa; font-weight: 500; }
+.unit-toggle-container:has(input:checked) #unit-label-mi { color: #007aff; font-weight: 700; }
 
 .ios-switch {
     position: relative;
     display: inline-block;
-    width: 32px;
-    height: 16px;
+    width: 34px;
+    height: 18px;
 }
 
 .ios-switch input {
@@ -218,26 +205,26 @@ body.is-playing #glowing-dot {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(9, 9, 11, 0.08);
-    transition: background-color 0.2s ease;
+    background-color: #09090b;
+    transition: background-color 0.25s ease;
     border-radius: 20px;
 }
 
 .ios-slider::before {
     position: absolute;
     content: "";
-    height: 12px;
-    width: 12px;
+    height: 14px;
+    width: 14px;
     left: 2px;
     bottom: 2px;
     background-color: #ffffff;
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     border-radius: 50%;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .ios-switch input:checked + .ios-slider {
-    background-color: #09090b;
+    background-color: #007aff;
 }
 
 .ios-switch input:checked + .ios-slider::before {
@@ -245,46 +232,50 @@ body.is-playing #glowing-dot {
 }
 
 /* ==========================================================================
-   4. CONTROL PANEL SIDEBAR (📌 FIXED TOP-LEFT DESKTOP HOOK)
+   4. CONTROL PANEL SIDEBAR (HYPER-TRANSLUCENT UPDATE)
    ========================================================================== */
 .minimal-panel {
     position: absolute;
     top: 20px;
     bottom: auto;
     left: 20px;
-    width: 280px;
-    padding: 12px;
+    width: 290px;
+    padding: 14px;
     max-height: calc(100vh - 40px);
-    height: 460px;
+    height: 480px;
     display: flex;
     flex-direction: column;
+    /* Boosted transparency profile to ensure clear path trace viewability */
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
 }
 
 .mobile-toggle-handle {
     display: none;
 }
 
-/* Unified Compact Button Control Row */
 .inline-controls {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 #btn-play-pause, #btn-restart {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    font-size: 0.8rem;
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(9, 9, 11, 0.04);
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(9, 9, 11, 0.05);
     color: #09090b;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -295,15 +286,14 @@ body.is-playing #glowing-dot {
     border-color: rgba(9, 9, 11, 0.12);
 }
 
-/* Horizontal Speed Track Slider Well */
 .speed-slider-container {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(9, 9, 11, 0.03);
-    padding: 0 8px;
-    height: 32px;
+    gap: 8px;
+    background: rgba(9, 9, 11, 0.05);
+    padding: 0 10px;
+    height: 34px;
     border-radius: 8px;
 }
 
@@ -316,11 +306,12 @@ body.is-playing #glowing-dot {
 }
 
 .slider-icon {
-    font-size: 0.7 foolproof rem;
-    opacity: 0.4;
+    font-size: 0.75rem;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
 }
 
-/* Scrollable Stage Selection List Container */
 #stage-list {
     list-style: none;
     overflow-y: auto;
@@ -341,19 +332,18 @@ body.is-playing #glowing-dot {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 7px 10px;
+    padding: 8px 10px;
     margin-bottom: 4px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.18);
     border: 1px solid rgba(9, 9, 11, 0.01);
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: #27272a;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
-/* Fluid Layout structure completely removes text compression errors on mobile hardware */
 .stage-item-name {
     white-space: nowrap;
     overflow: hidden;
@@ -369,13 +359,13 @@ body.is-playing #glowing-dot {
 }
 
 #stage-list li:hover {
-    background: rgba(255, 255, 255, 0.75);
-    border-color: rgba(9, 9, 11, 0.06);
+    background: rgba(255, 255, 255, 0.65);
+    border-color: rgba(9, 9, 11, 0.05);
     color: #09090b;
 }
 
 #stage-list li.active-stage-item {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.75);
     border-left: 3px solid var(--stage-color, #3b82f6);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
     color: #09090b;
@@ -383,7 +373,7 @@ body.is-playing #glowing-dot {
 }
 
 /* ==========================================================================
-   5. 📱 MOBILE OPERATIVE LAYER SYSTEM (DRAWER CONSTRAINT ADJUSTMENTS)
+   5. MOBILE LAYER SYSTEMS
    ========================================================================== */
 @media (max-width: 640px) {
     #stage-banner {
@@ -395,15 +385,14 @@ body.is-playing #glowing-dot {
     }
     
     .unit-toggle-container {
-        top: 10px;
+        top: 12px;
         right: 14px;
     }
 
-    .stat-val { font-size: 0.85rem; }
-    .chart-container { height: 28px; }
-    #banner-stage-name { font-size: 0.85rem; max-width: 65%; }
+    .stat-val { font-size: 0.88rem; }
+    .chart-container { height: 38px; }
+    #banner-stage-name { font-size: 0.88rem; max-width: 65%; }
 
-    /* Boosted dimensions cleanly space the drawer away from interactive layout sliders */
     .minimal-panel {
         position: fixed !important; 
         top: auto !important;
@@ -416,15 +405,13 @@ body.is-playing #glowing-dot {
         border: none;
         border-top: 1px solid rgba(9, 9, 11, 0.05);
         padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 12px)) 16px !important;
-        
         max-height: 105px; 
         overflow: hidden; 
         z-index: 9998 !important; 
         pointer-events: auto !important; 
         -webkit-tap-highlight-color: transparent;
-        
         transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        background: rgba(255, 255, 255, 0.65);
+        background: rgba(255, 255, 255, 0.5);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.04);
@@ -435,7 +422,6 @@ body.is-playing #glowing-dot {
         overflow-y: auto !important; 
     }
 
-    /* Clear isolated touch zone blueprints */
     .mobile-toggle-handle {
         display: block !important;
         width: 100% !important; 
@@ -459,17 +445,7 @@ body.is-playing #glowing-dot {
         border-radius: 2px;
     }
     
-    .inline-controls {
-        margin-bottom: 10px;
-    }
-    
-    #stage-list {
-        margin-top: 2px;
-    }
-
-    #stage-list li {
-        padding: 10px; 
-        margin-bottom: 4px;
-        font-size: 0.75rem;
-    }
+    .inline-controls { margin-bottom: 10px; }
+    #stage-list { margin-top: 2px; }
+    #stage-list li { padding: 10px; margin-bottom: 4px; font-size: 0.78rem; }
 }

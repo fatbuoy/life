@@ -6,18 +6,19 @@
     <title>Via Alpina Hike Replay</title>
     <link href="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet" />
     <script src="https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="stage-banner" class="panel hidden">
         <div class="unit-toggle-container">
-            <span class="unit-label">KM</span>
+            <span class="unit-label" id="unit-label-km">KM</span>
             <label class="ios-switch">
                 <input type="checkbox" id="unit-toggle-checkbox">
                 <span class="ios-slider"></span>
             </label>
-            <span class="unit-label">MI</span>
+            <span class="unit-label" id="unit-label-mi">MI</span>
         </div>
 
         <div class="banner-header">
@@ -43,21 +44,25 @@
         </div>
 
         <div class="chart-container">
+            <div id="chart-hiker-marker" style="display: none;">
+                <i class="fa-solid fa-person-hiking"></i>
+            </div>
+            
             <svg id="elevation-chart" viewBox="0 0 400 60" preserveAspectRatio="none">
                 <defs>
                     <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#09090b" stop-opacity="0.25"/>
+                        <stop offset="0%" stop-color="#09090b" stop-opacity="0.18"/>
                         <stop offset="100%" stop-color="#09090b" stop-opacity="0.0"/>
                     </linearGradient>
                     <linearGradient id="progress-grad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="var(--chart-line-color, #3b82f6)" stop-opacity="0.4"/>
-                        <stop offset="100%" stop-color="var(--chart-line-color, #3b82f6)" stop-opacity="0.1"/>
+                        <stop offset="100%" stop-color="var(--chart-line-color, #3b82f6)" stop-opacity="0.05"/>
                     </linearGradient>
                 </defs>
                 <path id="chart-bg-path" d="" fill="url(#chart-grad)" stroke="none"/>
+                <path id="chart-base-line" d="" fill="none" stroke="rgba(9, 9, 11, 0.15)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
                 <path id="chart-prog-fill" d="" fill="url(#progress-grad)" stroke="none"/>
-                <path id="chart-prog-path" d="" fill="none" stroke="var(--chart-line-color, #3b82f6)" stroke-width="1.5" stroke-linejoin="round"/>
-                <circle id="chart-pin" r="3.5" fill="var(--chart-line-color, #3b82f6)" stroke="#ffffff" stroke-width="1.5" style="display:none;"/>
+                <path id="chart-prog-path" d=\"\" fill="none" stroke="var(--chart-line-color, #3b82f6)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
             </svg>
         </div>
     </div>
@@ -68,11 +73,11 @@
         <div id="mobile-toggle-handle" class="mobile-toggle-handle"></div>
 
         <div class="control-row inline-controls">
-            <button id="btn-play-pause" title="Play / Pause">▶</button>
-            <button id="btn-restart" title="Restart Track Simulation">🔄</button>
+            <button id="btn-play-pause" title="Play / Pause"><i class="fa-solid fa-play"></i></button>
+            <button id="btn-restart" title="Restart Track Simulation"><i class="fa-solid fa-rotate-left"></i></button>
             <div class="speed-slider-container">
-                <span class="slider-icon">⏩</span>
-                <input type="range" id="speed-range" min="10" max="120" value="120">
+                <span class="slider-icon"><i class="fa-solid fa-gauge-high"></i></span>
+                <input type="range" id="speed-range" min="10" max="120" value="60">
             </div>
         </div>
 
