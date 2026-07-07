@@ -40,6 +40,20 @@ const unitToggleCheckbox = document.getElementById('unit-toggle-checkbox');
 
 const stageBanner = document.getElementById('stage-banner');
 const stageNameText = document.getElementById('stage-name-text');
+const funFactRow = document.getElementById('fun-fact-row');
+const funFactText = document.getElementById('fun-fact-text');
+// THE ALPS ACHIEVEMENTS TIMELINE DATASET
+const funFactsMilestones = [
+    { type: 'distance', threshold: 42.2, text: "🏃 Marathon Mark: You've officially conquered your first full alpine marathon!" },
+    { type: 'ascent', threshold: 4808, text: "⛰️ Altitude Check: You've climbed the total height of Mont Blanc from sea level!" },
+    { type: 'ascent', threshold: 8848, text: "🏔️ Everest Status: Insane! You've officially climbed the vertical height of Mount Everest!" },
+    { type: 'distance', threshold: 150, text: "🧀 Fondue Fuel: You've burned enough energy to offset roughly 4 entire pots of Swiss Fondue!" },
+    { type: 'ascent', threshold: 12000, text: "✈️ High Flyer: You've now ascended higher than the cruising altitude of a commercial airliner!" },
+    { type: 'distance', threshold: 250, text: "🧦 Blister Check: At this point on the trail, you've taken roughly 350,000 steps!" },
+    { type: 'ascent', threshold: 17696, text: "🚀 Double Everest: Absolute legendary endurance! You've scaled Mount Everest a second time!" },
+    { type: 'distance', threshold: 350, text: "🇨🇭 Cross-Country: You've walked further than the absolute widest geographic point of Switzerland!" },
+    { type: 'ascent', threshold: 21900, text: "👽 Space Hiker: You've scaled higher than Olympus Mons on Mars, the tallest mountain in our solar system!" }
+];
 const statDistance = document.getElementById('stat-distance');
 const statAscent = document.getElementById('stat-ascent');
 const statDescent = document.getElementById('stat-descent');
@@ -327,6 +341,7 @@ function updateUIProgress(current, total, activeStage) {
             if (currentLi) currentLi.classList.add('active-stage-item');
             lastActiveStageId = activeStage.id;
         }
+        if (funFactRow) funFactRow.classList.add('hidden');
     } else {
         labelDistance.textContent = "Total Distance";
         labelAscent.textContent = "Total Ascent";
@@ -349,6 +364,8 @@ function updateUIProgress(current, total, activeStage) {
             if (chartProgFill) chartProgFill.setAttribute('d', '');
             if (chartProgPath) chartProgPath.setAttribute('d', ''); 
             if (chartHikerMarker) chartHikerMarker.style.display = 'none';
+
+            if (funFactRow) funFactRow.classList.add('hidden');
         } else {
             stageNameText.textContent = activeStage.name;
             
@@ -356,6 +373,25 @@ function updateUIProgress(current, total, activeStage) {
             statDistance.textContent = formatDistance(metrics.distance);
             statAscent.textContent = formatElevation(metrics.ascent, true);
             statDescent.textContent = formatElevation(metrics.descent, false);
+
+            let activeMilestoneText = null;
+            for (const milestone of funFactsMilestones) {
+                if (milestone.type === 'distance' && metrics.distance >= milestone.threshold) {
+                    activeMilestoneText = milestone.text;
+                } else if (milestone.type === 'ascent' && metrics.ascent >= milestone.threshold) {
+                    activeMilestoneText = milestone.text;
+                }
+            }
+
+            if (activeMilestoneText && funFactRow && funFactText) {
+                // Only update DOM text content if a brand-new milestone is achieved to prevent animation stuttering
+                if (funFactText.textContent !== activeMilestoneText) {
+                    funFactText.textContent = activeMilestoneText;
+                }
+                funFactRow.classList.remove('hidden');
+            } else if (funFactRow) {
+                funFactRow.classList.add('hidden');
+            }
 
             if (lastActiveStageId !== activeStage.id) {
                 document.querySelectorAll('#stage-list li').forEach(li => li.classList.remove('active-stage-item'));

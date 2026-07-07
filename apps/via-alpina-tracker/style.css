@@ -458,3 +458,35 @@ body.is-playing #glowing-dot {
         display: flex !important;
     }
 }
+
+/* ==========================================================================
+   ADDED: DYNAMIC MILESTONE FUN FACT NOTIFICATIONS
+   ========================================================================== */
+.fun-fact-row {
+    border-top: 1px solid rgba(9, 9, 11, 0.06);
+    padding-top: 6px;
+    margin-top: 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #27272a;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideUpFact 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fun-fact-row.hidden {
+    display: none !important;
+}
+
+@keyframes slideUpFact {
+    from { 
+        opacity: 0; 
+        transform: translateY(3px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
