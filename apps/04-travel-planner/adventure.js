@@ -62,13 +62,14 @@ function renderTrekSheet() {
       <button class="ios-link-btn bold" onclick="openTripForm('${currentTrip.id}')">Edit</button>
     </div>
 
-    <div class="trek-hero">
+    <div class="trek-hero" id="trekHero">
       <div class="trek-hero-eyebrow">${(TYPE_META[currentTrip.type]?.label || currentTrip.type || 'Trek').toUpperCase()}</div>
       <div class="trek-hero-title">${currentTrip.title || currentTrip.destination}</div>
       <div class="trek-hero-sub">${fmtDate(currentTrip.startDate)} — ${fmtDate(currentTrip.endDate)} · ${movingDays} stage${movingDays===1?'':'s'}</div>
+      <div class="trek-hero-collapsed-label">${currentTrip.title || currentTrip.destination} · ${movingDays} stage${movingDays===1?'':'s'}</div>
       <div class="trek-stats-bar">
         <div class="trek-stat">
-          <div class="trek-stat-val">${totalKm}</div>
+          <div class="trek-stat-val">${Math.round(totalKm)}</div>
           <div class="trek-stat-lbl">km total</div>
         </div>
         <div class="trek-stat">
@@ -107,6 +108,16 @@ function renderTrekSheet() {
 
   document.getElementById('iosOverlay').style.display = 'flex';
   renderTrekStageList();
+  initTrekHeroCollapse();
+}
+
+function initTrekHeroCollapse() {
+  const body = document.getElementById('subTabContent');
+  const hero = document.getElementById('trekHero');
+  if (!body || !hero) return;
+  body.addEventListener('scroll', () => {
+    hero.classList.toggle('trek-hero-collapsed', body.scrollTop > 40);
+  }, { passive: true });
 }
 
 function setTrekFilter(filter) {
@@ -205,6 +216,7 @@ function renderTrekStageList() {
           <div class="trek-priority-badge" style="background:${prColour}20; color:${prColour};">${isBooked ? '✓ Booked' : priority}</div>
         </div>
         ${s.notes ? `<div class="trek-notes-box">${s.notes}</div>` : ''}
+        ${s.other_info ? `<div class="trek-notes-box" style="margin-top:6px;">${s.other_info}</div>` : ''}
         <div style="display:flex; gap:8px; margin-top:10px;">
           <button class="trek-filter-pill" style="flex:1; text-align:center; background:#fff;" onclick="openStageForm(${realIdx})">${getIconifyTag('mdi:pencil-outline', 13, '#3a3a3c')} Edit Stage</button>
           ${!isBooked ? `<button class="trek-filter-pill" style="flex:1; text-align:center; background:#e2fbe8; color:#15803d; border-color:#bbf0c9;" onclick="openStageForm(${realIdx}, true)">${getIconifyTag('mdi:check-circle-outline', 13, '#15803d')} Mark Booked</button>` : ''}
@@ -241,11 +253,11 @@ function openStageForm(index, jumpToBooked = false) {
   const nextStageNum = isNew ? (stages.filter(s => !isNaN(parseInt(s.stage_number))).length + 1) : null;
 
   const item = isNew ? {
-    id: 'it-' + Date.now(), type: 'activity', status: 'not-booked',
+    id: 'it-' + Date.now(), type: 'activity', status: 'not-booked', activitySubtype: 'hike',
     title: '', date: currentTrip.startDate || '', location: '',
     stage_number: String(nextStageNum), distance_km: '', ascent_m: '', descent_m: '',
     moving_time: '', breaks: '', start_time: '', finish_time: '', route_map: '',
-    suggested_accommodation: '', booking_priority: 'Low', notes: '', details: {}
+    suggested_accommodation: '', booking_priority: 'Low', notes: '', other_info: '', details: {}
   } : stages[index];
 
   const priority = jumpToBooked ? 'Booked' : (item.booking_priority || 'Low');
@@ -360,7 +372,7 @@ function openStageForm(index, jumpToBooked = false) {
       </div>
 
       ${notesGroupHtml('Route Notes', 'stgNotes', 'Pass conditions, lunch stops, cable cars...', item.notes)}
-
+      ${notesGroupHtml('Other Info', 'stgOtherInfo', 'Gear reminders, permits, anything else...', item.other_info)}
       ${removeItemFooterHtml(index, isNew, 'deleteStageRaw', 'Remove Stage')}
     </div>
   `;
@@ -385,6 +397,7 @@ function saveStageLevel(index) {
     id: isNew ? 'it-' + Date.now() : currentTrip.itinerary[index].id,
     type: 'activity',
     status: isBooked ? 'booked' : 'not-booked',
+    activitySubtype: 'hike',
     title: route,
     date: document.getElementById('stgDate').value,
     time: document.getElementById('stgStart').value,
@@ -401,6 +414,7 @@ function saveStageLevel(index) {
     suggested_accommodation: document.getElementById('stgAccom').value,
     booking_priority: isBooked ? 'Booked' : document.getElementById('stgPriority').value,
     notes: document.getElementById('stgNotes').value,
+    other_info: document.getElementById('stgOtherInfo').value,
     details: isBooked ? {
       phone: document.getElementById('stgPhone').value,
       address: document.getElementById('stgAddress').value,
