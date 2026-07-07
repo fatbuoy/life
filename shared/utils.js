@@ -1004,3 +1004,11 @@ function telHref(phone) {
 function mapsHref(address) {
   return 'https://maps.google.com/?q=' + encodeURIComponent(address);
 }
+
+
+function linkifyText(escapedText) {
+  return String(escapedText || '')
+    .replace(/\n/g, '<br>')
+    .replace(/(https?:\/\/[^\s<]+)/g,
+      url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+}
