@@ -52,6 +52,11 @@ async function fetchData(path, errorContainerId = 'app') {
   }
 }
 
+function _b64ToUtf8(b64) {
+  const binary = atob(b64.replace(/\n/g, ''));
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
 
 /**
  * Fetch a JSON data file from a private GitHub repository.
@@ -89,7 +94,7 @@ async function fetchFromGitHub(config, errorContainerId = 'app') {
     return null;
   }
 
-  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}`;
+  const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${config.path}?ref=${config.branch}&t=${Date.now()}`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -99,7 +104,7 @@ async function fetchFromGitHub(config, errorContainerId = 'app') {
     });
     if (!res.ok) throw new Error(`GitHub API returned HTTP ${res.status}`);
     const meta = await res.json();
-    return JSON.parse(atob(meta.content.replace(/\n/g, '')));
+    return JSON.parse(_b64ToUtf8(meta.content));
   } catch (e) {
     _renderError(`
       <div style="margin:40px auto;max-width:500px;background:#fff;border:1px solid #e0ddd7;border-radius:13px;padding:24px">
@@ -775,7 +780,7 @@ async function _ghFetchContent(url, headers) {
     throw err;
   }
   const meta = await res.json();
-  const content = JSON.parse(atob(meta.content.replace(/\n/g, '')));
+  const content = JSON.parse(_b64ToUtf8(meta.content));
   return { sha: meta.sha, content };
 }
 
