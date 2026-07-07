@@ -378,12 +378,12 @@
             if (!listData[currentUser]) listData[currentUser] = [];
             listData[currentUser].push(newItem);
             nameInput.value = ""; notesInput.value = "";
-            renderList(); triggerStateMutationSave(); closeAddItemModal();
+            triggerStateMutationSave(); renderList(); closeAddItemModal();
         }
 
         function toggleItemCheck(id) {
             listData[currentUser] = listData[currentUser].map(i => i.id === id ? { ...i, checked: !i.checked } : i);
-            renderList(); triggerStateMutationSave();
+            triggerStateMutationSave(); renderList(); 
         }
 
         function startInlineEdit(id, event) { event.stopPropagation(); editingItemId = id; renderList(); }
