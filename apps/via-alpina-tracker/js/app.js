@@ -34,6 +34,7 @@ const animator = new Animator(mapManager, updateUIProgress);
 const btnPlayPause = document.getElementById('btn-play-pause');
 const btnRestart = document.getElementById('btn-restart');
 const speedRange = document.getElementById('speed-range');
+const btnToggleDrawer = document.getElementById('btn-toggle-drawer');
 const stageList = document.getElementById('stage-list');
 const unitToggleCheckbox = document.getElementById('unit-toggle-checkbox');
 
@@ -175,6 +176,7 @@ function renderStageList(stages) {
             btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
             document.body.classList.remove('is-playing');
             controlPanel.classList.remove('expanded');
+            if (btnToggleDrawer) btnToggleDrawer.innerHTML = '<i class="fas fa-bars"></i>';
             
             if (isolationActiveIdx === idx) {
                 isolationActiveIdx = null;
@@ -450,17 +452,30 @@ btnPlayPause.addEventListener('click', () => {
 });
 
 btnRestart.addEventListener('click', () => {
+    animator.pause();
+    btnPlayPause.textContent = "▶";
     document.body.classList.remove('is-playing');
+    
     if (isolationActiveIdx !== null) {
+        // Clear active isolation stage mode entirely and return back to full route overview
+        isolationActiveIdx = null;
+        animator.setBounds(0, combinedCoordinates.length - 1);
         animator.stop();
-        const stage = loadedStages[isolationActiveIdx];
-        updateUIProgress(stage.startIndex, globalCumulativeMetrics.length, stage);
+        
+        mapManager.fitToRoute(combinedCoordinates);
+        if (typeof mapManager.clearSelection === 'function') {
+            mapManager.clearSelection();
+        } else {
+            mapManager.updatePlayback(0, loadedStages, combinedCoordinates[0], null);
+        }
+        buildSvgChartProfile(globalCumulativeMetrics.map(p => p.elevation));
+        updateUIProgress(0, globalCumulativeMetrics.length, loadedStages[0]);
     } else {
+        // Standard global animation frame rewind
         buildSvgChartProfile(globalCumulativeMetrics.map(p => p.elevation));
         animator.stop();
         updateUIProgress(0, globalCumulativeMetrics.length, loadedStages[0]);
     }
-    btnPlayPause.innerHTML = '<i class="fa-solid fa-play"></i>';
 });
 
 speedRange.addEventListener('input', (e) => {
@@ -479,11 +494,18 @@ if (unitToggleCheckbox) {
 }
 
 if (mobileToggleHandle) {
-    const togglePanelAction = (e) => {
-        e.stopPropagation();
-        controlPanel.classList.toggle('expanded');
-    };
+// UNIFIED CONTROL PANEL ACTION MANAGER
+const togglePanelAction = (e) => {
+    e.stopPropagation();
+    const isExpanded = controlPanel.classList.toggle('expanded');
+    if (btnToggleDrawer) {
+        btnToggleDrawer.innerHTML = isExpanded 
+            ? '<i class="fas fa-chevron-down"></i>' 
+            : '<i class="fas fa-bars"></i>';
+    }
+};
 
+if (mobileToggleHandle) {
     mobileToggleHandle.addEventListener('touchstart', (e) => {
         e.stopPropagation();
         if (e.cancelable) e.preventDefault(); 
@@ -493,6 +515,13 @@ if (mobileToggleHandle) {
     mobileToggleHandle.addEventListener('click', (e) => {
         togglePanelAction(e);
     });
+}
+
+if (btnToggleDrawer) {
+    btnToggleDrawer.addEventListener('click', (e) => {
+        togglePanelAction(e);
+    });
+}
 }
 
 autoLoadGpxFolder();

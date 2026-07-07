@@ -449,3 +449,35 @@ body.is-playing #glowing-dot {
     #stage-list { margin-top: 2px; }
     #stage-list li { padding: 10px; margin-bottom: 4px; font-size: 0.78rem; }
 }
+
+/* ==========================================================================
+   ADDED: MOBILE CONTROL PANEL HAMBURGER TOGGLE BUTTON METRICS
+   ========================================================================== */
+#btn-toggle-drawer {
+    display: none; /* Default hidden on desktop configurations */
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(9, 9, 11, 0.04);
+    color: #09090b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#btn-toggle-drawer:hover {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(9, 9, 11, 0.12);
+}
+
+/* Force visibility injection inside your existing mobile breakpoint query */
+@media (max-width: 640px) {
+    #btn-toggle-drawer {
+        display: flex !important;
+    }
+}
