@@ -127,6 +127,7 @@ async function loadData() {
 
   updateCountBadge();
   render();
+  openTripFromUrl();
 }
 
 /* Single source of truth for local persistence: the whole DATA object
@@ -829,6 +830,19 @@ function scrollToToday(container) {
     window.closeSheet = origClose;
     origClose();
   };
+}
+
+/* ── DEEP LINK: OPEN A SPECIFIC TRIP FROM A URL ──
+   Lets other Sahani Suite pages (the LifeOS homepage's hero card and
+   upcoming-trips list) link straight into a trip's modal via
+   travel-planner.html?trip=<id>, instead of landing on the plain list
+   view. Runs once after the first load/render so DATA is populated.
+   openTripSheet() already no-ops safely if the id isn't found, and
+   already branches internally to the adventure/trek sheet vs. the
+   generic sheet — nothing extra needed here for that. */
+function openTripFromUrl() {
+  const tripId = new URLSearchParams(window.location.search).get('trip');
+  if (tripId) openTripSheet(tripId);
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
