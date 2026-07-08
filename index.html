@@ -140,7 +140,15 @@ body {
   padding: 20px 20px 18px;
   margin-bottom: 22px;
   box-shadow: 0 12px 30px rgba(16,24,20,0.28);
+  display: block;
+  text-decoration: none !important;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+@media (hover: hover) {
+  #heroCard:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(16,24,20,0.34); }
+}
+#heroCard:active { transform: scale(0.98); }
 .hero-contours {
   position: absolute; inset: -40%;
   pointer-events: none;
@@ -182,8 +190,17 @@ body {
 #horizon-rag-dot { width: 10px; height: 10px; border-radius: 50%; background: #999; flex-shrink: 0; }
 
 /* ── UPCOMING TRIPS LIST ── */
-.trip-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.trip-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  text-decoration: none !important; color: inherit;
+  margin: 0 -6px; padding: 0 6px; border-radius: 6px;
+  transition: background 0.15s ease;
+}
 .trip-row + .trip-row { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+@media (hover: hover) {
+  .trip-row:hover { background: var(--paper); }
+}
+.trip-row:active { background: var(--paper); }
 .trip-row-dest { font-weight: 700; font-size: 14px; }
 .trip-row-dates { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
 .trip-row-days { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--color-live); white-space: nowrap; }
@@ -227,7 +244,7 @@ body {
        Summarises everything on today's date in the trip's itinerary array
        (activity stages, transit legs, sightseeing, accommodation), sorted
        chronologically, not just a single hiking/biking stage. -->
-  <div id="heroCard" style="display:none;">
+  <a id="heroCard" href="#" style="display:none;">
     <div class="hero-contours" aria-hidden="true"></div>
     <div class="hero-content">
       <div class="hero-top">
@@ -238,7 +255,7 @@ body {
       <div class="hero-daycount" id="hero-daycount">--</div>
       <div class="hero-agenda" id="hero-agenda"></div>
     </div>
-  </div>
+  </a>
 
   <div class="hub-body">
 
@@ -309,7 +326,7 @@ body {
            stale trailing tail. -->
       <div class="kpi-warn" id="spend-stale-flag" style="display:none;">⚠ --</div>
     </a>
-    <a href="./apps/04-travel-planner/travel-planner.html" class="hub-card pillar-live">
+    <a href="./apps/04-travel-planner/travel-planner.html" id="next-trip-card" class="hub-card pillar-live">
       <div class="kpi-lbl" id="live-trip-label">Next Trip</div>
       <div class="kpi-val" id="next-trip" style="font-size: 17px;">---</div>
       <div class="kpi-sub" id="trip-days" style="color: var(--muted)">---</div>
@@ -584,20 +601,25 @@ function render() {
 
     // 4. LIVE: Active trip in progress, else next upcoming (quick-glance stat)
     const liveLabel = document.getElementById('live-trip-label');
+    const nextTripCard = document.getElementById('next-trip-card');
     if (activeTrip) {
         liveLabel.textContent = 'On Trip';
-        document.getElementById('next-trip').textContent = activeTrip.destination.split(',')[0];
+        document.getElementById('next-trip').textContent = activeTrip.title.split(',')[0];
         const daysLeft = Math.ceil((new Date(activeTrip.endDate) - now) / 86400000);
         document.getElementById('trip-days').textContent = `${daysLeft} DAYS LEFT`;
+        nextTripCard.href = `./apps/04-travel-planner/travel-planner.html?trip=${encodeURIComponent(activeTrip.id)}`;
     } else if (allData.travel) {
         liveLabel.textContent = 'Next Trip';
         const upcoming = allData.travel.trips
             .filter(t => t.startDate >= todayStr)
             .sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
         if (upcoming[0]) {
-            document.getElementById('next-trip').textContent = upcoming[0].destination.split(',')[0];
+            document.getElementById('next-trip').textContent = upcoming[0].title.split(',')[0];
             const d = Math.ceil((new Date(upcoming[0].startDate) - now) / 86400000);
             document.getElementById('trip-days').textContent = `T-MINUS ${d} DAYS`;
+            nextTripCard.href = `./apps/04-travel-planner/travel-planner.html?trip=${encodeURIComponent(upcoming[0].id)}`;
+        } else {
+            nextTripCard.href = './apps/04-travel-planner/travel-planner.html';
         }
     }
 
@@ -611,7 +633,8 @@ function render() {
     // Summarises every itinerary item on today's date, not just one stage.
     const hero = document.getElementById('heroCard');
     if (activeTrip) {
-        document.getElementById('hero-title').textContent = activeTrip.destination;
+        hero.href = `./apps/04-travel-planner/travel-planner.html?trip=${encodeURIComponent(activeTrip.id)}`;
+        document.getElementById('hero-title').textContent = activeTrip.title;
 
         const start = new Date(activeTrip.startDate + 'T00:00:00');
         const end   = new Date(activeTrip.endDate   + 'T00:00:00');
@@ -675,13 +698,13 @@ function renderUpcomingTripsList(trips) {
         const startFmt = new Date(t.startDate + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const endFmt   = new Date(t.endDate   + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         return `
-          <div class="trip-row">
+          <a class="trip-row" href="./apps/04-travel-planner/travel-planner.html?trip=${encodeURIComponent(t.id)}">
             <div>
-              <div class="trip-row-dest">${t.destination}</div>
+              <div class="trip-row-dest">${t.title}</div>
               <div class="trip-row-dates">${startFmt} – ${endFmt}</div>
             </div>
             <div class="trip-row-days">T-${d}d</div>
-          </div>`;
+          </a>`;
     }).join('');
 
     card.style.display = 'block';
