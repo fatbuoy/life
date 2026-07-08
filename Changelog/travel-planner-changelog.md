@@ -144,3 +144,54 @@ small enough to paste or attach whole.
   on Scenarios tab recalc (one-liner wiring, logic already there)
 - Port `setupBackdropDismiss()` to remaining Sahani Suite apps (packing list,
   financial analyser, etc.) — still outstanding from 07-06
+
+---
+
+## 2026-07-07 (cont'd) — index.html data-fetch fix
+
+**Bug fix**
+- **LifeOS homepage showing no data**: `index.html` was loading `recipes`,
+  `calories`, `training`, `budget`, `travel` via a local `mobileSafeFetch()`
+  hitting `./data/${key}.json` — a plain `fetch()` against GitHub Pages.
+  All five files actually live in the private `fatbuoy/app-data` repo, so
+  every request 404'd silently (error only surfaces if a matching
+  container id exists, which index.html didn't have). `HORIZON_CONFIG`
+  was already using the correct pattern; the fix extends it to the rest.
+  - Removed `mobileSafeFetch()`
+  - Added `DATA_CONFIGS` object (six entries: recipes, calories, training,
+    budget, travel, horizon) — all using `fetchFromGitHub()` from
+    `utils.js`, same PAT as the sync features
+  - **Path correction mid-fix**: initial configs pointed at repo root
+    (`recipes.json`); actual repo layout nests everything under a `data/`
+    folder (`data/recipes.json` etc.) — all six configs, including
+    Horizon's, updated to match
+- **No PAT entry point on the homepage**: added a 🔑 button to the header
+  (`onclick="promptForGitToken()"`, reusing the existing utils.js modal —
+  no new code needed there). Confirmed `gh_pat_token` in localStorage is
+  shared across all pages on the same origin, so a token entered on
+  travel-planner.html is already available here on the same device.
+
+**Verified working**
+- All six data fetches now populate the dashboard
+- 🔑 modal opens/closes cleanly on mobile
+- Horizon card renders (fields are populated, but *values* look wrong —
+  field-mapping bug between `exportToLifeOS()`'s payload shape and what
+  `render()` expects on the homepage; deferred to a future session)
+
+**Non-issue investigated**
+- `WebSocket connection to 'ws://127.0.0.1:5500/...' failed: WebSocket is
+  closed due to suspension` in console on tile click — this is the VS
+  Code Live Server dev-reload socket, not app code. Drops when the tab is
+  backgrounded/throttled on navigation. Won't appear once served from
+  actual GitHub Pages; no fix needed.
+
+**Open items for next session**
+- Debug Horizon field mapping: compare `exportToLifeOS()`'s payload shape
+  (Horizon `core.js`) against what `index.html`'s `render()` reads
+  (`allData.horizon.liquidity.rag`, `.runway.label`, etc.) — likely a key
+  name mismatch
+- Carried forward from 07-06/07-07: port `setupBackdropDismiss()` to
+  remaining Sahani Suite apps (packing list, financial analyser) — still
+  outstanding
+- Carried forward: two-device concurrent edit smoke test for the
+  merge-aware sync fix
