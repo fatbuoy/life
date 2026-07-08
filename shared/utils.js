@@ -713,7 +713,7 @@ async function _doGitHubSync(config, buildPayload, indicatorId, token, mergeFn) 
     const sha = await _ghFetchSha(url, authHeaders);
     await _ghPut(url, authHeaders, config.branch, buildPayload, sha);
     console.log('syncToGitHub: success.');
-    _syncToast('✓ Saved to GitHub', 'success');
+    _syncToast('✓ Changes Saved', 'success');
 
   } catch (err) {
     // ── Conflict: another write landed between our GET and PUT.
@@ -736,7 +736,7 @@ async function _doGitHubSync(config, buildPayload, indicatorId, token, mergeFn) 
         }
         await _ghPut(url, authHeaders, config.branch, retryPayload, freshSha);
         console.log('syncToGitHub: success after conflict retry' + (mergeFn ? ' (merged).' : '.'));
-        _syncToast('✓ Saved to GitHub', 'success');
+        _syncToast('✓ Changes Saved', 'success');
         return;
       } catch (retryErr) {
         _syncHandleError(retryErr, /*afterRetry=*/true);

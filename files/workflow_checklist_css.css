@@ -1,0 +1,30 @@
+/* ── Workflow Checklist (Assumptions tab) ─────────────────────────
+   Add this block to wealth.css
+   ──────────────────────────────────────────────────────────────── */
+
+.wf-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.wf-row:hover   { border-color: #bbb; background: var(--surface) }
+.wf-done        { background: #f0fff4; border-color: #a8dbb8 }
+.wf-done:hover  { background: #e6ffed }
+
+.wf-check  { font-size: 16px; line-height: 1; margin-top: 1px; flex-shrink: 0 }
+
+.wf-content { flex: 1; min-width: 0 }
+.wf-label   {
+  font-size: var(--t-sm); font-weight: 600; color: var(--text);
+  margin-bottom: 3px; line-height: 1.3;
+}
+.wf-done .wf-label { text-decoration: line-through; color: var(--muted) }
+.wf-detail  { font-size: 10.5px; color: var(--muted); line-height: 1.5 }

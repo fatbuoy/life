@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spend Loader — Sahani Suite</title>
+<style>
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Inter, system-ui, sans-serif;
+  background: #f5f7fa;
+  color: #1a1a2e;
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+
+/* ── Header ── */
+.header {
+  background: #1a3a1a;
+  color: #fff;
+  padding: 0 20px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-home {
+  color: rgba(255,255,255,.65);
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 1;
+}
+.header-home:hover { color: #fff; }
+.header-title { font-size: 14px; font-weight: 700; letter-spacing: .01em; }
+.header-tag {
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255,255,255,.15);
+  color: rgba(255,255,255,.8);
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ── Main layout ── */
+.container { max-width: 600px; margin: 0 auto; padding: 32px 16px; }
+
+/* ── Section heading ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.card-title { font-size: 13px; font-weight: 700; color: #1a1a2e; }
+.card-meta { font-size: 11px; color: #9ca3af; }
+
+/* ── Upload zone ── */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 24px 16px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  text-align: center;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: #2d7a2d; background: #f0fdf0; }
+.upload-zone.loaded { border-color: #2d7a2d; border-style: solid; background: #f0fdf0; }
+.upload-zone input[type="file"] { display: none; }
+.upload-icon { font-size: 28px; line-height: 1; }
+.upload-title { font-size: 13px; font-weight: 600; color: #374151; }
+.upload-sub { font-size: 11px; color: #9ca3af; }
+
+/* ── Status row ── */
+.status-row {
+  display: none;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #2d7a2d;
+  font-weight: 600;
+  gap: 8px;
+  align-items: center;
+}
+.status-row.visible { display: flex; }
+
+/* ── Preview box ── */
+.preview-box {
+  display: none;
+  margin-top: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  color: #4b5563;
+  line-height: 1.7;
+}
+.preview-box.visible { display: block; }
+.preview-stat { display: flex; justify-content: space-between; }
+.preview-stat strong { color: #1a1a2e; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: #f0f0f0; margin: 6px 0 14px; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  padding: 9px 18px;
+  transition: opacity .15s, transform .08s;
+}
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn-primary { background: #1a3a1a; color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #2a5a2a; }
+.btn-ghost {
+  background: transparent;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+.btn-ghost:hover:not(:disabled) { border-color: #9ca3af; color: #1a1a2e; }
+.btn-green { background: #2d7a2d; color: #fff; }
+.btn-green:hover:not(:disabled) { background: #1a5a1a; }
+
+/* ── Action bar ── */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* ── Error / notice ── */
+.notice {
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 7px;
+  margin-top: 12px;
+  display: none;
+}
+.notice.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.notice.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.notice.visible { display: block; }
+
+/* ── Step numbers ── */
+.steps { display: flex; flex-direction: column; gap: 28px; }
+.step { display: flex; gap: 14px; }
+.step-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  background: #1a3a1a;
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+
+/* ── Output summary ── */
+.output-summary {
+  display: none;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 12px;
+  color: #15803d;
+  margin-bottom: 14px;
+}
+.output-summary.visible { display: block; }
+.output-summary strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <a class="header-home" href="../../index.html" title="Sahani Suite">⌂</a>
+    <span class="header-title">Spend Loader</span>
+    <span class="header-tag">Data prep</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="steps">
+
+    <!-- ── STEP 1: Actuals ───────────────────────────────────────── -->
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="section-label">Actuals ledger</div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">
+            <div class="card-title">Load Actuals CSV</div>
+            <div class="card-meta" id="actualsMeta"></div>
+          </div>
+
+          <label class="upload-zone" id="actualsZone" for="actualsInput">
+            <span class="upload-icon">📄</span>
+            <div class="upload-title">Click or drag to load Actuals CSV</div>
+            <div class="upload-sub">Consolidated ledger export · 17 or 18 columns</div>
+            <input type="file" id="actualsInput" accept=".csv">
+          </label>
+
+          <div class="status-row" id="actualsStatus">
+            <span>✓</span><span id="actualsStatusText"></span>
+          </div>
+
+          <div class="preview-box" id="actualsPreview">
+            <div class="preview-stat"><span>Total rows</span><strong id="prevActualsRows">—</strong></div>
+            <div class="preview-stat"><span>Date range</span><strong id="prevActualsDates">—</strong></div>
+            <div class="preview-stat"><span>Years</span><strong id="prevActualsYears">—</strong></div>
+            <div class="preview-stat"><span>→ Expenses</span><strong id="prevActualsExpenses">—</strong></div>
+            <div class="preview-stat"><span>→ Income</span><strong id="prevActualsIncome">—</strong></div>
+            <div class="preview-stat"><span>→ Savings</span><strong id="prevActualsSavings">—</strong></div>
+            <div class="preview-stat" style="color:#9ca3af;font-style:italic">
+              <span>↳ Internal transfers</span>
+              <span id="prevActualsTransfers">—</span>
+            </div>
+            <div class="preview-stat"><span>Currencies</span><strong id="prevActualsCcy">—</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: Budget ────────────────────────────────────────── -->
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="section-label">Budget <span style="font-weight:400;color:#9ca3af">(optional)</span></div>
+        <div class="card" style="margin-bottom:0">
+          <div class="card-header">
+            <div class="card-title">Load Budget CSV</div>
+            <div class="card-meta" id="budgetMeta"></div>
+          </div>
+
+          <label class="upload-zone" id="budgetZone" for="budgetInput">
+            <span class="upload-icon">📋</span>
+            <div class="upload-title">Click or drag to load Budget CSV</div>
+            <div class="upload-sub">Same schema · Source = "Budget" · replaces previous</div>
+            <input type="file" id="budgetInput" accept=".csv">
+          </label>
+
+          <div class="status-row" id="budgetStatus">
+            <span>✓</span><span id="budgetStatusText"></span>
+          </div>
+
+          <div class="preview-box" id="budgetPreview">
+            <div class="preview-stat"><span>Budget rows</span><strong id="prevBudgetRows">—</strong></div>
+            <div class="preview-stat"><span>Years covered</span><strong id="prevBudgetYears">—</strong></div>
+            <div class="preview-stat"><span>Total budgeted</span><strong id="prevBudgetTotal">—</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Export ────────────────────────────────────────── -->
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="section-label">Export JSON files</div>
+        <div class="card" style="margin-bottom:0">
+
+          <div id="exportSummary" class="output-summary">
+            Ready to export: <span id="exportSummaryText"></span>.
+            Download and place files in your <code style="font-size:11px;background:#dcfce7;padding:1px 4px;border-radius:3px">data/</code> folder.
+          </div>
+
+          <div class="notice" id="exportNotice"></div>
+
+          <p style="font-size:12px;color:#6b7280;margin-bottom:14px;line-height:1.6">
+            Each button downloads one file. <strong>Export all</strong> triggers all available files with a short delay between them.
+            Replace existing files in your <code style="font-size:11px;background:#f3f4f6;padding:1px 4px;border-radius:3px">data/</code> folder.
+          </p>
+
+          <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:6px">
+            Full detail
+          </p>
+          <div class="action-bar" style="margin-bottom:12px">
+            <button class="btn btn-green" id="exportExpensesBtn" onclick="exportExpenses()" disabled>
+              ⬇ actuals.json
+            </button>
+            <button class="btn btn-ghost" id="exportIncomeBtn" onclick="exportIncome()" disabled>
+              ⬇ income.json
+            </button>
+            <button class="btn btn-ghost" id="exportSavingsBtn" onclick="exportSavings()" disabled>
+              ⬇ savings.json
+            </button>
+            <button class="btn btn-ghost" id="exportBudgetBtn" onclick="exportBudget()" disabled>
+              ⬇ budget.json
+            </button>
+          </div>
+
+          <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;margin-bottom:6px">
+            Cashflow summaries
+          </p>
+          <div class="action-bar" style="margin-bottom:12px">
+            <button class="btn btn-ghost" id="exportExpensesSummaryBtn" onclick="exportExpensesSummary()" disabled>
+              ⬇ expenses-summary.json
+            </button>
+            <button class="btn btn-ghost" id="exportIncomeSummaryBtn" onclick="exportIncomeSummary()" disabled>
+              ⬇ income_summary.json
+            </button>
+          </div>
+
+          <div class="divider"></div>
+          <div class="action-bar">
+            <button class="btn btn-primary" id="exportAllBtn" onclick="exportAll()" disabled>
+              ⬇ Export all
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+</div><!-- /container -->
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════════
+   PARSE & ENRICH  (identical logic to expense-core.js)
+══════════════════════════════════════════════════════════════════ */
+function parseCSV(text) {
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = text.trim().split('\n');
+  if (!lines.length) return [];
+  const headers = splitCSVLine(lines[0]).map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = splitCSVLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h] = vals[idx] !== undefined ? vals[idx].trim() : ''; });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function splitCSVLine(line) {
+  const result = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { if (inQ && line[i+1] === '"') { cur += '"'; i++; } else { inQ = !inQ; } }
+    else if (c === ',' && !inQ) { result.push(cur); cur = ''; }
+    else cur += c;
+  }
+  result.push(cur);
+  return result;
+}
+
+function serialToDate(serial) {
+  const d = new Date((serial - 25569) * 86400000);
+  return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+}
+
+function enrichRow(row) {
+  const serial = parseFloat(row['Book Date']);
+  if (!isNaN(serial) && serial > 0) {
+    const dt = serialToDate(serial);
+    row._year = dt.year; row._month = dt.month;
+  } else {
+    row._year = 0; row._month = 0;
+  }
+  row._amount    = parseFloat(row['Amount']) || 0;
+  row._origAmount= parseFloat(row[' Orig Ccy '] || row['Orig Ccy'] || 0);
+  row._fx        = parseFloat(row['FX']) || 1;
+  row._group     = (row['Group'] || '').trim();
+  row._category  = (row['Category'] || '').trim();
+  row._subcat    = (row['Sub-Category'] || '').trim();
+  row._ccy       = (row['Ccy'] || 'CHF').trim();
+  row._source    = (row['Source'] || '').trim();
+  const canonical = (row['Canonical Merchant'] || '').trim();
+  const raw       = (row['Recipient / Order issuer'] || '').trim();
+  row._merchant    = canonical || raw;
+  row._merchantRaw = raw;
+  return row;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   STATE
+   All slices come from the same CSV upload(s).
+   actuals CSV  → _expenses   (Group=Expense, minus internal transfers)
+                  _income     (Group=Income, minus intra-account)
+                  _savings    (Group=Savings)
+                  _transfers  (Internal Transfer / Intra-account — display only, no download)
+   budget CSV   → _budget     (Group=Expense)
+══════════════════════════════════════════════════════════════════ */
+let _expenses  = null;
+let _income    = null;
+let _savings   = null;
+let _transfers = null;
+let _budget    = null;
+
+/* ══════════════════════════════════════════════════════════════════
+   FILE LOADING
+══════════════════════════════════════════════════════════════════ */
+function wireZone(zoneId, inputId, onParsed) {
+  const zone  = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+
+  input.addEventListener('change', () => {
+    const file = input.files[0]; if (!file) return;
+    readFile(file, onParsed);
+  });
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    const file = e.dataTransfer.files[0]; if (!file) return;
+    readFile(file, onParsed);
+  });
+}
+
+function readFile(file, cb) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const rows = parseCSV(e.target.result).map(enrichRow);
+      cb(rows, file.name);
+    } catch(err) {
+      showNotice('exportNotice', 'error', 'Parse error: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+wireZone('actualsZone', 'actualsInput', (rows, fname) => {
+  const isTransfer = r =>
+    r._subcat === 'Internal Transfer' || r._subcat === 'Intra-account transfers';
+
+  _expenses  = rows.filter(r => r._group === 'Expense' && !isTransfer(r));
+  _income    = rows.filter(r => r._group === 'Income'  && !isTransfer(r));
+  _savings   = rows.filter(r => r._group === 'Savings');
+  _transfers = rows.filter(r => isTransfer(r));
+
+  const zone = document.getElementById('actualsZone');
+  zone.classList.remove('drag'); zone.classList.add('loaded');
+
+  // Preview stats — based on full row set for dates/years/ccy
+  const years = [...new Set(rows.filter(r=>r._year>0).map(r=>r._year))].sort();
+  const dates = rows.filter(r=>r._year>0).map(r=>r._year*100+r._month);
+  const minD = Math.min(...dates), maxD = Math.max(...dates);
+  const fmtYM = v => { const y=Math.floor(v/100),m=v%100; return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]+' '+y; };
+  const ccys = [...new Set(rows.map(r=>r._ccy).filter(Boolean))].join(', ');
+  const sum  = arr => arr.reduce((s,r)=>s+r._amount, 0);
+  const fmtCHF = n => 'CHF ' + n.toLocaleString('de-CH', {maximumFractionDigits:0});
+
+  document.getElementById('actualsStatusText').textContent = `${rows.length.toLocaleString()} rows parsed from ${fname}`;
+  document.getElementById('actualsStatus').classList.add('visible');
+  document.getElementById('actualsMeta').textContent = `${rows.length.toLocaleString()} rows`;
+
+  document.getElementById('prevActualsRows').textContent      = rows.length.toLocaleString();
+  document.getElementById('prevActualsDates').textContent     = `${fmtYM(minD)} → ${fmtYM(maxD)}`;
+  document.getElementById('prevActualsYears').textContent     = years.join(', ');
+  document.getElementById('prevActualsExpenses').textContent  = `${_expenses.length.toLocaleString()} rows · ${fmtCHF(sum(_expenses))}`;
+  document.getElementById('prevActualsIncome').textContent    = `${_income.length.toLocaleString()} rows · ${fmtCHF(sum(_income))}`;
+  document.getElementById('prevActualsSavings').textContent   = `${_savings.length.toLocaleString()} rows · ${fmtCHF(sum(_savings))}`;
+  document.getElementById('prevActualsTransfers').textContent = `${_transfers.length.toLocaleString()} rows · ${fmtCHF(sum(_transfers))} (not exported)`;
+  document.getElementById('prevActualsCcy').textContent       = ccys;
+  document.getElementById('actualsPreview').classList.add('visible');
+
+  updateExportUI();
+});
+
+wireZone('budgetZone', 'budgetInput', (rows, fname) => {
+  _budget = rows.filter(r => r._group === 'Expense');
+  const zone = document.getElementById('budgetZone');
+  zone.classList.remove('drag'); zone.classList.add('loaded');
+
+  const years = [...new Set(_budget.filter(r=>r._year>0).map(r=>r._year))].sort();
+  const total = _budget.reduce((s,r)=>s+r._amount, 0);
+
+  document.getElementById('budgetStatusText').textContent = `${_budget.length.toLocaleString()} budget rows parsed from ${fname}`;
+  document.getElementById('budgetStatus').classList.add('visible');
+  document.getElementById('budgetMeta').textContent = `${_budget.length.toLocaleString()} rows`;
+
+  document.getElementById('prevBudgetRows').textContent  = _budget.length.toLocaleString();
+  document.getElementById('prevBudgetYears').textContent = years.join(', ') || '—';
+  document.getElementById('prevBudgetTotal').textContent = 'CHF ' + total.toLocaleString('de-CH', {maximumFractionDigits:0});
+  document.getElementById('budgetPreview').classList.add('visible');
+
+  updateExportUI();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   EXPORT UI STATE
+══════════════════════════════════════════════════════════════════ */
+function updateExportUI() {
+  const hasE = _expenses && _expenses.length > 0;
+  const hasI = _income   && _income.length   > 0;
+  const hasV = _savings  && _savings.length  > 0;
+  const hasB = _budget   && _budget.length   > 0;
+  const hasAny = hasE || hasI || hasV || hasB;
+
+  document.getElementById('exportExpensesBtn').disabled        = !hasE;
+  document.getElementById('exportIncomeBtn').disabled          = !hasI;
+  document.getElementById('exportSavingsBtn').disabled         = !hasV;
+  document.getElementById('exportBudgetBtn').disabled          = !hasB;
+  document.getElementById('exportExpensesSummaryBtn').disabled = !hasE;
+  document.getElementById('exportIncomeSummaryBtn').disabled   = !hasI;
+  document.getElementById('exportAllBtn').disabled             = !hasAny;
+
+  // Update "Export all" label to show accurate file count
+  const fileCount = (hasE ? 2 : 0) + (hasI ? 2 : 0) + (hasV ? 1 : 0) + (hasB ? 1 : 0);
+  document.getElementById('exportAllBtn').textContent =
+    `⬇ Export all${fileCount > 0 ? ' (' + fileCount + ' files)' : ''}`;
+
+  const summary = document.getElementById('exportSummary');
+  if (hasAny) {
+    const parts = [];
+    if (hasE) parts.push(`<strong>${_expenses.length.toLocaleString()}</strong> expense rows`);
+    if (hasI) parts.push(`<strong>${_income.length.toLocaleString()}</strong> income rows`);
+    if (hasV) parts.push(`<strong>${_savings.length.toLocaleString()}</strong> savings rows`);
+    if (hasB) parts.push(`<strong>${_budget.length.toLocaleString()}</strong> budget rows`);
+    document.getElementById('exportSummaryText').innerHTML = parts.join(' · ');
+    summary.classList.add('visible');
+  } else {
+    summary.classList.remove('visible');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DOWNLOAD HELPERS
+══════════════════════════════════════════════════════════════════ */
+function downloadJSON(data, filename) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportExpenses() {
+  if (!_expenses || !_expenses.length) return;
+  downloadJSON(_expenses, 'actuals.json');
+  showNotice('exportNotice', 'success', '✓ actuals.json downloaded (expense rows only).');
+}
+
+function exportIncome() {
+  if (!_income || !_income.length) return;
+  downloadJSON(_income, 'income.json');
+  showNotice('exportNotice', 'success', '✓ income.json downloaded.');
+}
+
+function exportSavings() {
+  if (!_savings || !_savings.length) return;
+  downloadJSON(_savings, 'savings.json');
+  showNotice('exportNotice', 'success', '✓ savings.json downloaded.');
+}
+
+function exportBudget() {
+  if (!_budget || !_budget.length) return;
+  downloadJSON(_budget, 'budget.json');
+  showNotice('exportNotice', 'success', '✓ budget.json downloaded.');
+}
+
+function exportAll() {
+  // Stagger downloads 350ms apart so browsers don't suppress them
+  const queue = [], names = [];
+  if (_expenses && _expenses.length) {
+    queue.push(() => downloadJSON(_expenses, 'actuals.json'));         names.push('actuals.json');
+    const es = buildExpensesSummary();
+    if (es) { queue.push(() => downloadJSON(es, 'expenses-summary.json')); names.push('expenses-summary.json'); }
+  }
+  if (_income && _income.length) {
+    queue.push(() => downloadJSON(_income, 'income.json'));            names.push('income.json');
+    const is = buildIncomeSummary();
+    if (is) { queue.push(() => downloadJSON(is, 'income-summary.json')); names.push('income-summary.json'); }
+  }
+  if (_savings && _savings.length) {
+    queue.push(() => downloadJSON(_savings, 'savings.json'));          names.push('savings.json');
+  }
+  if (_budget && _budget.length) {
+    queue.push(() => downloadJSON(_budget, 'budget.json'));            names.push('budget.json');
+  }
+  if (!queue.length) return;
+  queue.forEach((fn, i) => setTimeout(fn, i * 350));
+  setTimeout(() =>
+    showNotice('exportNotice', 'success', `✓ Downloaded: ${names.join(', ')}. Replace files in your data/ folder.`),
+    queue.length * 350
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUMMARY BUILDERS  (for cashflow dashboard)
+══════════════════════════════════════════════════════════════════ */
+
+/**
+ * expenses_summary.json
+ * { currency, years: { "2024": { total, categories: { cat: amount } } } }
+ * Source: _expenses (already excludes internal transfers)
+ */
+function buildExpensesSummary() {
+  if (!_expenses || !_expenses.length) return null;
+  const out = { currency: 'CHF', years: {} };
+
+  _expenses.forEach(r => {
+    if (!r._year) return;
+    const yr  = String(r._year);
+    const cat = (r._category || 'Other Expenses').toLowerCase();
+    if (!out.years[yr]) out.years[yr] = { total: 0, categories: {} };
+    out.years[yr].total += r._amount;
+    out.years[yr].categories[cat] = (out.years[yr].categories[cat] || 0) + r._amount;
+  });
+
+  // Round to 2dp
+  Object.values(out.years).forEach(y => {
+    y.total = Math.round(y.total * 100) / 100;
+    Object.keys(y.categories).forEach(k => {
+      y.categories[k] = Math.round(y.categories[k] * 100) / 100;
+    });
+  });
+
+
+  out.retirementAnnualTarget = 100000;
+  out.retirementAnnualTargetNote = "Estimated steady-state spend in retirement (today's CHF). Excludes salary-linked costs.";
+  out.budgetTrackerPath = "../expense-tracker/index.html";
+  return out;
+
+}
+
+/**
+ * income-summary.json
+ * { currency, years: { "2024": { total, categories: { cat: { total, subcategories: { subcat: amount } } } } } }
+ * Source: _income (already excludes intra-account transfers)
+ */
+function buildIncomeSummary() {
+  if (!_income || !_income.length) return null;
+  const out = { currency: 'CHF', years: {} };
+
+  _income.forEach(r => {
+    if (!r._year) return;
+    const yr     = String(r._year);
+    const cat    = (r._category || 'Other Income').toLowerCase();
+    const subcat = (r._subcat   || 'Other').toLowerCase();
+    if (!out.years[yr]) out.years[yr] = { total: 0, categories: {} };
+    if (!out.years[yr].categories[cat]) out.years[yr].categories[cat] = { total: 0, subcategories: {} };
+    out.years[yr].total += r._amount;
+    out.years[yr].categories[cat].total += r._amount;
+    out.years[yr].categories[cat].subcategories[subcat] =
+      (out.years[yr].categories[cat].subcategories[subcat] || 0) + r._amount;
+  });
+
+  // Round to 2dp
+  Object.values(out.years).forEach(y => {
+    y.total = Math.round(y.total * 100) / 100;
+    Object.values(y.categories).forEach(c => {
+      c.total = Math.round(c.total * 100) / 100;
+      Object.keys(c.subcategories).forEach(k => {
+        c.subcategories[k] = Math.round(c.subcategories[k] * 100) / 100;
+      });
+    });
+  });
+
+  return out;
+}
+
+function exportExpensesSummary() {
+  const data = buildExpensesSummary();
+  if (!data) return;
+  downloadJSON(data, 'expenses_summary.json');
+  showNotice('exportNotice', 'success', '✓ expenses-summary.json downloaded (annual totals by category).');
+}
+
+function exportIncomeSummary() {
+  const data = buildIncomeSummary();
+  if (!data) return;
+  downloadJSON(data, 'income-summary.json');
+  showNotice('exportNotice', 'success', '✓ income-summary.json downloaded (annual totals by category & sub-category).');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   NOTICE
+══════════════════════════════════════════════════════════════════ */
+function showNotice(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = `notice ${type} visible`;
+  el.textContent = msg;
+}
+</script>
+</body>
+</html>

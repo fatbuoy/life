@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spend Analyser — Sahani Suite</title>
+
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="expense-tracker.css">
+
+<style>
+/* ── Budget App Theme Override: Dark Forest Green ── */
+:root {
+  --app-primary:      #1a3a1a;
+  --app-primary2:     #2a5a2a;
+  --app-primary3:     #3a8a3a;
+  --app-accent:       #2d7a2d;
+  --app-on-primary:   #ffffff;
+  --app-on-primary2:  #a8d4a8;
+  --app-on-primary3:  #7ab87a;
+
+  --navy:             #1a3a1a;
+  --navy2:            #2a5a2a;
+  --navy3:            #3a8a3a;
+  --accent:           #2d7a2d;
+  --accent2:          #1a3a1a;
+  --accent-dim:       rgba(45, 122, 45, 0.10);
+}
+
+[data-theme="dark"] {
+  --navy:             #122412;
+  --navy2:            #1a3a1a;
+  --navy3:            #2a5a2a;
+  --accent:           #3ecf8e;
+  --accent2:          #2d7a2d;
+  --accent-dim:       rgba(62, 207, 142, 0.12);
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="header-row">
+      <div class="header-left">
+        <a class="header-home" href="../../index.html" title="Sahani Suite">⌂</a>
+        <span class="header-title">Expense Analyser</span>
+      </div>
+      <div class="header-right">
+        <button class="header-btn" onclick="toggleTheme()" id="themeToggle">🌙</button>
+        <a class="header-btn" href="spend-loader.html" title="Load new data">⬆ Load data</a>
+        <span class="header-badge" id="dataStatus">Loading…</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- YEAR STRIP — shared across all tabs -->
+<div id="sharedYearWrap" style="display:none;background:var(--app-primary);border-bottom:1px solid rgba(255,255,255,.08);padding:6px 14px 5px">
+  <div class="period-strip" id="sharedYearStrip" style="margin-bottom:0"></div>
+</div>
+
+<!-- NET TICKER -->
+<div class="net-ticker" id="netTicker" style="display:none">
+  <div class="nt-item">
+    <span class="nt-label">Viewing</span>
+    <span class="nt-value" id="tickerYear" style="font-size:15px;color:var(--text2)">—</span>
+    <span class="nt-sub" style="margin-left:6px" id="tickerYearSub"></span>
+  </div>
+  <div class="nt-item">
+    <span class="nt-label">Spend</span>
+    <span class="nt-value neu" id="tickerSpend">—</span>
+  </div>
+  <div class="nt-div"></div>
+  <div class="nt-item">
+    <span class="nt-label">Budget</span>
+    <span class="nt-value" id="tickerBudget" style="color:var(--text2)">—</span>
+  </div>
+  <div class="nt-div"></div>
+  <div class="nt-item">
+    <span class="nt-label">Variance</span>
+    <span class="nt-value" id="tickerVariance">—</span>
+    <span id="tickerBadge" class="nt-badge"></span>
+  </div>
+  <div class="nt-div"></div>
+</div>
+
+<!-- NAV TABS -->
+<nav class="nav" id="mainNav" style="display:none">
+  <button class="nav-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+  <button class="nav-btn" onclick="switchTab('monthly',this)">Monthly</button>
+  <button class="nav-btn" onclick="switchTab('trend',this)">Trend</button>
+  <button class="nav-btn" onclick="switchTab('fx',this)">FX</button>
+  <button class="nav-btn" onclick="switchTab('merchants',this)">Merchants</button>
+  <button class="nav-btn" onclick="switchTab('insights',this)">Insights</button>
+  <button class="nav-btn" onclick="switchTab('budget-planner',this)">Budget Planner</button>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- ── DASHBOARD TAB ─────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-dashboard">
+    <div class="card-hero" id="dashHeroCard" style="margin-bottom:14px"></div>
+    <div class="grid-2" style="align-items:stretch">
+      <div class="card" id="dashCatListCard" style="height:100%;box-sizing:border-box">
+        <div class="mb-2">
+          <span class="card-title" style="margin:0">Spend by Category</span>
+        </div>
+        <div id="dashCatList"></div>
+      </div>
+      <div id="dashCatRightCol" style="display:flex;flex-direction:column;gap:10px">
+        <div class="card" id="dashCatChartCard">
+          <div class="card-title" id="dashCatChartTitle">All Categories — Monthly Trend</div>
+          <div class="chart-container">
+            <canvas id="dashCatChart" height="160"></canvas>
+          </div>
+        </div>
+        <div class="card" id="dashCatMerchantCard" style="box-sizing:border-box">
+          <div class="card-title">Top Merchants</div>
+          <div id="dashCatMerchants"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MONTHLY TAB ───────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-monthly">
+    <div class="filter-pill-bar" id="monthlyCatFilter" style="margin-bottom:16px"></div>
+    <div class="card">
+      <div class="card-title">Monthly Spend
+        <div class="chart-legend" id="monthlyLegend"></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="monthlyChart" height="280"></canvas>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="card-title">Month-by-Month Table</div>
+      <div class="tbl-wrap">
+        <table id="monthlyTable">
+          <thead><tr id="monthlyTableHead"></tr></thead>
+          <tbody id="monthlyTableBody"></tbody>
+          <tfoot id="monthlyTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TREND TAB ─────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-trend">
+    <div style="margin-bottom:16px">
+      <div class="filter-pill-bar" id="trendCatFilter"></div>
+      <div class="filter-pill-bar" id="trendGroupBy"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Year-over-Year Trend
+        <div class="chart-legend" id="trendLegend"></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="trendChart" height="300"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Annual Summary by Category</div>
+      <div class="tbl-wrap">
+        <table id="trendTable">
+          <thead><tr id="trendTableHead"></tr></thead>
+          <tbody id="trendTableBody"></tbody>
+          <tfoot id="trendTableFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FX TAB ────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-fx">
+    <div class="grid-4" id="fxKpis"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Spend by Currency (CHF equiv)</div>
+        <div class="chart-container"><canvas id="fxPieChart" height="240"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Currency Exposure by Month</div>
+        <div class="chart-container"><canvas id="fxBarChart" height="240"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Currency Breakdown</div>
+      <div class="tbl-wrap">
+        <table id="fxTable">
+          <thead><tr>
+            <th>Currency</th>
+            <th class="num">Orig Amount</th>
+            <th class="num">CHF Equiv</th>
+            <th class="num">Avg FX Rate</th>
+            <th class="num">Transactions</th>
+            <th class="num">% of Total</th>
+          </tr></thead>
+          <tbody id="fxTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MERCHANTS TAB ─────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-merchants">
+   <div style="margin-bottom:16px">
+      <div class="filter-pill-bar" id="merchantCatFilter"></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
+        <input type="text" id="merchantSearch" placeholder="Search merchants…"
+          oninput="renderMerchants()"
+          style="flex:1;min-width:160px;background:var(--surface);border:1px solid var(--border2);
+                border-radius:var(--r-sm);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit">
+        <div class="filter-pill-bar" id="merchantLimit" style="margin-bottom:0;flex-shrink:0"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" id="merchantTitle">Top Merchants</div>
+      <div id="merchantList"></div>
+    </div>
+  </div>
+
+  <!-- ── INSIGHTS TAB ──────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-insights">
+    <div class="section-title" style="margin-bottom:14px">Recurring vs Variable Spend</div>
+    <div class="grid-4" id="insightsRecurringKpis"></div>
+    <div class="grid-2" style="margin-bottom:4px">
+      <div class="card">
+        <div class="card-title">Likely Recurring Expenses
+          <span class="pill pill-blue" id="recurringNote"></span>
+        </div>
+        <div id="insightsRecurringList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spend Composition</div>
+        <div class="chart-container"><canvas id="insightsRecurringChart" height="200"></canvas></div>
+        <div id="insightsRecurringLegend" style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin:20px 0 14px">Anomalies & Outliers</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Unusual Transactions
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">2.5σ above merchant avg</span>
+        </div>
+        <div id="insightsAnomalyList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spike Months
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">months >2σ above year avg</span>
+        </div>
+        <div id="insightsSpikeList"></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin:20px 0 14px">Calendar Patterns</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Spend by Day of Week</div>
+        <div class="chart-container"><canvas id="insightsDowChart" height="180"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spend by Day of Month
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">avg per occurrence</span>
+        </div>
+        <div class="chart-container"><canvas id="insightsDomChart" height="180"></canvas></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Seasonal Patterns — Average by Month <span style="font-size:10px;font-weight:400;color:var(--text3)">(across all years)</span></div>
+        <div class="chart-container"><canvas id="insightsSeasonChart" height="180"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Month-end Effect
+          <span style="font-size:10px;font-weight:400;color:var(--text3)">first vs last 5 days vs mid-month</span>
+        </div>
+        <div id="insightsMonthEndList"></div>
+        <div class="chart-container" style="margin-top:12px"><canvas id="insightsMonthEndChart" height="140"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin:20px 0 14px">Growth & Drift</div>
+    <div class="card">
+      <div class="card-title">Category Growth Rate Year-on-Year
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">% change vs prior year · last 3 complete years</span>
+      </div>
+      <div class="tbl-wrap"><table id="insightsGrowthTable">
+        <thead><tr id="insightsGrowthHead"></tr></thead>
+        <tbody id="insightsGrowthBody"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ── BUDGET PLANNER TAB ─────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-budget-planner">
+    <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:700;color:var(--text)">Planning year:</span>
+        <select id="budgetPlanYear" style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);color:var(--text);padding:5px 10px;font-size:12px;font-family:inherit" onchange="renderBudgetPlanner()"></select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="resetBudgetPlan()">↺ Reset from actuals</button>
+        <button class="btn btn-primary btn-sm" onclick="saveBudgetPlan()">💾 Save plan</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportBudgetPlanCSV()">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <div class="grid-4" id="budgetPlanKpis"></div>
+
+    <div class="card">
+      <div class="card-title">Category Budgets
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">Click any amount to edit · auto-saves on blur</span>
+      </div>
+      <div class="tbl-wrap">
+        <table id="budgetPlanTable">
+          <thead><tr>
+            <th>Category</th>
+            <th>Sub-Category</th>
+            <th class="num">Last Year</th>
+            <th class="num">3yr Avg</th>
+            <th class="num">Suggested</th>
+            <th class="num" style="min-width:120px">Your Budget</th>
+            <th class="num">vs Last Year</th>
+          </tr></thead>
+          <tbody id="budgetPlanBody"></tbody>
+          <tfoot id="budgetPlanFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Monthly Distribution
+        <span style="font-size:10px;font-weight:400;color:var(--text3)">based on historical monthly weights</span>
+      </div>
+      <div class="chart-container"><canvas id="budgetPlanChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOOLTIP -->
+<div id="chartTooltip"></div>
+
+<script src="expense-core.js"></script>
+<script src="expense-dashboard.js"></script>
+<script src="expense-monthly-tab.js"></script>
+<script src="expense-category-tab.js"></script>
+<script src="expense-trend-tab.js"></script>
+<script src="expense-fx-tab.js"></script>
+<script src="expense-merchants-tab.js"></script>
+<script src="expense-insights-tab.js"></script>
+<script src="expense-budget-tab.js"></script>
+
+</body>
+</html>
