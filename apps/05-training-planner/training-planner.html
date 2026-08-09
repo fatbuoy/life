@@ -3,324 +3,369 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Marathon du Jura — Training</title>
+<title>Training Planner</title>
 <link rel="stylesheet" href="../../shared/base.css">
 <style>
 :root {
-  --navy:   #1a2535;
-  --navy2:  #243047;
-  --navy3:  #3a5575;
-  --orange: #d06020;
-  --green:  #27ae60;
-  --on-nav: #ffffff;
-  --on-n2:  #b8cce0;
-  --on-n3:  #7aaabb;
-  --r:      9px;
+  --app-primary:    #1a2535;
+  --app-primary2:   #243047;
+  --app-primary3:   #3a5575;
+  --app-accent:     #d06020;
+  --app-on-primary:    #ffffff;
+  --app-on-primary2:   #b8cce0;
+  --app-on-primary3:   #7aaabb;
+  --green: #27ae60;
 }
 
-/* ── Global resets for tight mobile layout ── */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, system-ui, sans-serif; background: #f2f4f7; color: #1a1a2e; }
-.app { max-width: 100%; padding-bottom: 32px; }
-.app-inner { max-width: 480px; margin: 0 auto; }
-@media (min-width: 700px) { .app-inner { max-width: 720px; } }
-@media (min-width: 1024px) { .app-inner { max-width: 1000px; } }
-
-/* ── Header ── */
-.topbar {
-  background: var(--navy);
-  color: var(--on-nav);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px;
-  position: sticky; top: 0; z-index: 50;
-}
-@media (min-width: 1024px) { .topbar { padding: 14px 24px; } }
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-.topbar-home {
-  font-size: 1rem; color: var(--on-n2); text-decoration: none;
-  background: rgba(255,255,255,0.08); border-radius: 6px;
-  padding: 3px 8px; line-height: 1.4;
-  transition: background 0.15s;
-}
-.topbar-home:hover { background: rgba(255,255,255,0.18); }
-.topbar-title { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.3px }
-@media (min-width: 1024px) { .topbar-title { font-size: 1rem; } }
-.unit-toggle { display: flex; border: 1px solid var(--navy3); border-radius: 20px; overflow: hidden; font-size: 0.7rem }
-.u-btn { padding: 4px 11px; cursor: pointer; background: transparent; color: var(--on-n3); transition: all 0.15s }
-.u-btn.active { background: var(--orange); color: #fff; }
-
-/* ── Hero banner ── */
-.hero {
-  background: var(--navy2);
-  padding: 14px 16px 10px;
-  color: var(--on-nav);
-}
-@media (min-width: 1024px) {
-  .hero { padding: 20px 24px 16px; }
-}
-.hero-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 6px }
-@media (min-width: 1024px) {
-  .hero-row { margin-bottom: 10px; }
-}
-.hero-dist { font-size: 1.8rem; font-weight: 900; color: var(--orange); line-height: 1 }
-@media (min-width: 1024px) {
-  .hero-dist { font-size: 2.2rem; }
-}
-.hero-unit { font-size: 0.75rem; color: var(--on-n3); margin-left: 3px }
-.hero-goal { font-size: 0.75rem; color: var(--on-n3) }
-.rail { height: 10px; background: rgba(255,255,255,0.12); border-radius: 5px; overflow: hidden; margin-bottom: 6px }
-.rail-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.6s ease }
-.hero-stats { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--on-n3); text-transform: uppercase; letter-spacing: 0.8px }
-
-/* ── Sparkline chart ── */
-.chart-wrap {
-  background: var(--navy);
-  padding: 10px 16px 8px;
-}
-@media (min-width: 1024px) {
-  .chart-wrap { padding: 16px 24px 12px; }
-}
-.chart-label { font-size: 0.6rem; color: var(--on-n3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px }
-.bars-row { display: flex; align-items: flex-end; gap: 3px; height: 52px }
-@media (min-width: 1024px) {
-  .bars-row { gap: 5px; height: 64px; }
-}
-.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer }
-.bar-outer { width: 100%; border-radius: 3px 3px 0 0; background: rgba(255,255,255,0.08); position: relative; overflow: hidden; flex: 1; min-height: 4px }
-.bar-inner { position: absolute; bottom: 0; left: 0; right: 0; background: var(--navy3); border-radius: 3px 3px 0 0; transition: height 0.4s ease }
-.bar-inner.done { background: var(--green) }
-.bar-inner.partial { background: var(--orange) }
-.bar-label { font-size: 0.55rem; color: var(--on-n3); white-space: nowrap }
-@media (min-width: 1024px) {
-  .bar-label { font-size: 0.65rem; }
-}
-.bar-col.selected .bar-label { color: var(--orange); font-weight: 700 }
-.bar-col.selected .bar-outer { outline: 1px solid var(--orange); border-radius: 3px 3px 0 0 }
-
-/* ── Week tab strip ── */
-.week-strip-wrap {
-  background: var(--navy);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding: 0 16px 10px;
+/* ── Race selector strip ── */
+.race-strip-wrap {
+  background: var(--app-primary2);
+  padding: 0 var(--sp-4) 10px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
-@media (min-width: 1024px) { .week-strip-wrap { padding: 0 24px 12px; } }
+.race-strip-wrap::-webkit-scrollbar { display: none }
+.race-strip { display: flex; gap: 6px; width: max-content }
+.race-tab {
+  padding: 5px 14px; border-radius: var(--r-pill);
+  font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.15); color: var(--app-on-primary3);
+  background: transparent; font-family: inherit;
+  transition: all .15s; -webkit-tap-highlight-color: transparent;
+}
+.race-tab.active { background: var(--app-accent); border-color: var(--app-accent); color: #fff }
+.race-tab.done   { border-color: var(--green); color: var(--green) }
+
+/* ── Hero bar ── */
+.hero-bar {
+  background: var(--app-primary2);
+  padding: 12px var(--sp-4) 14px;
+  color: var(--app-on-primary);
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px }
+.hero-name { font-size: 15px; font-weight: 700 }
+.hero-meta { font-size: 11px; color: var(--app-on-primary3); margin-top: 2px }
+.hero-right { text-align: right }
+.hero-days  { font-size: 26px; font-weight: 700; color: var(--app-accent); line-height: 1 }
+.hero-days-lbl { font-size: 10px; color: var(--app-on-primary3); text-transform: uppercase; letter-spacing: .06em }
+.hero-rail { height: 8px; background: rgba(255,255,255,.12); border-radius: 4px; overflow: hidden; margin-bottom: 6px }
+.hero-rail-fill { height: 100%; background: linear-gradient(90deg, var(--app-accent), var(--green)); transition: width .5s ease }
+.hero-stats { display: flex; justify-content: space-between; font-size: 10px; color: var(--app-on-primary3); text-transform: uppercase; letter-spacing: .06em }
+
+/* ── Sparkline ── */
+.chart-wrap {
+  background: var(--app-primary);
+  padding: 10px var(--sp-4) 8px;
+}
+.chart-lbl { font-size: 9px; color: var(--app-on-primary3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px }
+.bars-row { display: flex; align-items: flex-end; gap: 3px; height: 48px }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer }
+.bar-outer { width: 100%; border-radius: 3px 3px 0 0; background: rgba(255,255,255,.07); position: relative; overflow: hidden; flex: 1; min-height: 4px }
+.bar-inner { position: absolute; bottom: 0; left: 0; right: 0; background: var(--app-primary3); border-radius: 3px 3px 0 0; transition: height .35s ease }
+.bar-inner.done    { background: var(--green) }
+.bar-inner.partial { background: var(--app-accent) }
+.bar-lbl { font-size: 8px; color: var(--app-on-primary3); white-space: nowrap }
+.bar-col.selected .bar-lbl   { color: var(--app-accent); font-weight: 700 }
+.bar-col.selected .bar-outer { outline: 1.5px solid var(--app-accent); border-radius: 3px 3px 0 0 }
+
+/* ── Week strip ── */
+.week-strip-wrap {
+  background: var(--app-primary);
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  padding: 0 var(--sp-4) 10px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
 .week-strip-wrap::-webkit-scrollbar { display: none }
 .week-strip { display: flex; gap: 5px; width: max-content }
-@media (min-width: 1024px) { .week-strip { gap: 8px; } }
 .wtab {
-  padding: 5px 11px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: var(--on-n3);
-  background: transparent;
-  transition: all 0.15s;
-  white-space: nowrap;
-  position: relative;
+  padding: 5px 11px; border-radius: var(--r-pill);
+  font-size: 10px; font-weight: 600; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.1); color: var(--app-on-primary3);
+  background: transparent; font-family: inherit;
+  transition: all .15s; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
-@media (min-width: 1024px) { .wtab { padding: 6px 14px; font-size: 0.75rem; } }
-.wtab.is-current { border-color: var(--orange); color: var(--orange) }
-.wtab.active { background: var(--orange); border-color: var(--orange); color: #fff }
+.wtab.is-current { border-color: var(--app-accent); color: var(--app-accent) }
+.wtab.active { background: var(--app-accent); border-color: var(--app-accent); color: #fff }
 .wtab .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle }
 
 /* ── Week panel ── */
-.week-panel { padding: 12px 16px }
-@media (min-width: 1024px) { .week-panel { padding: 20px 24px; } }
+.week-panel { padding: 12px var(--sp-4) }
+@media (min-width: 600px) { .week-panel { padding: 16px var(--sp-6) } }
 .week-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px }
-.week-heading { font-size: 0.85rem; font-weight: 700; color: var(--navy) }
-.week-phase { font-size: 0.65rem; color: #888; margin-top: 1px }
-.week-progress { text-align: right; font-size: 0.7rem; color: #555 }
-.week-pct { font-size: 1.1rem; font-weight: 800; color: var(--navy); display: block }
+.week-heading { font-size: 13px; font-weight: 700; color: var(--text) }
+.week-phase   { font-size: 10px; color: var(--muted); margin-top: 1px }
+.week-progress { text-align: right; font-size: 10px; color: var(--muted) }
+.week-pct { font-size: 17px; font-weight: 700; color: var(--text); display: block }
 
 /* ── Session rows ── */
-.sessions { background: #fff; border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06) }
+.sessions-list { background: var(--white); border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border) }
 .sess-row {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px;
-  border-bottom: 1px solid #f0f0f4;
-  transition: background 0.15s;
-}
-@media (min-width: 1024px) {
-  .sess-row { padding: 14px 18px; gap: 14px; }
+  padding: 10px 14px; border-bottom: 1px solid var(--border2);
+  transition: background .12s;
 }
 .sess-row:last-child { border-bottom: none }
-.sess-row.is-done { background: #fafafa }
-.sess-row.is-rest { opacity: 0.55 }
-.sess-check { width: 22px; height: 22px; flex-shrink: 0; accent-color: var(--orange); cursor: pointer }
-.sess-day { width: 34px; flex-shrink: 0 }
-.sess-day-name { font-size: 0.58rem; text-transform: uppercase; color: #aaa; display: block }
-.sess-day-num { font-size: 0.9rem; font-weight: 700; color: #333 }
-.pill { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 0.62rem; font-weight: 700; white-space: nowrap; flex-shrink: 0 }
-@media (min-width: 1024px) {
-  .pill { padding: 4px 10px; font-size: 0.7rem; }
-}
-.type-easy     { background:#e2f0d6; color:#27500a }
-.type-tempo    { background:#faeeda; color:#633806 }
-.type-long     { background:#deeaf7; color:#0c447c }
-.type-interval { background:#fde8e8; color:#7c0c0c }
-.type-race     { background:#2d0a6e; color:#d4c8ff }
-.type-rest     { background:#f0ede8; color:#aaa }
-.type-cross    { background:#e0f5f0; color:#0a5040 }
+.sess-row.is-done { background: var(--surface) }
+.sess-row.is-rest { opacity: .5 }
+.sess-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--app-accent); cursor: pointer }
+.sess-day { width: 32px; flex-shrink: 0 }
+.sess-day-name { font-size: 9px; text-transform: uppercase; color: var(--faint); display: block }
+.sess-day-num  { font-size: 15px; font-weight: 700; color: var(--text) }
 .sess-info { flex: 1; min-width: 0 }
-.sess-note { font-size: 0.78rem; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.sess-note.done-text { color: #bbb; text-decoration: line-through }
-.sess-dist { font-size: 0.85rem; font-weight: 800; color: #222; flex-shrink: 0; text-align: right; min-width: 44px }
+.sess-note { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.sess-note.done-text { color: var(--faint); text-decoration: line-through }
+.sess-dist { font-size: 13px; font-weight: 700; color: var(--text); flex-shrink: 0; text-align: right; min-width: 40px }
 .sess-dist.done-dist { color: var(--green) }
-.sess-dist span { display: block; font-size: 0.78rem; font-weight: 600; color: #222 }
+.sess-dist span { display: block; font-size: 11px; font-weight: 500 }
+
+/* ── Session type pills — reuse base.css §9 pill pattern with custom colours ── */
+.type-easy     { background: var(--bg-success); color: var(--c-success) }
+.type-tempo    { background: var(--bg-warning); color: #633806 }
+.type-long     { background: var(--bg-info);    color: var(--c-info) }
+.type-interval { background: var(--bg-danger);  color: var(--c-danger) }
+.type-race     { background: #2d0a6e;            color: #d4c8ff }
+.type-rest     { background: var(--bg-neutral);  color: var(--c-neutral) }
+.type-cross    { background: var(--bg-teal);     color: var(--c-teal) }
+
+/* ── Sync indicator ── */
+#syncIndicator {
+  display: none; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--app-accent); margin-left: 6px;
+  animation: pulse 1s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
 
 /* ── Bottom controls ── */
-.bottom-bar { padding: 16px 16px 0; display: flex; gap: 8px }
-@media (min-width: 1024px) { .bottom-bar { padding: 20px 24px 0; gap: 12px; } }
-.btn-sm { flex: 1; padding: 9px 0; font-size: 0.75rem; font-weight: 600; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #555; cursor: pointer }
-@media (min-width: 1024px) { .btn-sm { padding: 11px 0; font-size: 0.8rem; } }
-.btn-sm:hover { background: #f5f5f5 }
-.btn-sm.danger { color: #c0392b; border-color: #f5c6c6 }
+.bottom-bar { padding: 12px var(--sp-4) 0; display: flex; gap: 8px }
+.btn-sm {
+  flex: 1; padding: 8px 0; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--white); color: var(--muted); cursor: pointer; font-family: inherit;
+}
+.btn-sm:hover { background: var(--surface) }
+.btn-sm.danger { color: var(--c-danger); border-color: #f5c6c6 }
 </style>
 </head>
 <body>
+<div id="app">
+
 <header class="header">
-  <div class="container">
-    <div class="header-row">
-      <div class="header-left">
-        <a class="header-home" href="../../index.html" title="Hub">⌂</a>
-        <span class="header-title">Marathon du Jura</span>
-      </div>
-    <div class="unit-toggle" onclick="toggleUnits()">
-      <div id="u-km" class="u-btn active">km</div>
-      <div id="u-mi" class="u-btn">mi</div>
+  <div class="header-row">
+    <div class="header-left">
+      <a class="header-home" href="../index.html">⌂</a>
+      <span class="header-title">Training</span>
+      <span id="syncIndicator"></span>
     </div>
+    <div class="header-right">
+      <button class="header-btn" onclick="toggleUnits()" id="unitBtn">mi</button>
+      <button class="header-btn" onclick="promptForGitToken()">🔑</button>
     </div>
   </div>
 </header>
 
+<!-- Race selector -->
+<div class="race-strip-wrap">
+  <div class="race-strip" id="raceStrip"></div>
+</div>
 
-
-
-  <div class="app-inner">
-
-  <!-- Hero banner -->
-  <div class="hero">
-    <div class="hero-row">
-      <div>
-        <span class="hero-dist" id="hero-done">0</span><span class="hero-unit" id="hero-unit">KM</span>
-        <div style="font-size:0.65rem;color:var(--on-n3);margin-top:2px">of <span id="hero-goal">0</span> planned</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:1.4rem;font-weight:900;color:var(--orange)" id="hero-days">34</div>
-        <div style="font-size:0.62rem;color:var(--on-n3);text-transform:uppercase;letter-spacing:0.6px">days to race</div>
-      </div>
+<!-- Hero bar -->
+<div class="hero-bar">
+  <div class="hero-top">
+    <div>
+      <div class="hero-name" id="heroName">—</div>
+      <div class="hero-meta" id="heroMeta">—</div>
     </div>
-    <div class="rail"><div class="rail-fill" id="hero-fill" style="width:0%"></div></div>
-    <div class="hero-stats">
-      <span id="hero-pct">0% complete</span>
-      <span id="hero-sessions">0 / 0 sessions</span>
+    <div class="hero-right">
+      <div class="hero-days" id="heroDays">—</div>
+      <div class="hero-days-lbl">days to go</div>
     </div>
   </div>
-
-  <!-- Sparkline chart -->
-  <div class="chart-wrap">
-    <div class="chart-label">Weekly volume</div>
-    <div class="bars-row" id="barsRow"></div>
+  <div class="hero-rail"><div class="hero-rail-fill" id="heroFill" style="width:0%"></div></div>
+  <div class="hero-stats">
+    <span id="heroKm">0 km done</span>
+    <span id="heroPct">0% complete</span>
+    <span id="heroSessions">0 / 0 sessions</span>
   </div>
+</div>
 
-  <!-- Week tab strip -->
-  <div class="week-strip-wrap">
-    <div class="week-strip" id="weekStrip"></div>
-  </div>
+<!-- Sparkline -->
+<div class="chart-wrap">
+  <div class="chart-lbl">Weekly volume</div>
+  <div class="bars-row" id="barsRow"></div>
+</div>
 
-  <!-- Selected week panel -->
-  <div class="week-panel">
-    <div class="week-meta">
-      <div>
-        <div class="week-heading" id="panelTitle">Week —</div>
-        <div class="week-phase" id="panelPhase"></div>
-      </div>
-      <div class="week-progress">
-        <span class="week-pct" id="panelPct">0%</span>
-        <span id="panelKm"></span>
-      </div>
+<!-- Week tab strip -->
+<div class="week-strip-wrap">
+  <div class="week-strip" id="weekStrip"></div>
+</div>
+
+<!-- Week detail panel -->
+<div class="week-panel">
+  <div class="week-meta">
+    <div>
+      <div class="week-heading" id="panelTitle">—</div>
+      <div class="week-phase"   id="panelPhase">—</div>
     </div>
-    <div class="sessions" id="sessionsPanel"></div>
+    <div class="week-progress">
+      <span class="week-pct" id="panelPct">—</span>
+      <span id="panelKm">—</span>
+    </div>
   </div>
-
+  <div class="sessions-list" id="sessionsPanel"></div>
   <div class="bottom-bar">
     <button class="btn-sm" onclick="prevWeek()">← Prev</button>
     <button class="btn-sm" onclick="nextWeek()">Next →</button>
-    <button class="btn-sm danger" onclick="resetPlan()">Reset</button>
+    <button class="btn-sm danger" onclick="resetRace()">Reset race</button>
   </div>
-
-  </div><!-- /app-inner -->
 </div>
+
+</div><!-- #app -->
 
 <script src="../../shared/utils.js"></script>
 <script>
-const TYPE_LABELS = { easy:'Easy', tempo:'Tempo', long:'Long run', interval:'Intervals', race:'Race', rest:'Rest', cross:'Cross' };
-const miToKm = 1.60934;
+'use strict';
 
-let WEEKS = [], PROFILE = {};
-let useKm = localStorage.getItem('unitPref') !== 'mi';
+/* ── GitHub config — update owner/repo/path/branch to match your repo ── */
+const GH_CONFIG = {
+  owner:  "fatbuoy",
+  repo:   "app-data",
+  path:   'data/training.json',
+  branch: "main"
+};
+
+/* ── State ── */
+let DATA        = null;   // full parsed JSON
+let RACES       = [];     // data.races array
+let activeRace  = null;   // current race object
 let activeWkNum = null;
+let useKm       = localStorage.getItem('unitPref') !== 'mi';
 
-/* ── Persistence helpers ── */
-const sessKey = (wkNum, date) => `jura-session-${wkNum}-${date}`;
-const isDone   = (wkNum, date) => localStorage.getItem(sessKey(wkNum, date)) === 'true';
-const setDone  = (wkNum, date, val) => localStorage.setItem(sessKey(wkNum, date), val ? 'true' : 'false');
+const TYPE_LABELS = {
+  easy: 'Easy', tempo: 'Tempo', long: 'Long', interval: 'Intervals',
+  race: 'Race', rest: 'Rest', cross: 'Cross',
+};
+
+/* ── Persistence key — scoped per race ── */
+const sessKey = (date) => `${activeRace.id}-sess-${date}`;
+const isDone  = (date) => localStorage.getItem(sessKey(date)) === 'true';
+const setDone = (date, val) => localStorage.setItem(sessKey(date), val ? 'true' : 'false');
 
 /* ── Unit helpers ── */
-const disp = km => useKm ? km : km / miToKm;
-const unitStr = () => useKm ? 'km' : 'mi';
+const MI_PER_KM = 0.621371;
+const disp    = km => useKm ? km : km * MI_PER_KM;
+const unitStr = ()  => useKm ? 'km' : 'mi';
 
-/* ── Totals ── */
-function getTotals() {
+/* ── Race totals ── */
+function getRaceTotals(race) {
   let totalKm = 0, doneKm = 0, totalSess = 0, doneSess = 0;
-  WEEKS.forEach(wk => wk.sessions.forEach(s => {
-    totalKm += s.plannedKm || 0;
+  race.weeks.forEach(wk => wk.sessions.forEach(s => {
+    totalKm  += s.plannedKm || 0;
     totalSess++;
-    if (isDone(wk.weekNumber, s.date)) { doneKm += s.plannedKm || 0; doneSess++; }
+    if (isDone(s.date)) { doneKm += s.plannedKm || 0; doneSess++; }
   }));
   return { totalKm, doneKm, totalSess, doneSess };
 }
 
+/* ── GitHub: build full payload (merge-safe) ── */
+function buildPayload() {
+  // Persist all ticked sessions back into the data object before syncing
+  RACES.forEach(race => {
+    race.weeks.forEach(wk => wk.sessions.forEach(s => {
+      const key = `${race.id}-sess-${s.date}`;
+      s.actualKm = localStorage.getItem(key) === 'true' ? s.plannedKm : 0;
+    }));
+  });
+  return DATA;
+}
+
+/* ── GitHub: merge remote + local on conflict ── */
+function mergeFn(remote, local) {
+  // Remote is source of truth for plan content; local wins on checked state.
+  // Walk remote sessions and apply any local actualKm that's set.
+  remote.races.forEach(remRace => {
+    remRace.weeks.forEach(wk => wk.sessions.forEach(s => {
+      const key = `${remRace.id}-sess-${s.date}`;
+      const localDone = localStorage.getItem(key) === 'true';
+      s.actualKm = localDone ? s.plannedKm : 0;
+    }));
+  });
+  return remote;
+}
+
+/* ── Sync to GitHub ── */
+function sync() {
+  syncToGitHub(GH_CONFIG, buildPayload, 'syncIndicator', mergeFn);
+}
+
+/* ── Race selector ── */
+function renderRaceStrip() {
+  const now = new Date().toISOString().slice(0,10);
+  document.getElementById('raceStrip').innerHTML = RACES.map(r => {
+    const done   = r.date < now;
+    const active = r.id === activeRace.id;
+    return `<button class="race-tab${active ? ' active' : done ? ' done' : ''}"
+      onclick="selectRace('${r.id}')">${r.name}</button>`;
+  }).join('');
+}
+
+function selectRace(id) {
+  activeRace = RACES.find(r => r.id === id) || RACES[0];
+  // Default to current week within this race, else first week
+  const now = new Date();
+  const cur = activeRace.weeks.find(w => {
+    const ws = new Date(w.weekStart + 'T00:00:00');
+    return now >= ws && now < new Date(ws.getTime() + 7 * 86400000);
+  });
+  activeWkNum = (cur || activeRace.weeks[0]).weekNumber;
+  renderAll();
+  // Scroll race tab into view
+  setTimeout(() => {
+    const strip = document.getElementById('raceStrip');
+    const active = strip.querySelector('.race-tab.active');
+    if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }, 50);
+}
+
 /* ── Hero ── */
 function renderHero() {
-  const { totalKm, doneKm, totalSess, doneSess } = getTotals();
-  const raceDate = new Date((PROFILE.raceGoal || {}).date || '2026-06-14');
-  const daysLeft = Math.max(0, Math.ceil((raceDate - new Date()) / 86400000));
+  const { totalKm, doneKm, totalSess, doneSess } = getRaceTotals(activeRace);
+  const daysLeft = Math.max(0, daysUntil(activeRace.date));
   const pct = totalKm > 0 ? Math.round(doneKm / totalKm * 100) : 0;
 
-  document.getElementById('hero-done').textContent = disp(doneKm).toFixed(1);
-  document.getElementById('hero-unit').textContent = ' ' + unitStr().toUpperCase();
-  document.getElementById('hero-goal').textContent = disp(totalKm).toFixed(1) + ' ' + unitStr();
-  document.getElementById('hero-days').textContent = daysLeft;
-  document.getElementById('hero-fill').style.width = pct + '%';
-  document.getElementById('hero-pct').textContent = pct + '% complete';
-  document.getElementById('hero-sessions').textContent = doneSess + ' / ' + totalSess + ' sessions';
-  document.getElementById('u-km').className = useKm ? 'u-btn active' : 'u-btn';
-  document.getElementById('u-mi').className = !useKm ? 'u-btn active' : 'u-btn';
+  document.getElementById('heroName').textContent = activeRace.name;
+  document.getElementById('heroMeta').textContent =
+    `Target ${activeRace.targetTime} · ${activeRace.location}`;
+  document.getElementById('heroDays').textContent = daysLeft;
+  document.getElementById('heroFill').style.width  = pct + '%';
+  document.getElementById('heroKm').textContent    =
+    disp(doneKm).toFixed(1) + ' ' + unitStr() + ' done';
+  document.getElementById('heroPct').textContent   = pct + '% complete';
+  document.getElementById('heroSessions').textContent =
+    doneSess + ' / ' + totalSess + ' sessions';
+  document.getElementById('unitBtn').textContent = useKm ? 'mi' : 'km';
 }
 
 /* ── Sparkline bars ── */
 function renderBars() {
-  const maxKm = Math.max(...WEEKS.map(w => w.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0)));
-  const row = document.getElementById('barsRow');
-  row.innerHTML = WEEKS.map(wk => {
+  const weeks = activeRace.weeks;
+  const maxKm = Math.max(...weeks.map(w =>
+    w.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0)));
+  document.getElementById('barsRow').innerHTML = weeks.map(wk => {
     const planned = wk.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0);
-    const done    = wk.sessions.filter(s => isDone(wk.weekNumber, s.date)).reduce((s, x) => s + (x.plannedKm || 0), 0);
+    const done    = wk.sessions.filter(s => isDone(s.date))
+                               .reduce((s, x) => s + (x.plannedKm || 0), 0);
     const pct     = planned > 0 ? done / planned : 0;
-    const heightPct = planned > 0 ? Math.round(planned / maxKm * 100) : 4;
-    const fillCls = pct >= 1 ? 'done' : pct > 0 ? 'partial' : '';
-    const fillH   = Math.round(pct * 100);
+    const hPct    = planned > 0 ? Math.round(planned / maxKm * 100) : 4;
+    const fCls    = pct >= 1 ? 'done' : pct > 0 ? 'partial' : '';
     const isSel   = wk.weekNumber === activeWkNum;
-    return `<div class="bar-col${isSel ? ' selected' : ''}" onclick="selectWeek(${wk.weekNumber})" title="W${wk.weekNumber}: ${planned.toFixed(0)} km">
-      <div class="bar-outer" style="height:${heightPct}%">
-        <div class="bar-inner ${fillCls}" style="height:${fillH}%"></div>
+    return `<div class="bar-col${isSel ? ' selected' : ''}"
+      onclick="selectWeek(${wk.weekNumber})"
+      title="W${wk.weekNumber}: ${planned.toFixed(0)} km">
+      <div class="bar-outer" style="height:${hPct}%">
+        <div class="bar-inner ${fCls}" style="height:${Math.round(pct*100)}%"></div>
       </div>
-      <div class="bar-label">W${wk.weekNumber}</div>
+      <div class="bar-lbl">W${wk.weekNumber}</div>
     </div>`;
   }).join('');
 }
@@ -328,17 +373,17 @@ function renderBars() {
 /* ── Week tab strip ── */
 function renderStrip() {
   const now = new Date();
-  document.getElementById('weekStrip').innerHTML = WEEKS.map(wk => {
+  document.getElementById('weekStrip').innerHTML = activeRace.weeks.map(wk => {
     const ws = new Date(wk.weekStart + 'T00:00:00');
     const we = new Date(ws.getTime() + 7 * 86400000);
     const isCurrent = now >= ws && now < we;
-    const anyDone = wk.sessions.some(s => isDone(wk.weekNumber, s.date));
-    const isActive = wk.weekNumber === activeWkNum;
-    return `<div class="wtab${isCurrent ? ' is-current' : ''}${isActive ? ' active' : ''}" onclick="selectWeek(${wk.weekNumber})">
+    const anyDone   = wk.sessions.some(s => isDone(s.date));
+    const isActive  = wk.weekNumber === activeWkNum;
+    return `<button class="wtab${isCurrent ? ' is-current' : ''}${isActive ? ' active' : ''}"
+      onclick="selectWeek(${wk.weekNumber})">
       W${wk.weekNumber}${anyDone ? '<span class="dot"></span>' : ''}
-    </div>`;
+    </button>`;
   }).join('');
-  // Scroll active tab into view
   setTimeout(() => {
     const strip = document.getElementById('weekStrip');
     const active = strip.querySelector('.wtab.active');
@@ -348,66 +393,72 @@ function renderStrip() {
 
 /* ── Session panel ── */
 function renderPanel() {
-  const wk = WEEKS.find(w => w.weekNumber === activeWkNum);
+  const wk = activeRace.weeks.find(w => w.weekNumber === activeWkNum);
   if (!wk) return;
   const planned = wk.sessions.reduce((s, x) => s + (x.plannedKm || 0), 0);
-  const done    = wk.sessions.filter(s => isDone(wk.weekNumber, s.date)).reduce((s, x) => s + (x.plannedKm || 0), 0);
-  const pct     = planned > 0 ? Math.round(done / planned * 100) : 0;
+  const done    = wk.sessions.filter(s => isDone(s.date))
+                             .reduce((s, x) => s + (x.plannedKm || 0), 0);
+  const pct = planned > 0 ? Math.round(done / planned * 100) : 0;
 
   document.getElementById('panelTitle').textContent = 'Week ' + wk.weekNumber;
   document.getElementById('panelPhase').textContent = wk.phase || '';
-  document.getElementById('panelPct').textContent = pct + '%';
-  document.getElementById('panelKm').textContent = disp(done).toFixed(1) + ' / ' + disp(planned).toFixed(1) + ' ' + unitStr();
+  document.getElementById('panelPct').textContent   = pct + '%';
+  document.getElementById('panelKm').textContent    =
+    disp(done).toFixed(1) + ' / ' + disp(planned).toFixed(1) + ' ' + unitStr();
 
   document.getElementById('sessionsPanel').innerHTML = wk.sessions.map(s => {
-    const done_ = isDone(wk.weekNumber, s.date);
-    const d = new Date(s.date + 'T00:00:00');
-    const dayName = d.toLocaleDateString('en-US', {weekday:'short'});
+    const done_  = isDone(s.date);
+    const d      = new Date(s.date + 'T00:00:00');
+    const dayName = d.toLocaleDateString('en-GB', { weekday: 'short' });
     const dayNum  = d.getDate();
     const isRest  = s.type === 'rest';
     const km      = disp(s.plannedKm).toFixed(1);
-    const key     = sessKey(wk.weekNumber, s.date);
     return `<div class="sess-row${done_ ? ' is-done' : ''}${isRest ? ' is-rest' : ''}">
-      <input type="checkbox" class="sess-check" ${done_ ? 'checked' : ''} ${isRest ? 'disabled' : ''} onchange="toggleSess('${key}', ${wk.weekNumber}, '${s.date}')">
+      <input type="checkbox" class="sess-check"
+        ${done_ ? 'checked' : ''} ${isRest ? 'disabled' : ''}
+        onchange="toggleSess('${s.date}', this.checked)">
       <div class="sess-day">
         <span class="sess-day-name">${dayName}</span>
         <span class="sess-day-num">${dayNum}</span>
       </div>
       <span class="pill type-${s.type || 'rest'}">${TYPE_LABELS[s.type] || s.type}</span>
       <div class="sess-info">
-        <div class="sess-note${done_ ? ' done-text' : ''}">${s.notes || TYPE_LABELS[s.type] || ''}</div>
+        <div class="sess-note${done_ ? ' done-text' : ''}">${s.notes || ''}</div>
       </div>
       ${s.plannedKm > 0
-        ? `<div class="sess-dist${done_ ? ' done-dist' : ''}"><span class="sess-km-val">${km}</span><span>${unitStr()}</span></div>`
-        : `<div class="sess-dist" style="color:#ccc">—</div>`}
+        ? `<div class="sess-dist${done_ ? ' done-dist' : ''}">
+             <span>${km}</span><span>${unitStr()}</span>
+           </div>`
+        : `<div class="sess-dist" style="color:var(--faint)">—</div>`}
     </div>`;
   }).join('');
 }
 
-/* ── Select / prev / next ── */
+/* ── Toggle session ── */
+function toggleSess(date, checked) {
+  setDone(date, checked);
+  renderHero();
+  renderBars();
+  renderStrip();
+  renderPanel();
+  sync();
+}
+
+/* ── Select week ── */
 function selectWeek(num) {
   activeWkNum = num;
   renderBars();
   renderStrip();
   renderPanel();
 }
+
 function prevWeek() {
-  const idx = WEEKS.findIndex(w => w.weekNumber === activeWkNum);
-  if (idx > 0) selectWeek(WEEKS[idx - 1].weekNumber);
+  const idx = activeRace.weeks.findIndex(w => w.weekNumber === activeWkNum);
+  if (idx > 0) selectWeek(activeRace.weeks[idx - 1].weekNumber);
 }
 function nextWeek() {
-  const idx = WEEKS.findIndex(w => w.weekNumber === activeWkNum);
-  if (idx < WEEKS.length - 1) selectWeek(WEEKS[idx + 1].weekNumber);
-}
-
-/* ── Toggle session ── */
-function toggleSess(key, wkNum, date) {
-  const cur = localStorage.getItem(key) === 'true';
-  localStorage.setItem(key, cur ? 'false' : 'true');
-  renderHero();
-  renderBars();
-  renderStrip();
-  renderPanel();
+  const idx = activeRace.weeks.findIndex(w => w.weekNumber === activeWkNum);
+  if (idx < activeRace.weeks.length - 1) selectWeek(activeRace.weeks[idx + 1].weekNumber);
 }
 
 /* ── Unit toggle ── */
@@ -418,33 +469,71 @@ function toggleUnits() {
   renderPanel();
 }
 
-/* ── Reset ── */
-function resetPlan() {
-  if (!confirm('Clear all logged sessions?')) return;
-  Object.keys(localStorage).filter(k => k.startsWith('jura-')).forEach(k => localStorage.removeItem(k));
-  renderHero(); renderBars(); renderStrip(); renderPanel();
+/* ── Reset current race sessions only ── */
+function resetRace() {
+  if (!confirm(`Clear all logged sessions for ${activeRace.name}?`)) return;
+  activeRace.weeks.forEach(wk =>
+    wk.sessions.forEach(s => localStorage.removeItem(sessKey(s.date)))
+  );
+  renderAll();
+  sync();
 }
 
-/* ── Init ── */
-(async () => {
-  const raw = await fetchData('../../data/training.json');
-  if (!raw) { document.getElementById('sessionsPanel').textContent = 'Could not load training.json'; return; }
-  PROFILE = raw.profile || {};
-  WEEKS   = raw.weeks   || [];
-  if (!WEEKS.length) return;
-
-  // Default to current week, fall back to first week
-  const now = new Date();
-  const cur = WEEKS.find(w => {
-    const ws = new Date(w.weekStart + 'T00:00:00');
-    return now >= ws && now < new Date(ws.getTime() + 7 * 86400000);
-  });
-  activeWkNum = (cur || WEEKS[0]).weekNumber;
-
+/* ── Render everything ── */
+function renderAll() {
+  renderRaceStrip();
   renderHero();
   renderBars();
   renderStrip();
   renderPanel();
+}
+
+/* ── Load ticked state from actualKm in JSON (on first load from GitHub) ── */
+function hydrateFromJson() {
+  RACES.forEach(race => {
+    race.weeks.forEach(wk => wk.sessions.forEach(s => {
+      if ((s.actualKm || 0) >= s.plannedKm && s.plannedKm > 0) {
+        const key = `${race.id}-sess-${s.date}`;
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, 'true');
+        }
+      }
+    }));
+  });
+}
+
+/* ── Auto-select active race (next upcoming race from today) ── */
+function pickActiveRace() {
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = RACES.find(r => r.date >= today);
+  return upcoming || RACES[RACES.length - 1];
+}
+
+/* ── Init ── */
+(async () => {
+  const raw = await fetchFromGitHub(GH_CONFIG);
+  if (!raw) return;
+
+  DATA  = raw;
+  RACES = raw.races || [];
+  if (!RACES.length) {
+    document.getElementById('app').innerHTML =
+      '<p style="padding:32px;color:var(--muted)">No races found in training.json</p>';
+    return;
+  }
+
+  hydrateFromJson();
+  activeRace = pickActiveRace();
+
+  // Default week: current week within active race, else first week
+  const now = new Date();
+  const cur = activeRace.weeks.find(w => {
+    const ws = new Date(w.weekStart + 'T00:00:00');
+    return now >= ws && now < new Date(ws.getTime() + 7 * 86400000);
+  });
+  activeWkNum = (cur || activeRace.weeks[0]).weekNumber;
+
+  renderAll();
 })();
 </script>
 </body>
