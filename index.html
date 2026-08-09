@@ -520,21 +520,28 @@ function render() {
     const todayStage = activeTrip ? getTodayStage(activeTrip) : null;
 
     if (allData.training) {
-        const goal = allData.training.profile.raceGoal;
-        const diff = Math.ceil((new Date(goal.date) - now) / 86400000);
+    const todayStr10 = todayStr; // already defined above as YYYY-MM-DD
+
+    // Find next upcoming race (mirrors pickActiveRace() in training-planner.html)
+    const races = allData.training.races || [];
+    const activeRace = races.find(r => r.date >= todayStr10) || races[races.length - 1];
+
+    if (activeRace) {
+        const diff = Math.ceil((new Date(activeRace.date) - now) / 86400000);
         document.getElementById('race-days').textContent = diff;
 
-        const currentWeek = allData.training.weeks.find(w => {
-            const s = new Date(w.weekStart);
-            const e = new Date(s); e.setDate(s.getDate() + 7);
+        const currentWeek = activeRace.weeks.find(w => {
+            const s = new Date(w.weekStart + 'T00:00:00');
+            const e = new Date(s.getTime() + 7 * 86400000);
             return now >= s && now < e;
         });
 
         if (currentWeek) {
             document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
-            const sess = currentWeek.sessions.find(s => s.date === todayStr);
+            const sess = currentWeek.sessions.find(s => s.date === todayStr10);
             if (sess) {
-                document.getElementById('today-session').textContent = sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
+                document.getElementById('today-session').textContent =
+                    sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
                 document.getElementById('run-notes').textContent = sess.notes || 'No notes';
             }
             const plannedTotal = currentWeek.sessions.reduce((acc, s) => acc + (s.plannedKm || 0), 0);
@@ -545,6 +552,7 @@ function render() {
                 : 'Actual: not logged yet';
         }
     }
+}
 
     const activityLine = document.getElementById('trip-activity-line');
     if (todayStage) {
