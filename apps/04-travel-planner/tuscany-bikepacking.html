@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuscany Bikepacking · November</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --stone:    #F7F4EE;
+    --parchment:#EDE8DC;
+    --terracotta-dark: #7C3D2A;
+    --terracotta: #B05A38;
+    --sage:     #6B7B5E;
+    --charcoal: #2C2B28;
+    --mid:      #6B6860;
+    --light:    #A09D97;
+    --rule:     #D8D2C4;
+    --white:    #FEFCF8;
+
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans:  'Inter', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--stone);
+    color: var(--charcoal);
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 80px 40px 72px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% 120%, rgba(176,90,56,0.28) 0%, transparent 70%),
+      url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='58' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .hero-sub {
+    font-family: var(--serif);
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.55);
+    margin-top: 16px;
+    position: relative;
+  }
+
+  /* cypress silhouette strip */
+  .cypress-strip {
+    background: var(--charcoal);
+    line-height: 0;
+    overflow: hidden;
+    height: 60px;
+  }
+  .cypress-strip svg { display: block; width: 100%; height: 60px; }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  section { padding: 60px 0; }
+  section + section { border-top: 1px solid var(--rule); }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--light);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--charcoal);
+    margin-bottom: 24px;
+  }
+
+  h2 em { font-style: italic; color: var(--terracotta-dark); }
+
+  p { color: var(--mid); margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── WHY NOVEMBER: pill grid ── */
+  .pill-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--charcoal);
+  }
+
+  .pill-icon { font-size: 15px; flex-shrink: 0; }
+
+  /* ── ITINERARY TABLE ── */
+  .itinerary-wrap {
+    overflow-x: auto;
+    margin-top: 8px;
+    border-radius: 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  thead tr {
+    background: var(--charcoal);
+    color: var(--white);
+  }
+
+  thead th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  tbody tr { transition: background 0.15s; }
+  tbody tr:nth-child(even) { background: var(--parchment); }
+  tbody tr:hover { background: #E4DDD0; }
+
+  tbody td {
+    padding: 11px 14px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--rule);
+    color: var(--charcoal);
+  }
+
+  .day-num {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--terracotta);
+    white-space: nowrap;
+  }
+
+  .route-main { font-weight: 400; }
+  .route-via  { font-size: 12px; color: var(--light); margin-top: 2px; }
+
+  .badge-rest {
+    display: inline-block;
+    background: var(--sage);
+    color: var(--white);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+  }
+
+  .stat { white-space: nowrap; }
+
+  /* ── TOTALS STRIP ── */
+  .totals-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 24px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .total-cell {
+    background: var(--white);
+    padding: 20px 18px;
+    text-align: center;
+  }
+
+  .total-value {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--terracotta-dark);
+    line-height: 1;
+  }
+
+  .total-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--light);
+    margin-top: 5px;
+  }
+
+  /* ── HIGHLIGHTS ── */
+  .highlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .highlight-card {
+    background: var(--white);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--terracotta);
+    padding: 13px 15px;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--charcoal);
+  }
+
+  /* ── DIFFICULTY ── */
+  .difficulty-list {
+    list-style: none;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .difficulty-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--mid);
+  }
+
+  .diff-marker {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  .compare-list {
+    list-style: none;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .compare-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--mid);
+  }
+
+  .compare-list li:last-child { border-bottom: none; }
+
+  .compare-label { flex: 1; }
+
+  .diff-bar-wrap { width: 120px; background: var(--parchment); height: 6px; border-radius: 3px; flex-shrink: 0; }
+  .diff-bar { height: 6px; border-radius: 3px; background: var(--terracotta); }
+
+  /* ── BUDGET ── */
+  .budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .budget-table tr { border-bottom: 1px solid var(--rule); }
+  .budget-table tr:last-child { border-bottom: none; }
+  .budget-table td { padding: 12px 0; color: var(--mid); }
+  .budget-table td:last-child { text-align: right; font-weight: 400; color: var(--charcoal); }
+
+  .budget-total-row td {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--charcoal);
+    border-top: 2px solid var(--charcoal);
+    padding-top: 14px;
+  }
+
+  /* ── FOOD ── */
+  .food-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .food-tag {
+    background: var(--parchment);
+    border: 1px solid var(--rule);
+    padding: 6px 13px;
+    font-size: 13px;
+    color: var(--charcoal);
+    border-radius: 2px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal);
+    color: rgba(255,255,255,0.35);
+    text-align: center;
+    padding: 32px 40px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero { padding: 60px 24px 56px; }
+    .container { padding: 0 20px; }
+    section { padding: 44px 0; }
+    .totals-strip { grid-template-columns: repeat(2, 1fr); }
+    .total-value { font-size: 24px; }
+    .diff-bar-wrap { width: 70px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <p class="hero-eyebrow">Bikepacking · Two People · Early November</p>
+  <h1>Tuscany<br><em>on two wheels</em></h1>
+  <p class="hero-sub">15 days · ~660 km · vineyards, hill towns & white roads</p>
+</header>
+
+<!-- cypress silhouette -->
+<div class="cypress-strip">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 60 L0 0 L1200 0 L1200 60 Z" fill="#2C2B28"/>
+    <!-- cypress trees -->
+    <ellipse cx="80"  cy="28" rx="8"  ry="28" fill="#3d4a32" opacity="0.9"/>
+    <ellipse cx="160" cy="22" rx="7"  ry="22" fill="#3d4a32" opacity="0.7"/>
+    <ellipse cx="240" cy="30" rx="9"  ry="30" fill="#3d4a32" opacity="0.9"/>
+    <ellipse cx="310" cy="24" rx="6"  ry="24" fill="#3d4a32" opacity="0.6"/>
+    <ellipse cx="500" cy="26" rx="8"  ry="26" fill="#3d4a32" opacity="0.8"/>
+    <ellipse cx="570" cy="20" rx="6"  ry="20" fill="#3d4a32" opacity="0.7"/>
+    <ellipse cx="700" cy="28" rx="9"  ry="28" fill="#3d4a32" opacity="0.85"/>
+    <ellipse cx="780" cy="23" rx="7"  ry="23" fill="#3d4a32" opacity="0.65"/>
+    <ellipse cx="900" cy="30" rx="8"  ry="30" fill="#3d4a32" opacity="0.9"/>
+    <ellipse cx="980" cy="22" rx="6"  ry="22" fill="#3d4a32" opacity="0.7"/>
+    <ellipse cx="1080" cy="26" rx="8" ry="26" fill="#3d4a32" opacity="0.8"/>
+    <ellipse cx="1150" cy="20" rx="6" ry="20" fill="#3d4a32" opacity="0.6"/>
+  </svg>
+</div>
+
+<!-- OVERVIEW -->
+<section>
+  <div class="container">
+    <p class="section-label">The journey</p>
+    <h2>Not about <em>conquering</em>, but savouring</h2>
+    <p>This is a 15-day self-supported bikepacking tour through the most iconic corners of Tuscany, averaging 50–60 km per day. The riding is rolling rather than mountainous, leaving room every day to wander a piazza, linger over lunch, or simply watch the mist lift off the vineyards.</p>
+    <p>It feels like the natural counterpoint to the Via Alpina: less about endurance, more about one of Italy's most beautiful regions experienced at an unhurried pace.</p>
+  </div>
+</section>
+
+<!-- WHY NOVEMBER -->
+<section>
+  <div class="container">
+    <p class="section-label">Timing</p>
+    <h2>Why <em>November</em>?</h2>
+    <div class="pill-grid">
+      <div class="pill"><span class="pill-icon">🌡️</span> 14–20°C riding temperatures</div>
+      <div class="pill"><span class="pill-icon">🚗</span> Quiet roads, fewer tourists</div>
+      <div class="pill"><span class="pill-icon">💶</span> Lower accommodation prices</div>
+      <div class="pill"><span class="pill-icon">🍂</span> Autumn colour across the vineyards</div>
+      <div class="pill"><span class="pill-icon">🫒</span> Olive harvest season</div>
+      <div class="pill"><span class="pill-icon">🍄</span> Mushrooms, chestnuts & fresh olive oil</div>
+    </div>
+  </div>
+</section>
+
+<!-- ITINERARY -->
+<section>
+  <div class="container">
+    <p class="section-label">Day by day</p>
+    <h2>The <em>route</em></h2>
+
+    <div class="itinerary-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Route</th>
+            <th>Distance</th>
+            <th>Climbing</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="day-num">1</span></td>
+            <td><div class="route-main">Florence → Greve in Chianti</div><div class="route-via">Into the Chianti hills</div></td>
+            <td class="stat">48 km</td>
+            <td class="stat">900 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">2</span></td>
+            <td><div class="route-main">Greve → Radda → Gaiole</div><div class="route-via">Heart of Chianti Classico</div></td>
+            <td class="stat">46 km</td>
+            <td class="stat">950 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">3</span></td>
+            <td><div class="route-main">Gaiole → Siena</div><div class="route-via">Descending to the city</div></td>
+            <td class="stat">54 km</td>
+            <td class="stat">700 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">4</span></td>
+            <td><div class="route-main">Rest day in Siena</div><div class="route-via">Piazza del Campo, Duomo, good espresso</div></td>
+            <td class="stat">—</td>
+            <td class="stat"><span class="badge-rest">Rest</span></td>
+          </tr>
+          <tr>
+            <td><span class="day-num">5</span></td>
+            <td><div class="route-main">Siena → Asciano</div><div class="route-via">Into the Crete Senesi</div></td>
+            <td class="stat">42 km</td>
+            <td class="stat">650 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">6</span></td>
+            <td><div class="route-main">Asciano → Buonconvento → Montalcino</div><div class="route-via">Brunello country</div></td>
+            <td class="stat">56 km</td>
+            <td class="stat">950 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">7</span></td>
+            <td><div class="route-main">Montalcino → Bagno Vignoni → Pienza</div><div class="route-via">Val d'Orcia begins</div></td>
+            <td class="stat">44 km</td>
+            <td class="stat">700 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">8</span></td>
+            <td><div class="route-main">Pienza → Montepulciano</div><div class="route-via">Short day; explore Montepulciano thoroughly</div></td>
+            <td class="stat">33 km</td>
+            <td class="stat">550 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">9</span></td>
+            <td><div class="route-main">Montepulciano → Chiusi → Cetona</div><div class="route-via">Southern Orcia edge</div></td>
+            <td class="stat">57 km</td>
+            <td class="stat">750 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">10</span></td>
+            <td><div class="route-main">Cetona → San Quirico d'Orcia</div><div class="route-via">Back north through Val d'Orcia — verify routing</div></td>
+            <td class="stat">61 km</td>
+            <td class="stat">900 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">11</span></td>
+            <td><div class="route-main">San Quirico → Colle Val d'Elsa</div><div class="route-via">Long valley crossing</div></td>
+            <td class="stat">67 km</td>
+            <td class="stat">900 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">12</span></td>
+            <td><div class="route-main">Colle Val d'Elsa → San Gimignano → Volterra</div><div class="route-via">Towers & white roads</div></td>
+            <td class="stat">54 km</td>
+            <td class="stat">1,100 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">13</span></td>
+            <td><div class="route-main">Volterra → Lucca</div><div class="route-via">Longest day — consider splitting at San Miniato</div></td>
+            <td class="stat">72 km</td>
+            <td class="stat">700 m</td>
+          </tr>
+          <tr>
+            <td><span class="day-num">14</span></td>
+            <td><div class="route-main">Rest day in Lucca</div><div class="route-via">Medieval walls, towers, trattorias</div></td>
+            <td class="stat">—</td>
+            <td class="stat"><span class="badge-rest">Rest</span></td>
+          </tr>
+          <tr>
+            <td><span class="day-num">15</span></td>
+            <td><div class="route-main">Lucca → Pisa (optional) → train to Florence</div><div class="route-via">Gentle finale along the Arno plain</div></td>
+            <td class="stat">28–45 km</td>
+            <td class="stat">100 m</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="totals-strip">
+      <div class="total-cell">
+        <div class="total-value">~660</div>
+        <div class="total-label">km total</div>
+      </div>
+      <div class="total-cell">
+        <div class="total-value">~10,300</div>
+        <div class="total-label">m climbing</div>
+      </div>
+      <div class="total-cell">
+        <div class="total-value">51</div>
+        <div class="total-label">km avg day</div>
+      </div>
+      <div class="total-cell">
+        <div class="total-value">2</div>
+        <div class="total-label">rest days</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section>
+  <div class="container">
+    <p class="section-label">Places</p>
+    <h2>What makes this <em>special</em></h2>
+    <p>Rather than following the Strade Bianche race route, this itinerary combines Tuscany's most beautiful landscapes with its best towns. The white gravel roads appear only where they genuinely add to the experience.</p>
+    <div class="highlight-grid">
+      <div class="highlight-card">Florence</div>
+      <div class="highlight-card">Chianti wine region</div>
+      <div class="highlight-card">Siena</div>
+      <div class="highlight-card">Crete Senesi</div>
+      <div class="highlight-card">Val d'Orcia</div>
+      <div class="highlight-card">Montalcino</div>
+      <div class="highlight-card">Bagno Vignoni</div>
+      <div class="highlight-card">Pienza</div>
+      <div class="highlight-card">Montepulciano</div>
+      <div class="highlight-card">San Gimignano</div>
+      <div class="highlight-card">Volterra</div>
+      <div class="highlight-card">Lucca</div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFICULTY -->
+<section>
+  <div class="container">
+    <p class="section-label">How hard is it?</p>
+    <h2>Rolling hills, <em>not</em> Alpine climbs</h2>
+    <p>Around 10,000 m of climbing sounds significant, but the hills here are nothing like the sustained Alpine ascents. Most are over within a few kilometres.</p>
+    <ul class="difficulty-list">
+      <li><div class="diff-marker"></div><span>5–8% on most climbs</span></li>
+      <li><div class="diff-marker"></div><span>Occasional short ramps of 10–12%</span></li>
+      <li><div class="diff-marker"></div><span>Very few long continuous ascents</span></li>
+    </ul>
+
+    <ul class="compare-list" style="margin-top: 32px;">
+      <li>
+        <span class="compare-label">Amalfi coast</span>
+        <div class="diff-bar-wrap"><div class="diff-bar" style="width: 55%;"></div></div>
+      </li>
+      <li>
+        <span class="compare-label">Mount Vesuvius day</span>
+        <div class="diff-bar-wrap"><div class="diff-bar" style="width: 50%;"></div></div>
+      </li>
+      <li>
+        <span class="compare-label">Andalucía (Seville–Granada)</span>
+        <div class="diff-bar-wrap"><div class="diff-bar" style="width: 60%;"></div></div>
+      </li>
+      <li>
+        <span class="compare-label" style="font-weight:500; color: var(--charcoal);">Tuscany ← this trip</span>
+        <div class="diff-bar-wrap"><div class="diff-bar" style="width: 40%;"></div></div>
+      </li>
+      <li>
+        <span class="compare-label">Via Alpina</span>
+        <div class="diff-bar-wrap"><div class="diff-bar" style="width: 95%;"></div></div>
+      </li>
+    </ul>
+    <p style="margin-top:20px; font-size: 13px; color: var(--light);">Relative difficulty — illustrative comparison only.</p>
+  </div>
+</section>
+
+<!-- BUDGET -->
+<section>
+  <div class="container">
+    <p class="section-label">Money</p>
+    <h2>Budget for <em>two</em></h2>
+    <table class="budget-table">
+      <tbody>
+        <tr>
+          <td>Train travel (including bikes)</td>
+          <td>CHF 450</td>
+        </tr>
+        <tr>
+          <td>Accommodation (15 nights)</td>
+          <td>CHF 1,500</td>
+        </tr>
+        <tr>
+          <td>Food</td>
+          <td>CHF 700 – 1,000</td>
+        </tr>
+        <tr>
+          <td>Activities & incidentals</td>
+          <td>CHF 200</td>
+        </tr>
+        <tr>
+          <td>Contingency</td>
+          <td>CHF 150</td>
+        </tr>
+        <tr class="budget-total-row">
+          <td>Estimated total</td>
+          <td>≈ CHF 3,000 – 3,300</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:20px; font-size: 13.5px;">Early November keeps accommodation costs well below summer prices. Tuscany is excellent for vegetarian eating, with plenty of hearty dishes to look forward to:</p>
+    <div class="food-grid">
+      <span class="food-tag">Ribollita</span>
+      <span class="food-tag">Pappa al pomodoro</span>
+      <span class="food-tag">Pici pasta</span>
+      <span class="food-tag">Mushroom risotto</span>
+      <span class="food-tag">Pecorino</span>
+      <span class="food-tag">Fresh olive oil</span>
+      <span class="food-tag">Chestnuts</span>
+      <span class="food-tag">Porcini</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section>
+  <div class="container">
+    <p class="section-label">The spirit of the trip</p>
+    <h2>Slow down. <em>Enjoy</em>.</h2>
+    <p>Unlike an expedition where every day is measured by distance covered, this journey is designed to let Tuscany reveal itself gradually: vineyards in the morning mist, espresso in a piazza no one else seems to have found, a glass of Brunello in the golden hour before dinner.</p>
+    <p>The aim is to stay in agriturismos and family-run B&Bs, eat what's seasonal, and arrive each evening having genuinely seen where we rode through, not merely passed it.</p>
+    <p>The perfect contrast to the Via Alpina.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Draft itinerary · Tuscany Bikepacking · November 2026 · Two people</p>
+</footer>
+
+</body>
+</html>
