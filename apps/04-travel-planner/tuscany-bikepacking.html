@@ -345,6 +345,58 @@
     padding-top: 14px;
   }
 
+  /* ── KOMOOT MAP ── */
+  .map-section {
+    background: var(--charcoal);
+    padding: 60px 0;
+  }
+
+  .map-section .container { }
+
+  .map-section .section-label {
+    color: rgba(255,255,255,0.4);
+  }
+
+  .map-section h2 {
+    color: var(--white);
+  }
+
+  .map-section h2 em {
+    color: var(--terracotta);
+  }
+
+  .map-section p {
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 28px;
+  }
+
+  .map-frame {
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    line-height: 0;
+  }
+
+  .map-frame iframe {
+    display: block;
+    width: 100%;
+    border: none;
+  }
+
+  .map-cta {
+    margin-top: 18px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+    text-align: right;
+  }
+
+  .map-cta a {
+    color: var(--terracotta);
+    text-decoration: none;
+  }
+
+  .map-cta a:hover { text-decoration: underline; }
+
   /* ── FOOD ── */
   .food-grid {
     display: flex;
@@ -377,6 +429,8 @@
     .hero { padding: 60px 24px 56px; }
     .container { padding: 0 20px; }
     section { padding: 44px 0; }
+    .map-section { padding: 44px 0; }
+    .map-frame iframe { height: 480px; }
     .totals-strip { grid-template-columns: repeat(2, 1fr); }
     .total-value { font-size: 24px; }
     .diff-bar-wrap { width: 70px; }
@@ -391,7 +445,7 @@
 
 <!-- HERO -->
 <header class="hero">
-  <p class="hero-eyebrow">Bikepacking · Two People · Early November</p>
+  <p class="hero-eyebrow">Our next adventure · Early November</p>
   <h1>Tuscany<br><em>on two wheels</em></h1>
   <p class="hero-sub">15 days · ~660 km · vineyards, hill towns & white roads</p>
 </header>
@@ -421,8 +475,8 @@
   <div class="container">
     <p class="section-label">The journey</p>
     <h2>Not about <em>conquering</em>, but savouring</h2>
-    <p>This is a 15-day self-supported bikepacking tour through the most iconic corners of Tuscany, averaging 50–60 km per day. The riding is rolling rather than mountainous, leaving room every day to wander a piazza, linger over lunch, or simply watch the mist lift off the vineyards.</p>
-    <p>It feels like the natural counterpoint to the Via Alpina: less about endurance, more about one of Italy's most beautiful regions experienced at an unhurried pace.</p>
+    <p>After completing the Via Alpina, we're taking our bikes somewhere altogether different. This is our plan for a 15-day self-supported bikepacking tour through the most iconic corners of Tuscany, averaging 50–60 km per day. The riding is rolling rather than mountainous, leaving room every day to wander a piazza, linger over lunch, or simply watch the mist lift off the vineyards.</p>
+    <p>Less about endurance, more about one of Italy's most beautiful regions experienced at an unhurried pace. Exactly what we're after.</p>
   </div>
 </section>
 
@@ -571,6 +625,19 @@
         <div class="total-label">rest days</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- KOMOOT MAP -->
+<section class="map-section">
+  <div class="container">
+    <p class="section-label">Interactive route</p>
+    <h2>The full route, <em>mapped</em></h2>
+    <p>Every day of the journey, elevation profile included. Pinch to explore.</p>
+    <div class="map-frame">
+      <iframe src="https://www.komoot.com/tour/3185662411/embed?share_token=acxdLdmopWA2cqsdPACyMtwt1GfcgsY6lApbciRDiMhthpbyh1&layout=classic&profile=1" height="700" scrolling="no"></iframe>
+    </div>
+    <p class="map-cta">View full screen on <a href="https://www.komoot.com/tour/3185662411" target="_blank" rel="noopener">Komoot ↗</a></p>
   </div>
 </section>
 
