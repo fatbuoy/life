@@ -17,10 +17,22 @@
   --green: #27ae60;
 }
 
+/* ── Hero card — wraps race strip + hero bar + chart + week strip
+   in one rounded dark card, matching the base.css .card-hero pattern
+   (§6). Sits on the page background with normal .container margins;
+   overflow:hidden clips all four inner sections to the same rounded
+   corners regardless of their individual background shades. ── */
+.training-hero-card {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin: 14px 0;
+  border: 1px solid var(--app-primary3);
+}
+
 /* ── Race selector strip ── */
 .race-strip-wrap {
   background: var(--app-primary2);
-  padding: 0 var(--sp-4) 10px;
+  padding: 10px var(--sp-4);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
@@ -56,6 +68,7 @@
 .chart-wrap {
   background: var(--app-primary);
   padding: 10px var(--sp-4) 8px;
+  border-top: 1px solid rgba(255,255,255,.06);
 }
 .chart-lbl { font-size: 9px; color: var(--app-on-primary3); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px }
 .bars-row { display: flex; align-items: flex-end; gap: 3px; height: 48px }
@@ -72,8 +85,7 @@
 .week-strip-wrap {
   background: var(--app-primary);
   overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-  padding: 0 var(--sp-4) 10px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
+  padding: 0 var(--sp-4) 12px;
 }
 .week-strip-wrap::-webkit-scrollbar { display: none }
 .week-strip { display: flex; gap: 5px; width: max-content }
@@ -90,8 +102,7 @@
 .wtab .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-left: 4px; vertical-align: middle }
 
 /* ── Week panel ── */
-.week-panel { padding: 12px var(--sp-4) }
-@media (min-width: 600px) { .week-panel { padding: 16px var(--sp-6) } }
+.week-panel { padding: 0 }
 .week-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px }
 .week-heading { font-size: 13px; font-weight: 700; color: var(--text) }
 .week-phase   { font-size: 10px; color: var(--muted); margin-top: 1px }
@@ -137,90 +148,94 @@
 @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
 
 /* ── Bottom controls ── */
-.bottom-bar { padding: 12px var(--sp-4) 0; display: flex; gap: 8px }
-.btn-sm {
-  flex: 1; padding: 8px 0; font-size: 11px; font-weight: 600;
-  border: 1px solid var(--border); border-radius: var(--r-md);
-  background: var(--white); color: var(--muted); cursor: pointer; font-family: inherit;
-}
-.btn-sm:hover { background: var(--surface) }
-.btn-sm.danger { color: var(--c-danger); border-color: #f5c6c6 }
+.bottom-bar { padding: 14px 0 4px; display: flex; gap: 8px }
 </style>
 </head>
 <body>
-<div id="app">
 
 <header class="header">
-  <div class="header-row">
-    <div class="header-left">
-      <a class="header-home" href="../index.html">⌂</a>
-      <span class="header-title">Training</span>
-      <span id="syncIndicator"></span>
-    </div>
-    <div class="header-right">
-      <button class="header-btn" onclick="toggleUnits()" id="unitBtn">mi</button>
-      <button class="header-btn" onclick="promptForGitToken()">🔑</button>
+  <div class="container">
+    <div class="header-row">
+      <div class="header-left">
+        <a class="header-home" href="../index.html">⌂</a>
+        <span class="header-title">Training</span>
+        <span id="syncIndicator"></span>
+      </div>
+      <div class="header-right">
+        <button class="header-btn" onclick="toggleUnits()" id="unitBtn">mi</button>
+        <button class="header-btn" onclick="promptForGitToken()">🔑</button>
+      </div>
     </div>
   </div>
 </header>
 
-<!-- Race selector -->
-<div class="race-strip-wrap">
-  <div class="race-strip" id="raceStrip"></div>
-</div>
+<div class="container">
 
-<!-- Hero bar -->
-<div class="hero-bar">
-  <div class="hero-top">
-    <div>
-      <div class="hero-name" id="heroName">—</div>
-      <div class="hero-meta" id="heroMeta">—</div>
+  <!-- Hero card: race strip + hero bar + sparkline + week strip,
+       rounded as one unit -->
+  <div class="training-hero-card">
+
+    <!-- Race selector -->
+    <div class="race-strip-wrap">
+      <div class="race-strip" id="raceStrip"></div>
     </div>
-    <div class="hero-right">
-      <div class="hero-days" id="heroDays">—</div>
-      <div class="hero-days-lbl">days to go</div>
+
+    <!-- Hero bar -->
+    <div class="hero-bar">
+      <div class="hero-top">
+        <div>
+          <div class="hero-name" id="heroName">—</div>
+          <div class="hero-meta" id="heroMeta">—</div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-days" id="heroDays">—</div>
+          <div class="hero-days-lbl">days to go</div>
+        </div>
+      </div>
+      <div class="hero-rail"><div class="hero-rail-fill" id="heroFill" style="width:0%"></div></div>
+      <div class="hero-stats">
+        <span id="heroKm">0 km done</span>
+        <span id="heroPct">0% complete</span>
+        <span id="heroSessions">0 / 0 sessions</span>
+      </div>
     </div>
-  </div>
-  <div class="hero-rail"><div class="hero-rail-fill" id="heroFill" style="width:0%"></div></div>
-  <div class="hero-stats">
-    <span id="heroKm">0 km done</span>
-    <span id="heroPct">0% complete</span>
-    <span id="heroSessions">0 / 0 sessions</span>
-  </div>
-</div>
 
-<!-- Sparkline -->
-<div class="chart-wrap">
-  <div class="chart-lbl">Weekly volume</div>
-  <div class="bars-row" id="barsRow"></div>
-</div>
-
-<!-- Week tab strip -->
-<div class="week-strip-wrap">
-  <div class="week-strip" id="weekStrip"></div>
-</div>
-
-<!-- Week detail panel -->
-<div class="week-panel">
-  <div class="week-meta">
-    <div>
-      <div class="week-heading" id="panelTitle">—</div>
-      <div class="week-phase"   id="panelPhase">—</div>
+    <!-- Sparkline -->
+    <div class="chart-wrap">
+      <div class="chart-lbl">Weekly volume</div>
+      <div class="bars-row" id="barsRow"></div>
     </div>
-    <div class="week-progress">
-      <span class="week-pct" id="panelPct">—</span>
-      <span id="panelKm">—</span>
-    </div>
-  </div>
-  <div class="sessions-list" id="sessionsPanel"></div>
-  <div class="bottom-bar">
-    <button class="btn-sm" onclick="prevWeek()">← Prev</button>
-    <button class="btn-sm" onclick="nextWeek()">Next →</button>
-    <button class="btn-sm danger" onclick="resetRace()">Reset race</button>
-  </div>
-</div>
 
-</div><!-- #app -->
+    <!-- Week tab strip -->
+    <div class="week-strip-wrap">
+      <div class="week-strip" id="weekStrip"></div>
+    </div>
+
+  </div><!-- .training-hero-card -->
+
+  <!-- Week detail panel -->
+  <div id="app">
+    <div class="week-panel">
+      <div class="week-meta">
+        <div>
+          <div class="week-heading" id="panelTitle">—</div>
+          <div class="week-phase"   id="panelPhase">—</div>
+        </div>
+        <div class="week-progress">
+          <span class="week-pct" id="panelPct">—</span>
+          <span id="panelKm">—</span>
+        </div>
+      </div>
+      <div class="sessions-list" id="sessionsPanel"></div>
+      <div class="bottom-bar">
+        <button class="btn btn-secondary" onclick="prevWeek()">← Prev</button>
+        <button class="btn btn-secondary" onclick="nextWeek()">Next →</button>
+        <button class="btn btn-danger" onclick="resetRace()">Reset race</button>
+      </div>
+    </div>
+  </div><!-- #app -->
+
+</div><!-- .container -->
 
 <script src="../../shared/utils.js"></script>
 <script>
