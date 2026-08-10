@@ -6,10 +6,6 @@
 <title>Tuscany Bikepacking · November</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
-<!-- Leaflet CSS for Map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -192,19 +188,6 @@
   tbody tr:nth-child(even) { background: var(--parchment); }
   tbody tr:hover { background: #E4DDD0; }
 
-  /* Highlight clickable route rows */
-  tbody tr.clickable-row {
-    cursor: pointer;
-  }
-  tbody tr.clickable-row:hover .route-main {
-    color: var(--terracotta);
-    text-decoration: underline;
-  }
-
-  tbody tr.active-row {
-    background: #DFC8B6 !important;
-  }
-
   tbody td {
     padding: 11px 14px;
     vertical-align: top;
@@ -220,7 +203,7 @@
     white-space: nowrap;
   }
 
-  .route-main { font-weight: 400; transition: color 0.15s; }
+  .route-main { font-weight: 400; }
   .route-via  { font-size: 12px; color: var(--light); margin-top: 2px; }
 
   .badge-rest {
@@ -362,7 +345,7 @@
     padding-top: 14px;
   }
 
-  /* ── CUSTOM MAP SECTION ── */
+  /* ── KOMOOT MAP ── */
   .map-section {
     background: var(--charcoal);
     padding: 60px 0;
@@ -382,57 +365,27 @@
 
   .map-section p {
     color: rgba(255,255,255,0.45);
-    margin-bottom: 20px;
+    margin-bottom: 28px;
   }
 
-  .map-container-wrap {
-    position: relative;
-    border-radius: 4px;
+  .map-frame {
+    border-radius: 2px;
     overflow: hidden;
     box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    line-height: 0;
   }
 
-  #custom-map {
-    height: 580px;
+  .map-frame iframe {
+    display: block;
     width: 100%;
-    background: #e5e3df;
-    z-index: 1;
-  }
-
-  .map-controls-bar {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 1000;
-    display: flex;
-    gap: 8px;
-  }
-
-  .map-btn {
-    background: var(--charcoal);
-    color: var(--white);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 8px 14px;
-    font-size: 12px;
-    font-family: var(--sans);
-    letter-spacing: 0.05em;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .map-btn:hover {
-    background: var(--terracotta);
-    border-color: var(--terracotta);
+    border: none;
   }
 
   .map-cta {
     margin-top: 18px;
     font-size: 13px;
     color: rgba(255,255,255,0.35);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: right;
   }
 
   .map-cta a {
@@ -441,56 +394,6 @@
   }
 
   .map-cta a:hover { text-decoration: underline; }
-
-/* Fullscreen overlay styling */
-.map-container-wrap.is-fullscreen {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 99999;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-.map-container-wrap.is-fullscreen #custom-map {
-  height: 100vh !important;
-  width: 100vw !important;
-}
-
-/* Close button style when in fullscreen */
-.map-btn.btn-close-full {
-  background: var(--terracotta);
-  border-color: var(--terracotta);
-  font-weight: 500;
-}
-
-  /* Custom Leaflet Popup Styling */
-  .leaflet-popup-content-wrapper {
-    background: var(--stone);
-    color: var(--charcoal);
-    border-radius: 2px;
-    font-family: var(--sans);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  }
-
-  .leaflet-popup-tip {
-    background: var(--stone);
-  }
-
-  .map-popup-title {
-    font-family: var(--serif);
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--terracotta-dark);
-    margin-bottom: 2px;
-  }
-
-  .map-popup-meta {
-    font-size: 12px;
-    color: var(--mid);
-  }
 
   /* ── FOOD ── */
   .food-grid {
@@ -525,7 +428,7 @@
     .container { padding: 0 20px; }
     section { padding: 44px 0; }
     .map-section { padding: 44px 0; }
-    #custom-map { height: 440px; }
+    .map-frame iframe { height: 480px; }
     .totals-strip { grid-template-columns: repeat(2, 1fr); }
     .total-value { font-size: 24px; }
     .diff-bar-wrap { width: 70px; }
@@ -596,10 +499,9 @@
   <div class="container">
     <p class="section-label">Day by day</p>
     <h2>The <em>route</em></h2>
-    <p style="font-size: 13px; color: var(--light); margin-bottom: 12px;">💡 Click any riding day below to focus and zoom in on that segment on the map.</p>
 
     <div class="itinerary-wrap">
-      <table id="itinerary-table">
+      <table>
         <thead>
           <tr>
             <th>Day</th>
@@ -609,19 +511,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="clickable-row" data-segment="1">
+          <tr>
             <td><span class="day-num">1</span></td>
             <td><div class="route-main">Florence → Greve in Chianti</div><div class="route-via">Into the Chianti hills</div></td>
             <td class="stat">48 km</td>
             <td class="stat">900 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="2">
+          <tr>
             <td><span class="day-num">2</span></td>
             <td><div class="route-main">Greve → Radda → Gaiole</div><div class="route-via">Heart of Chianti Classico</div></td>
             <td class="stat">46 km</td>
             <td class="stat">950 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="3">
+          <tr>
             <td><span class="day-num">3</span></td>
             <td><div class="route-main">Gaiole → Siena</div><div class="route-via">Descending to the city</div></td>
             <td class="stat">54 km</td>
@@ -633,57 +535,57 @@
             <td class="stat">—</td>
             <td class="stat"><span class="badge-rest">Rest</span></td>
           </tr>
-          <tr class="clickable-row" data-segment="4">
+          <tr>
             <td><span class="day-num">5</span></td>
             <td><div class="route-main">Siena → Asciano</div><div class="route-via">Into the Crete Senesi</div></td>
             <td class="stat">42 km</td>
             <td class="stat">650 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="5">
+          <tr>
             <td><span class="day-num">6</span></td>
             <td><div class="route-main">Asciano → Buonconvento → Montalcino</div><div class="route-via">Brunello country</div></td>
             <td class="stat">56 km</td>
             <td class="stat">950 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="6">
+          <tr>
             <td><span class="day-num">7</span></td>
             <td><div class="route-main">Montalcino → Bagno Vignoni → Pienza</div><div class="route-via">Val d'Orcia begins</div></td>
             <td class="stat">44 km</td>
             <td class="stat">700 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="7">
+          <tr>
             <td><span class="day-num">8</span></td>
             <td><div class="route-main">Pienza → Montepulciano</div><div class="route-via">Short day; explore Montepulciano thoroughly</div></td>
             <td class="stat">33 km</td>
             <td class="stat">550 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="8">
+          <tr>
             <td><span class="day-num">9</span></td>
             <td><div class="route-main">Montepulciano → Chiusi → Cetona</div><div class="route-via">Southern Orcia edge</div></td>
             <td class="stat">57 km</td>
             <td class="stat">750 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="9">
+          <tr>
             <td><span class="day-num">10</span></td>
-            <td><div class="route-main">Cetona → San Quirico d'Orcia</div><div class="route-via">Back north through Val d'Orcia</div></td>
+            <td><div class="route-main">Cetona → San Quirico d'Orcia</div><div class="route-via">Back north through Val d'Orcia — verify routing</div></td>
             <td class="stat">61 km</td>
             <td class="stat">900 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="10">
+          <tr>
             <td><span class="day-num">11</span></td>
             <td><div class="route-main">San Quirico → Colle Val d'Elsa</div><div class="route-via">Long valley crossing</div></td>
             <td class="stat">67 km</td>
             <td class="stat">900 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="11">
+          <tr>
             <td><span class="day-num">12</span></td>
             <td><div class="route-main">Colle Val d'Elsa → San Gimignano → Volterra</div><div class="route-via">Towers & white roads</div></td>
             <td class="stat">54 km</td>
             <td class="stat">1,100 m</td>
           </tr>
-          <tr class="clickable-row" data-segment="12">
+          <tr>
             <td><span class="day-num">13</span></td>
-            <td><div class="route-main">Volterra → Lucca</div><div class="route-via">Longest day — via San Miniato</div></td>
+            <td><div class="route-main">Volterra → Lucca</div><div class="route-via">Longest day — consider splitting at San Miniato</div></td>
             <td class="stat">72 km</td>
             <td class="stat">700 m</td>
           </tr>
@@ -693,10 +595,10 @@
             <td class="stat">—</td>
             <td class="stat"><span class="badge-rest">Rest</span></td>
           </tr>
-          <tr class="clickable-row" data-segment="13">
+          <tr>
             <td><span class="day-num">15</span></td>
-            <td><div class="route-main">Lucca → Pisa → Train to Florence</div><div class="route-via">Gentle finale along the Arno plain</div></td>
-            <td class="stat">28 km</td>
+            <td><div class="route-main">Lucca → Pisa (optional) → train to Florence</div><div class="route-via">Gentle finale along the Arno plain</div></td>
+            <td class="stat">28–45 km</td>
             <td class="stat">100 m</td>
           </tr>
         </tbody>
@@ -724,25 +626,16 @@
   </div>
 </section>
 
-<!-- CUSTOM MAP SECTION -->
-<section class="map-section" id="map-section">
+<!-- KOMOOT MAP -->
+<section class="map-section">
   <div class="container">
     <p class="section-label">Interactive route</p>
-    <h2>13 Segments, <em>custom mapped</em></h2>
-    <p>Click any line on the map or stage in the itinerary table to isolate a segment.</p>
-    
-    <div class="map-container-wrap">
-      <div class="map-controls-bar">
-        <button class="map-btn" id="fullscreen-btn">⛶ Fullscreen</button>
-        <button class="map-btn" id="reset-map-btn">Fit Full Route</button>
-      </div>
-      <div id="custom-map"></div>
+    <h2>The full route, <em>mapped</em></h2>
+    <p>Every day of the journey, elevation profile included. Pinch to explore.</p>
+    <div class="map-frame">
+      <iframe src="https://www.komoot.com/tour/3185662411/embed?share_token=acxdLdmopWA2cqsdPACyMtwt1GfcgsY6lApbciRDiMhthpbyh1&layout=classic&profile=1" height="700" scrolling="no"></iframe>
     </div>
-
-    <div class="map-cta">
-      <span>Map styled with CartoDB Positron & Leaflet</span>
-      <a href="https://www.komoot.com/tour/3185662411" target="_blank" rel="noopener">View on Komoot ↗</a>
-    </div>
+    <p class="map-cta">View full screen on <a href="https://www.komoot.com/tour/3185662411" target="_blank" rel="noopener">Komoot ↗</a></p>
   </div>
 </section>
 
@@ -868,186 +761,6 @@
 <footer>
   <p>Tuscany Bikepacking · November 2026 · Our next adventure after the Via Alpina</p>
 </footer>
-
-<!-- Leaflet JS Library -->
-<!-- Leaflet JS Library -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script>
-  // ── 1. MAP INITIALIZATION ──
-  const map = L.map('custom-map', {
-    scrollWheelZoom: false,
-    zoomControl: true
-  }).setView([43.4, 11.2], 9);
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
-
-  // Map Styles
-  const defaultStyle = { color: '#B05A38', weight: 4, opacity: 0.8, lineCap: 'round', lineJoin: 'round' };
-  const highlightStyle = { color: '#7C3D2A', weight: 7, opacity: 1.0 };
-  const dimStyle = { color: '#A09D97', weight: 3, opacity: 0.35 };
-
-  const mapPolylines = {};
-  const boundsGroup = L.featureGroup();
-  let currentSelectedId = null;
-
-  // Metadata mapping for popups
-  const stageInfo = {
-    1: { title: "Day 1: Florence → Greve in Chianti", dist: "48 km", elev: "900 m" },
-    2: { title: "Day 2: Greve → Radda → Gaiole", dist: "46 km", elev: "950 m" },
-    3: { title: "Day 3: Gaiole → Siena", dist: "54 km", elev: "700 m" },
-    4: { title: "Day 5: Siena → Asciano", dist: "42 km", elev: "650 m" },
-    5: { title: "Day 6: Asciano → Montalcino", dist: "56 km", elev: "950 m" },
-    6: { title: "Day 7: Montalcino → Pienza", dist: "44 km", elev: "700 m" },
-    7: { title: "Day 8: Pienza → Montepulciano", dist: "33 km", elev: "550 m" },
-    8: { title: "Day 9: Montepulciano → Cetona", dist: "57 km", elev: "750 m" },
-    9: { title: "Day 10: Cetona → San Quirico d'Orcia", dist: "61 km", elev: "900 m" },
-    10: { title: "Day 11: San Quirico → Colle Val d'Elsa", dist: "67 km", elev: "900 m" },
-    11: { title: "Day 12: Colle Val d'Elsa → Volterra", dist: "54 km", elev: "1,100 m" },
-    12: { title: "Day 13: Volterra → Lucca", dist: "72 km", elev: "700 m" },
-    13: { title: "Day 15: Lucca → Pisa", dist: "28 km", elev: "100 m" }
-  };
-
-  // ── 2. GPX PARSER & AUTO-LOADER ──
-  function loadGPXData(gpxText) {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(gpxText, "text/xml");
-    const trksegs = xml.querySelectorAll("trkseg");
-
-    // Clear placeholder layers
-    Object.values(mapPolylines).forEach(layer => map.removeLayer(layer));
-    boundsGroup.clearLayers();
-
-    trksegs.forEach((seg, index) => {
-      const segId = index + 1; // Stage 1 through 13
-      const points = Array.from(seg.querySelectorAll("trkpt")).map(pt => [
-        parseFloat(pt.getAttribute("lat")),
-        parseFloat(pt.getAttribute("lon"))
-      ]);
-
-      if (points.length === 0) return;
-
-      const polyline = L.polyline(points, defaultStyle).addTo(map);
-      const meta = stageInfo[segId] || { title: `Segment ${segId}`, dist: '', elev: '' };
-
-      polyline.bindPopup(`
-        <div style="padding: 4px;">
-          <div class="map-popup-title">${meta.title}</div>
-          ${meta.dist ? `<div class="map-popup-meta">📊 ${meta.dist} · ⛰️ ${meta.elev} climbing</div>` : ''}
-        </div>
-      `);
-
-      polyline.on('click', () => selectSegment(segId, false));
-
-      mapPolylines[segId] = polyline;
-      boundsGroup.addLayer(polyline);
-    });
-
-    if (boundsGroup.getLayers().length > 0) {
-      map.fitBounds(boundsGroup.getBounds().pad(0.08));
-    }
-  }
-
-  // Automatically fetch route.gpx from server
-  fetch('route.gpx')
-    .then(response => {
-      if (!response.ok) throw new Error('Could not find route.gpx on server');
-      return response.text();
-    })
-    .then(gpxText => loadGPXData(gpxText))
-    .catch(err => console.warn('GPX auto-load info:', err.message));
-
-  // ── 3. TABLE & MAP INTERACTIVITY ──
-  function selectSegment(id, scrollMap = false) {
-    currentSelectedId = id;
-
-    Object.keys(mapPolylines).forEach(key => {
-      if (key == id) {
-        mapPolylines[key].setStyle(highlightStyle);
-        mapPolylines[key].bringToFront();
-      } else {
-        mapPolylines[key].setStyle(dimStyle);
-      }
-    });
-
-    const targetLayer = mapPolylines[id];
-    if (targetLayer) {
-      map.fitBounds(targetLayer.getBounds().pad(0.3));
-      targetLayer.openPopup();
-    }
-
-    document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
-      tr.classList.remove('active-row');
-    });
-    const selectedRow = document.querySelector(`#itinerary-table tr[data-segment="${id}"]`);
-    if (selectedRow) {
-      selectedRow.classList.add('active-row');
-    }
-
-    if (scrollMap) {
-      document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  function resetFullRoute() {
-    currentSelectedId = null;
-    Object.keys(mapPolylines).forEach(key => {
-      mapPolylines[key].setStyle(defaultStyle);
-      mapPolylines[key].closePopup();
-    });
-    document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
-      tr.classList.remove('active-row');
-    });
-    if (boundsGroup.getLayers().length > 0) {
-      map.fitBounds(boundsGroup.getBounds().pad(0.08));
-    }
-  }
-
-  document.querySelectorAll('#itinerary-table tbody tr.clickable-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const segId = row.getAttribute('data-segment');
-      selectSegment(segId, true);
-    });
-  });
-
-  document.getElementById('reset-map-btn').addEventListener('click', resetFullRoute);
-
-  // ── 4. FULLSCREEN TOGGLE LOGIC ──
-  const mapWrap = document.querySelector('.map-container-wrap');
-  const fullscreenBtn = document.getElementById('fullscreen-btn');
-
-  function toggleFullscreen() {
-    const isFull = mapWrap.classList.toggle('is-fullscreen');
-    
-    if (isFull) {
-      fullscreenBtn.textContent = '✕ Exit Fullscreen';
-      fullscreenBtn.classList.add('btn-close-full');
-      document.body.style.overflow = 'hidden';
-    } else {
-      fullscreenBtn.textContent = '⛶ Fullscreen';
-      fullscreenBtn.classList.remove('btn-close-full');
-      document.body.style.overflow = '';
-    }
-
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-  }
-
-  if (fullscreenBtn) {
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mapWrap.classList.contains('is-fullscreen')) {
-      toggleFullscreen();
-    }
-  });
-</script>
 
 </body>
 </html>
