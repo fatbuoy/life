@@ -534,6 +534,40 @@
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
   }
+
+  /* Custom Minimalistic Map Markers */
+.segment-marker {
+  background: none;
+  border: none;
+}
+
+.marker-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.marker-badge:hover {
+  transform: scale(1.25);
+  background: var(--terracotta-dark);
+}
+
+.marker-badge.finish-badge {
+  background: var(--charcoal);
+  border-color: var(--terracotta);
+}
 </style>
 </head>
 <body>
@@ -541,8 +575,8 @@
 <!-- HERO -->
 <header class="hero">
   <p class="hero-eyebrow">Our next adventure · Early November</p>
-  <h1>Tuscany<br><em>on two wheels</em></h1>
-  <p class="hero-sub">15 days · ~660 km · vineyards, hill towns & white roads</p>
+  <h1>Tuscany<br><em>on two wheels*</em></h1>
+  <p class="hero-sub">15 days · ~660 km · vineyards, hill towns & white roads (*...well, two each)</p>
 </header>
 
 <!-- cypress silhouette -->
@@ -569,9 +603,9 @@
 <section>
   <div class="container">
     <p class="section-label">The journey</p>
-    <h2>Not about <em>conquering</em>, but savouring</h2>
-    <p>After completing the Via Alpina, we're taking our bikes somewhere altogether different. This is our plan for a 15-day self-supported bikepacking tour through the most iconic corners of Tuscany, averaging 50–60 km per day. The riding is rolling rather than mountainous, leaving room every day to wander a piazza, linger over lunch, or simply watch the mist lift off the vineyards.</p>
-    <p>Less about endurance, more about one of Italy's most beautiful regions experienced at an unhurried pace. Exactly what we're after.</p>
+    <h2>No <em>conquering</em>, just savouring</h2>
+    <p>After completing the Via Alpina, time to give the boots a rest and get on the wheels for a gentle roll. This is the tentative plan for a 15-day two together bikepacking tour through the most iconic corners of Tuscany, averaging 50–60 km per day. The riding is rolling rather than mountainous, leaving room every day to wander a piazza, linger over lunch, or simply watch the mist lift off the vineyards.</p>
+    <p>Typical Sahani style, this is not about endurance, more about one of Italy's most beautiful regions experienced at an unhurried pace.</p>
   </div>
 </section>
 
@@ -874,179 +908,240 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // ── 1. MAP INITIALIZATION ──
-  const map = L.map('custom-map', {
-    scrollWheelZoom: false,
-    zoomControl: true
-  }).setView([43.4, 11.2], 9);
+// ── 1. MAP INITIALIZATION ──
+const map = L.map('custom-map', {
+  scrollWheelZoom: false,
+  zoomControl: true
+}).setView([43.4, 11.2], 9);
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
 
-  // Map Styles
-  const defaultStyle = { color: '#B05A38', weight: 4, opacity: 0.8, lineCap: 'round', lineJoin: 'round' };
-  const highlightStyle = { color: '#7C3D2A', weight: 7, opacity: 1.0 };
-  const dimStyle = { color: '#A09D97', weight: 3, opacity: 0.35 };
+// Map Styles
+const defaultStyle = { color: '#B05A38', weight: 4, opacity: 0.8, lineCap: 'round', lineJoin: 'round' };
+const highlightStyle = { color: '#7C3D2A', weight: 7, opacity: 1.0 };
+const dimStyle = { color: '#A09D97', weight: 3, opacity: 0.35 };
 
-  const mapPolylines = {};
-  const boundsGroup = L.featureGroup();
-  let currentSelectedId = null;
+const mapPolylines = {};
+const mapMarkers = [];
+const boundsGroup = L.featureGroup();
+let currentSelectedId = null;
 
-  // Metadata mapping for popups
-  const stageInfo = {
-    1: { title: "Day 1: Florence → Greve in Chianti", dist: "48 km", elev: "900 m" },
-    2: { title: "Day 2: Greve → Radda → Gaiole", dist: "46 km", elev: "950 m" },
-    3: { title: "Day 3: Gaiole → Siena", dist: "54 km", elev: "700 m" },
-    4: { title: "Day 5: Siena → Asciano", dist: "42 km", elev: "650 m" },
-    5: { title: "Day 6: Asciano → Montalcino", dist: "56 km", elev: "950 m" },
-    6: { title: "Day 7: Montalcino → Pienza", dist: "44 km", elev: "700 m" },
-    7: { title: "Day 8: Pienza → Montepulciano", dist: "33 km", elev: "550 m" },
-    8: { title: "Day 9: Montepulciano → Cetona", dist: "57 km", elev: "750 m" },
-    9: { title: "Day 10: Cetona → San Quirico d'Orcia", dist: "61 km", elev: "900 m" },
-    10: { title: "Day 11: San Quirico → Colle Val d'Elsa", dist: "67 km", elev: "900 m" },
-    11: { title: "Day 12: Colle Val d'Elsa → Volterra", dist: "54 km", elev: "1,100 m" },
-    12: { title: "Day 13: Volterra → Lucca", dist: "72 km", elev: "700 m" },
-    13: { title: "Day 15: Lucca → Pisa", dist: "28 km", elev: "100 m" }
-  };
+// Stage Titles
+const stageTitles = {
+  1: "Day 1: Florence → Greve in Chianti",
+  2: "Day 2: Greve → Radda → Gaiole",
+  3: "Day 3: Gaiole → Siena",
+  4: "Day 5: Siena → Asciano",
+  5: "Day 6: Asciano → Montalcino",
+  6: "Day 7: Montalcino → Pienza",
+  7: "Day 8: Pienza → Montepulciano",
+  8: "Day 9: Montepulciano → Cetona",
+  9: "Day 10: Cetona → San Quirico d'Orcia",
+  10: "Day 11: San Quirico → Colle Val d'Elsa",
+  11: "Day 12: Colle Val d'Elsa → Volterra",
+  12: "Day 13: Volterra → Lucca",
+  13: "Day 15: Lucca → Pisa"
+};
 
-  // ── 2. GPX PARSER & AUTO-LOADER ──
-  function loadGPXData(gpxText) {
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(gpxText, "text/xml");
-    const trksegs = xml.querySelectorAll("trkseg");
+// ── HAVERSINE DISTANCE CALCULATOR ──
+function getHaversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
 
-    // Clear placeholder layers
-    Object.values(mapPolylines).forEach(layer => map.removeLayer(layer));
-    boundsGroup.clearLayers();
+// ── GPX PARSER & STAT CALCULATOR ──
+function loadGPXData(gpxText) {
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(gpxText, "text/xml");
+  const trksegs = xml.querySelectorAll("trkseg");
 
-    trksegs.forEach((seg, index) => {
-      const segId = index + 1; // Stage 1 through 13
-      const points = Array.from(seg.querySelectorAll("trkpt")).map(pt => [
-        parseFloat(pt.getAttribute("lat")),
-        parseFloat(pt.getAttribute("lon"))
-      ]);
+  // Clear existing elements
+  Object.values(mapPolylines).forEach(layer => map.removeLayer(layer));
+  mapMarkers.forEach(marker => map.removeLayer(marker));
+  mapMarkers.length = 0;
+  boundsGroup.clearLayers();
 
-      if (points.length === 0) return;
+  trksegs.forEach((seg, index) => {
+    const segId = index + 1;
+    const trkpts = Array.from(seg.querySelectorAll("trkpt"));
+    if (trkpts.length === 0) return;
 
-      const polyline = L.polyline(points, defaultStyle).addTo(map);
-      const meta = stageInfo[segId] || { title: `Segment ${segId}`, dist: '', elev: '' };
+    const points = [];
+    let totalDistKm = 0;
+    let totalEleGain = 0;
+    let prevEle = null;
 
-      polyline.bindPopup(`
-        <div style="padding: 4px;">
-          <div class="map-popup-title">${meta.title}</div>
-          ${meta.dist ? `<div class="map-popup-meta">📊 ${meta.dist} · ⛰️ ${meta.elev} climbing</div>` : ''}
-        </div>
-      `);
+    trkpts.forEach((pt, i) => {
+      const lat = parseFloat(pt.getAttribute("lat"));
+      const lon = parseFloat(pt.getAttribute("lon"));
+      points.push([lat, lon]);
 
-      polyline.on('click', () => selectSegment(segId, false));
+      // Cumulative Distance
+      if (i > 0) {
+        totalDistKm += getHaversineDistance(points[i - 1][0], points[i - 1][1], lat, lon);
+      }
 
-      mapPolylines[segId] = polyline;
-      boundsGroup.addLayer(polyline);
-    });
-
-    if (boundsGroup.getLayers().length > 0) {
-      map.fitBounds(boundsGroup.getBounds().pad(0.08));
-    }
-  }
-
-  // Automatically fetch route.gpx from server
-  fetch('route.gpx')
-    .then(response => {
-      if (!response.ok) throw new Error('Could not find route.gpx on server');
-      return response.text();
-    })
-    .then(gpxText => loadGPXData(gpxText))
-    .catch(err => console.warn('GPX auto-load info:', err.message));
-
-  // ── 3. TABLE & MAP INTERACTIVITY ──
-  function selectSegment(id, scrollMap = false) {
-    currentSelectedId = id;
-
-    Object.keys(mapPolylines).forEach(key => {
-      if (key == id) {
-        mapPolylines[key].setStyle(highlightStyle);
-        mapPolylines[key].bringToFront();
-      } else {
-        mapPolylines[key].setStyle(dimStyle);
+      // Cumulative Elevation Gain
+      const eleNode = pt.querySelector("ele");
+      if (eleNode) {
+        const ele = parseFloat(eleNode.textContent);
+        if (prevEle !== null && ele > prevEle) {
+          totalEleGain += (ele - prevEle);
+        }
+        prevEle = ele;
       }
     });
 
-    const targetLayer = mapPolylines[id];
-    if (targetLayer) {
-      map.fitBounds(targetLayer.getBounds().pad(0.3));
-      targetLayer.openPopup();
-    }
+    // Format calculated values from GPX
+    const calcDist = totalDistKm.toFixed(1) + " km";
+    const calcElev = prevEle !== null ? Math.round(totalEleGain) + " m" : null;
+    const title = stageTitles[segId] || `Segment ${segId}`;
 
-    document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
-      tr.classList.remove('active-row');
-    });
-    const selectedRow = document.querySelector(`#itinerary-table tr[data-segment="${id}"]`);
-    if (selectedRow) {
-      selectedRow.classList.add('active-row');
-    }
+    // Draw Line
+    const polyline = L.polyline(points, defaultStyle).addTo(map);
+    polyline.bindPopup(`
+      <div style="padding: 4px;">
+        <div class="map-popup-title">${title}</div>
+        <div class="map-popup-meta">📊 ${calcDist} ${calcElev ? `· ⛰️ ${calcElev} climbing` : ''}</div>
+      </div>
+    `);
 
-    if (scrollMap) {
-      document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+    polyline.on('click', () => selectSegment(segId, false));
+    mapPolylines[segId] = polyline;
+    boundsGroup.addLayer(polyline);
 
-  function resetFullRoute() {
-    currentSelectedId = null;
-    Object.keys(mapPolylines).forEach(key => {
-      mapPolylines[key].setStyle(defaultStyle);
-      mapPolylines[key].closePopup();
+    // ── ADD MINIMALIST START MARKER ──
+    const startPt = points[0];
+    const markerIcon = L.divIcon({
+      className: 'segment-marker',
+      html: `<div class="marker-badge">${segId}</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
     });
-    document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
-      tr.classList.remove('active-row');
-    });
-    if (boundsGroup.getLayers().length > 0) {
-      map.fitBounds(boundsGroup.getBounds().pad(0.08));
-    }
-  }
 
-  document.querySelectorAll('#itinerary-table tbody tr.clickable-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const segId = row.getAttribute('data-segment');
-      selectSegment(segId, true);
-    });
+    const marker = L.marker(startPt, { icon: markerIcon }).addTo(map);
+    marker.on('click', () => selectSegment(segId, false));
+    mapMarkers.push(marker);
+
+    // If it's the final segment, add a finish marker at the end point
+    if (index === trksegs.length - 1) {
+      const endPt = points[points.length - 1];
+      const finishIcon = L.divIcon({
+        className: 'segment-marker',
+        html: `<div class="marker-badge finish-badge">🏁</div>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      });
+      const finishMarker = L.marker(endPt, { icon: finishIcon }).addTo(map);
+      mapMarkers.push(finishMarker);
+    }
   });
 
-  document.getElementById('reset-map-btn').addEventListener('click', resetFullRoute);
+  if (boundsGroup.getLayers().length > 0) {
+    map.fitBounds(boundsGroup.getBounds().pad(0.08));
+  }
+}
 
-  // ── 4. FULLSCREEN TOGGLE LOGIC ──
-  const mapWrap = document.querySelector('.map-container-wrap');
-  const fullscreenBtn = document.getElementById('fullscreen-btn');
+// Automatically fetch route.gpx from server
+fetch('route.gpx')
+  .then(response => {
+    if (!response.ok) throw new Error('Could not find route.gpx');
+    return response.text();
+  })
+  .then(gpxText => loadGPXData(gpxText))
+  .catch(err => console.warn('GPX auto-load info:', err.message));
 
-  function toggleFullscreen() {
-    const isFull = mapWrap.classList.toggle('is-fullscreen');
-    
-    if (isFull) {
-      fullscreenBtn.textContent = '✕ Exit Fullscreen';
-      fullscreenBtn.classList.add('btn-close-full');
-      document.body.style.overflow = 'hidden';
+// ── TABLE & MAP INTERACTIVITY ──
+function selectSegment(id, scrollMap = false) {
+  currentSelectedId = id;
+
+  Object.keys(mapPolylines).forEach(key => {
+    if (key == id) {
+      mapPolylines[key].setStyle(highlightStyle);
+      mapPolylines[key].bringToFront();
     } else {
-      fullscreenBtn.textContent = '⛶ Fullscreen';
-      fullscreenBtn.classList.remove('btn-close-full');
-      document.body.style.overflow = '';
-    }
-
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-  }
-
-  if (fullscreenBtn) {
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mapWrap.classList.contains('is-fullscreen')) {
-      toggleFullscreen();
+      mapPolylines[key].setStyle(dimStyle);
     }
   });
+
+  const targetLayer = mapPolylines[id];
+  if (targetLayer) {
+    map.fitBounds(targetLayer.getBounds().pad(0.3));
+    targetLayer.openPopup();
+  }
+
+  document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
+    tr.classList.remove('active-row');
+  });
+  const selectedRow = document.querySelector(`#itinerary-table tr[data-segment="${id}"]`);
+  if (selectedRow) {
+    selectedRow.classList.add('active-row');
+  }
+
+  if (scrollMap) {
+    document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function resetFullRoute() {
+  currentSelectedId = null;
+  Object.keys(mapPolylines).forEach(key => {
+    mapPolylines[key].setStyle(defaultStyle);
+    mapPolylines[key].closePopup();
+  });
+  document.querySelectorAll('#itinerary-table tbody tr').forEach(tr => {
+    tr.classList.remove('active-row');
+  });
+  if (boundsGroup.getLayers().length > 0) {
+    map.fitBounds(boundsGroup.getBounds().pad(0.08));
+  }
+}
+
+document.querySelectorAll('#itinerary-table tbody tr.clickable-row').forEach(row => {
+  row.addEventListener('click', () => {
+    const segId = row.getAttribute('data-segment');
+    selectSegment(segId, true);
+  });
+});
+
+document.getElementById('reset-map-btn').addEventListener('click', resetFullRoute);
+
+// ── FULLSCREEN TOGGLE LOGIC ──
+const mapWrap = document.querySelector('.map-container-wrap');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+function toggleFullscreen() {
+  const isFull = mapWrap.classList.toggle('is-fullscreen');
+  if (isFull) {
+    fullscreenBtn.textContent = '✕ Exit Fullscreen';
+    fullscreenBtn.classList.add('btn-close-full');
+    document.body.style.overflow = 'hidden';
+  } else {
+    fullscreenBtn.textContent = '⛶ Fullscreen';
+    fullscreenBtn.classList.remove('btn-close-full');
+    document.body.style.overflow = '';
+  }
+  setTimeout(() => map.invalidateSize(), 100);
+}
+
+if (fullscreenBtn) {
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && mapWrap.classList.contains('is-fullscreen')) {
+    toggleFullscreen();
+  }
+});
 </script>
 
 </body>
