@@ -47,6 +47,7 @@
 
   <div id="sec1"></div>
   <div id="sec2"></div>
+  <div id="secYoY"></div>
   <div class="section-sep"></div>
   <div id="sec3"></div>
   <div id="sec4"></div>
@@ -84,6 +85,10 @@ let ACTUALS = [], BUDGETS = [];
 let YEARS = [];
 let selectedYear = new Date().getFullYear();
 
+let yoyMode = 'YTD'; // 'YTD' | 'Annual'
+let trendViewMode = 'amount'; // 'amount' | 'pct'
+let isTrendTableOpen = true;
+
 /* ─── Data helpers ──────────────────────────────────────────────── */
 function getActuals(year) { return ACTUALS.filter(r => r.year === year) }
 function getBudgets(year) { return BUDGETS.filter(r => r.year === year) }
@@ -103,11 +108,19 @@ function onPrivacyChange() {
 }
 
 /* ─── Forecast ──────────────────────────────────────────────────── */
+function _lastCompleteMonthIndex() {
+  return new Date().getMonth() - 1;   // 0 = Jan .. 11 = Dec; -1 = January (nothing complete yet)
+}
+
 function forecast(year) {
   if (year !== new Date().getFullYear()) return null;
   const curr = monthlyTotals(year), bgt = monthlyBudgets(year);
+  const boundary = _lastCompleteMonthIndex();
   let actual = 0, projected = 0;
-  curr.forEach((v, i) => { if (v > 0) actual += v; else projected += (bgt[i] || 0); });
+  MONTHS.forEach((m, i) => {
+    if (i <= boundary) actual += curr[i] || 0;
+    else projected += (bgt[i] || 0);
+  });
   return { actual, projected, total: actual + projected };
 }
 
@@ -215,56 +228,215 @@ function renderSec2(year) {
   document.getElementById('sec2').innerHTML = html;
 }
 
-/* ─── SECTION 3: Category trend chart ───────────────────────────── */
+/* ─── SECTION: YoY Growth & Biggest Movers ──────────────────────── */
+function setYoYMode(mode) {
+  yoyMode = mode;
+  renderYoY(selectedYear);
+}
+
+function computeYoYData(year) {
+  const prevYear = year - 1;
+  const currYear = new Date().getFullYear();
+
+  let boundary = 11;
+  if (year === currYear) {
+    boundary = _lastCompleteMonthIndex();
+    if (boundary < 0) boundary = 0;
+  }
+
+  const isYTD = (yoyMode === 'YTD');
+
+  return Object.keys(CAT_COLORS).map(cat => {
+    let curr = 0, prev = 0;
+
+    if (isYTD) {
+      curr = sumBy(ACTUALS.filter(r => r.year === year && r.category === cat && MONTHS.indexOf(r.month) <= boundary), r => r.amount);
+      prev = sumBy(ACTUALS.filter(r => r.year === prevYear && r.category === cat && MONTHS.indexOf(r.month) <= boundary), r => r.amount);
+    } else {
+      const actCurr = sumBy(ACTUALS.filter(r => r.year === year && r.category === cat && MONTHS.indexOf(r.month) <= boundary), r => r.amount);
+      const bgtCurr = sumBy(BUDGETS.filter(r => r.year === year && r.category === cat && MONTHS.indexOf(r.month) > boundary), r => r.amount);
+      curr = actCurr + bgtCurr;
+      prev = sumBy(ACTUALS.filter(r => r.year === prevYear && r.category === cat), r => r.amount);
+    }
+
+    const delta = curr - prev;
+    const deltaPct = prev >= 1 ? (delta / prev * 100) : null;
+    return { cat, curr, prev, delta, deltaPct };
+  }).filter(d => d.curr >= 1 || d.prev >= 1);
+}
+
+function renderYoY(year) {
+  const prevYear = year - 1;
+  const el = document.getElementById('secYoY');
+  if (!YEARS.includes(prevYear)) { el.innerHTML = ''; return; }
+
+  const currYear = new Date().getFullYear();
+  let boundary = 11;
+  if (year === currYear) {
+    boundary = _lastCompleteMonthIndex();
+    if (boundary < 0) boundary = 0;
+  }
+
+  const data = computeYoYData(year);
+  const totCurr = sumBy(data, d => d.curr);
+  const totPrev = sumBy(data, d => d.prev);
+  const totDelta = totCurr - totPrev;
+  const totDeltaPct = totPrev > 0 ? (totDelta / totPrev * 100) : 0;
+
+  const withBaseline = data.filter(d => d.deltaPct !== null);
+  const up   = [...withBaseline].filter(d => d.delta > 0).sort((a, b) => b.delta - a.delta).slice(0, 2);
+  const down = [...withBaseline].filter(d => d.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 2);
+
+  const moverRow = (d, isUp) => `
+    <div class="flex-between" style="padding:5px 0;font-size:11px">
+      <span style="display:flex;align-items:center;gap:6px;min-width:0">
+        <span class="ri-dot" style="background:${CAT_COLORS[d.cat]}"></span>
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.cat}</span>
+      </span>
+      <span class="pill ${isUp ? 'pill-danger' : 'pill-success'} num-private" style="flex-shrink:0">
+        ${isUp ? '+' : ''}${fmtK(d.delta)}
+      </span>
+    </div>`;
+
+  let moversHtml = '';
+  if (up.length || down.length) {
+    moversHtml = `
+      <div class="sec-lbl">Biggest Movers vs ${prevYear}</div>
+      <div class="card">
+        ${up.length ? `<div class="db-meta" style="margin-bottom:2px">Up the most</div>${up.map(d => moverRow(d, true)).join('')}` : ''}
+        ${up.length && down.length ? '<div class="section-sep" style="margin:8px 0"></div>' : ''}
+        ${down.length ? `<div class="db-meta" style="margin-bottom:2px">Down the most</div>${down.map(d => moverRow(d, false)).join('')}` : ''}
+      </div>`;
+  }
+
+  const rows = data.map(d => `
+    <tr>
+      <td>● ${d.cat}</td>
+      <td class="num-private">${fmtK(d.prev)}</td>
+      <td class="num-private">${fmtK(d.curr)}</td>
+      <td class="num-private ${d.delta > 0 ? 'text-danger' : d.delta < 0 ? 'text-success' : ''}">${d.delta >= 0 ? '+' : ''}${fmtK(d.delta)}</td>
+      <td>${d.deltaPct === null ? 'new' : (d.deltaPct >= 0 ? '+' : '') + Math.round(d.deltaPct) + '%'}</td>
+    </tr>`).join('');
+
+  const rangeStr = (yoyMode === 'YTD' && year === currYear && boundary < 11) ? ` (${MONTHS[0]}–${MONTHS[boundary]})` : '';
+
+  const tableHtml = `
+    <div class="flex-between mt-3 mb-2">
+      <div class="sec-lbl" style="margin:0">YoY Growth by Category</div>
+      <div style="display:flex;gap:4px">
+        <button class="period-btn ${yoyMode === 'YTD' ? 'active' : ''}" onclick="setYoYMode('YTD')">YTD${rangeStr}</button>
+        <button class="period-btn ${yoyMode === 'Annual' ? 'active' : ''}" onclick="setYoYMode('Annual')">Annual</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Category</th><th>${prevYear}</th><th>${year}</th><th>&Delta;</th><th>&Delta;%</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr>
+        <td>Total</td>
+        <td class="num-private">${fmtK(totPrev)}</td>
+        <td class="num-private">${fmtK(totCurr)}</td>
+        <td class="num-private">${totDelta >= 0 ? '+' : ''}${fmtK(totDelta)}</td>
+        <td>${totDeltaPct >= 0 ? '+' : ''}${Math.round(totDeltaPct)}%</td>
+      </tr></tfoot>
+    </table></div></div>`;
+
+  el.innerHTML = moversHtml + tableHtml;
+}
+
+/* ─── SECTION 3: Combined Spend Trend Chart & Data Table Accordion ───────────────── */
+function setTrendViewMode(mode) {
+  trendViewMode = mode;
+  renderSec3();
+}
+
+function toggleTrendTable() {
+  isTrendTableOpen = !isTrendTableOpen;
+  const wrap = document.getElementById('trendTableWrap');
+  const btn = document.getElementById('trendTableToggleBtn');
+  if (wrap) wrap.style.display = isTrendTableOpen ? 'block' : 'none';
+  if (btn) btn.textContent = isTrendTableOpen ? '▲ Hide Table' : '▼ Show Table';
+}
+
 function renderSec3() {
   const cats = Object.keys(CAT_COLORS).filter(c => c !== 'Other expenses');
-  const series = cats.map(cat => ({
+  const yrs = [...YEARS]; // Left to right 2017 -> 2026
+  const isPct = (trendViewMode === 'pct');
+
+  const yearTotals = yrs.map(yr => sumBy(ACTUALS.filter(r => r.year === yr), r => r.amount));
+
+  const grid = cats.map(cat => yrs.map((yr, yi) => {
+    const amt = sumBy(ACTUALS.filter(r => r.year === yr && r.category === cat), r => r.amount);
+    if (isPct) {
+      return yearTotals[yi] > 0 ? (amt / yearTotals[yi] * 100) : 0;
+    }
+    return amt;
+  }));
+
+  const series = cats.map((cat, ci) => ({
     name: cat,
-    data: YEARS.map(yr => sumBy(ACTUALS.filter(r => r.year === yr && r.category === cat), r => r.amount))
+    data: grid[ci]
   }));
   const colors = cats.map(c => CAT_COLORS[c]);
 
+  const cell = (val) => {
+    if (isPct) return val > 0 ? `${val.toFixed(1)}%` : '—';
+    return val > 0 ? fmtK(val) : '—';
+  };
+
+  let rowsHtml = '';
+  cats.forEach((cat, ci) => {
+    rowsHtml += `<tr><td style="cursor:pointer;color:var(--app-accent)" onclick="showDetail('${cat}')">● ${cat}</td>`;
+    grid[ci].forEach((v) => { rowsHtml += `<td class="num-private">${cell(v)}</td>`; });
+    rowsHtml += '</tr>';
+  });
+
   document.getElementById('sec3').innerHTML = `
-    <div class="sec-lbl">Spend Trend by Category</div>
-    <div class="legend">${cats.map((c,i) => `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${c}</div>`).join('')}</div>
-    <div class="card"><div class="chart-wrap"><canvas id="trendChart"></canvas></div></div>`;
+    <div class="flex-between mb-2">
+      <div class="sec-lbl" style="margin:0">Spend Trend & Breakdown by Category</div>
+      <div style="display:flex;gap:4px">
+        <button class="period-btn ${!isPct ? 'active' : ''}" onclick="setTrendViewMode('amount')">Amount</button>
+        <button class="period-btn ${isPct ? 'active' : ''}" onclick="setTrendViewMode('pct')">% of Total</button>
+      </div>
+    </div>
+    <div class="legend" style="margin-bottom:8px">${cats.map((c,i) => `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${c}</div>`).join('')}</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="chart-wrap" style="padding:12px 14px 6px"><canvas id="trendChart"></canvas></div>
+      <div class="flex-between" style="padding:8px 14px;background:var(--surface);border-top:1px solid var(--border);border-bottom:${isTrendTableOpen ? '1px solid var(--border)' : 'none'}">
+        <span style="font-size:11px;font-weight:600;color:var(--muted)">Category Data Table (2017–2026)</span>
+        <button id="trendTableToggleBtn" class="period-btn" onclick="toggleTrendTable()">${isTrendTableOpen ? '▲ Hide Table' : '▼ Show Table'}</button>
+      </div>
+      <div id="trendTableWrap" style="display:${isTrendTableOpen ? 'block' : 'none'}">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Category</th>${yrs.map(y => `<th>${y}</th>`).join('')}</tr></thead>
+            <tbody>${rowsHtml}</tbody>
+            <tfoot><tr><td>Total</td>${yearTotals.map((t) => `<td class="num-private">${isPct ? '100%' : fmtK(t)}</td>`).join('')}</tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  const sec4 = document.getElementById('sec4');
+  if (sec4) sec4.innerHTML = '';
 
   requestAnimationFrame(() => {
     const c = document.getElementById('trendChart');
     if (c) {
-      drawTrendChart(c, series, YEARS, colors, { prefix: CURRENCY + ' ' });
-      registerChartRedraw(() => { const ch = document.getElementById('trendChart'); if (ch) drawTrendChart(ch, series, YEARS, colors, { prefix: CURRENCY + ' ' }); });
+      const chartOpts = isPct ? { suffix: '%' } : { prefix: CURRENCY + ' ' };
+      drawTrendChart(c, series, yrs, colors, chartOpts);
+      registerChartRedraw(() => {
+        const ch = document.getElementById('trendChart');
+        if (ch) drawTrendChart(ch, series, yrs, colors, chartOpts);
+      });
     }
   });
-}
-
-/* ─── SECTION 4: Data table ──────────────────────────────────────── */
-function renderSec4() {
-  const cats = Object.keys(CAT_COLORS).filter(c => c !== 'Other expenses');
-  const yrs = [...YEARS].reverse();
-  const totals = Array(yrs.length).fill(0);
-
-  let html = `<div class="sec-lbl">Actuals by Category &amp; Year</div>
-    <div class="card" style="padding:0;overflow:hidden"><div class="table-wrap"><table class="data-table">
-    <thead><tr><th>Category</th>${yrs.map(y => `<th>${y}</th>`).join('')}</tr></thead><tbody>`;
-
-  cats.forEach(cat => {
-    html += `<tr><td style="cursor:pointer;color:var(--app-accent)" onclick="showDetail('${cat}')">● ${cat}</td>`;
-    yrs.forEach((yr, i) => {
-      const v = sumBy(ACTUALS.filter(r => r.year === yr && r.category === cat), r => r.amount);
-      totals[i] += v;
-      html += `<td class="num-private">${v > 0 ? fmtK(v) : '—'}</td>`;
-    });
-    html += '</tr>';
-  });
-  html += `</tbody><tfoot><tr><td>Total</td>${totals.map(t => `<td class="num-private">${fmtK(t)}</td>`).join('')}</tr></tfoot></table></div></div>`;
-  document.getElementById('sec4').innerHTML = html;
 }
 
 /* ─── DETAIL VIEW ───────────────────────────────────────────────── */
 function showDetail(cat) {
   document.getElementById('sec1').style.display = 'none';
   document.getElementById('sec2').style.display = 'none';
+  document.getElementById('secYoY').style.display = 'none';
   document.getElementById('sec3').style.display = 'none';
   document.getElementById('sec4').style.display = 'none';
   document.getElementById('periodStrip').style.display = 'none';
@@ -335,7 +507,7 @@ function showDetail(cat) {
 function backToMain() {
   document.getElementById('detailView').style.display = 'none';
   document.getElementById('detailView').innerHTML = '';
-  ['sec1','sec2','sec3','sec4','periodStrip'].forEach(id => {
+  ['sec1','sec2','secYoY','sec3','sec4','periodStrip'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = '';
   });
@@ -348,6 +520,7 @@ function selectYear(year) {
   document.getElementById('yearBadge').textContent = year;
   renderSec1(year);
   renderSec2(year);
+  renderYoY(year);
   renderPeriodStrip('periodStrip', YEARS, selectedYear, selectYear, { reverse: true });
 }
 
@@ -374,8 +547,8 @@ function selectYear(year) {
   renderPeriodStrip('periodStrip', YEARS, selectedYear, selectYear, { reverse: true });
   renderSec1(selectedYear);
   renderSec2(selectedYear);
+  renderYoY(selectedYear);
   renderSec3();
-  renderSec4();
 })();
 </script>
 </body>
