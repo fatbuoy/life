@@ -394,8 +394,8 @@ function renderSec3() {
     <div class="flex-between mb-2">
       <div class="sec-lbl" style="margin:0">Spend Trend & Breakdown by Category</div>
       <div style="display:flex;gap:4px">
-        <button class="period-btn ${!isPct ? 'active' : ''}" onclick="setTrendViewMode('amount')">Amount</button>
-        <button class="period-btn ${isPct ? 'active' : ''}" onclick="setTrendViewMode('pct')">% of Total</button>
+        <button class="period-btn ${!isPct ? 'active' : ''}" onclick="setTrendViewMode('amount')">Fr.</button>
+        <button class="period-btn ${isPct ? 'active' : ''}" onclick="setTrendViewMode('pct')">%</button>
       </div>
     </div>
     <div class="legend" style="margin-bottom:8px">${cats.map((c,i) => `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${c}</div>`).join('')}</div>
