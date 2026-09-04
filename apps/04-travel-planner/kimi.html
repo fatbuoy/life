@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    :root {
+    font-family: var(--kimi-font-sans, sans-serif);
+    color: var(--kimi-color-text-primary, #111);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    button, input { font: inherit; }
+    .wrap {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 32px;
+    font-family: var(--kimi-font-sans, sans-serif);
+    color: var(--kimi-color-text-primary);
+    }
+    /* Header */
+    .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    }
+    .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    }
+    .brand svg { width: 22px; height: 22px; color: var(--kimi-color-text-primary); }
+    .year-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--kimi-color-surface-muted, #f3f3f5);
+    border-radius: 10px;
+    padding: 4px;
+    }
+    .year-ctrl button {
+    width: 32px; height: 32px;
+    border: none; background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--kimi-color-text-secondary);
+    transition: background var(--t-fast, 120ms) var(--ease-out);
+    }
+    .year-ctrl button:hover { background: var(--kimi-color-surface-raised, #fff); }
+    .year-ctrl .year {
+    min-width: 56px; text-align: center;
+    font-size: 15px; font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    }
+    .chip {
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--kimi-color-surface-muted);
+    color: var(--kimi-color-text-secondary);
+    }
+    /* Tabs */
+    .tabs {
+    display: flex; gap: 4px;
+    background: var(--kimi-color-surface-muted);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+    }
+    .tab {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 8px 0;
+    border: none; background: transparent;
+    border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    color: var(--kimi-color-text-secondary);
+    cursor: pointer;
+    transition: background var(--t-fast, 120ms) var(--ease-out), color var(--t-fast, 120ms) var(--ease-out);
+    }
+    .tab:hover { color: var(--kimi-color-text-primary); }
+    .tab.active {
+    background: var(--kimi-color-surface-raised, #fff);
+    color: var(--kimi-color-text-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .tab svg { width: 18px; height: 18px; }
+    /* Section label */
+    .section-label {
+    font-size: 12px; font-weight: 500;
+    color: var(--kimi-color-text-tertiary);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    text-transform: none;
+    }
+    /* Trip cards */
+    .cards {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 32px;
+    }
+    .card {
+    position: relative;
+    display: flex; align-items: stretch;
+    background: var(--kimi-color-surface-raised, #fff);
+    border: 1px solid var(--kimi-color-border, rgba(0,0,0,0.08));
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow var(--t-fast, 120ms) var(--ease-out), transform var(--t-fast, 120ms) var(--ease-out);
+    cursor: pointer;
+    }
+    .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+    }
+    .card-strip {
+    width: 4px;
+    flex-shrink: 0;
+    }
+    .card-body {
+    flex: 1;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    }
+    .card-top {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    }
+    .card-meta {
+    font-size: 12px; font-weight: 500;
+    color: var(--kimi-color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    }
+    .card-title {
+    font-size: 16px; font-weight: 500;
+    line-height: 1.3;
+    color: var(--kimi-color-text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-date {
+    font-size: 13px;
+    color: var(--kimi-color-text-secondary);
+    }
+    .card-tag {
+    align-self: flex-start;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: 6px;
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+    }
+    /* Active / now card */
+    .card.now .card-strip {
+    background: var(--kimi-color-accent, #6b5ce7);
+    }
+    .card.now {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--kimi-color-accent) 20%, transparent), 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .card.now .card-meta { color: var(--kimi-color-accent); }
+    .live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--kimi-color-positive, #22c55e);
+    margin-right: 6px;
+    vertical-align: middle;
+    animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+    }
+    /* Category colors using chart tokens */
+    .strip-family { background: var(--kimi-chart-4, #8b5cf6); }
+    .strip-work { background: var(--kimi-chart-5, #64748b); }
+    .strip-race { background: var(--kimi-chart-2, #ef4444); }
+    .strip-adventure { background: var(--kimi-chart-3, #22c55e); }
+    .tag-family {
+    background: color-mix(in srgb, var(--kimi-chart-4, #8b5cf6) 12%, transparent);
+    color: color-mix(in srgb, var(--kimi-chart-4, #8b5cf6) 80%, #000);
+    }
+    .tag-work {
+    background: color-mix(in srgb, var(--kimi-chart-5, #64748b) 12%, transparent);
+    color: color-mix(in srgb, var(--kimi-chart-5, #64748b) 80%, #000);
+    }
+    .tag-race {
+    background: color-mix(in srgb, var(--kimi-chart-2, #ef4444) 12%, transparent);
+    color: color-mix(in srgb, var(--kimi-chart-2, #ef4444) 80%, #000);
+    }
+    .tag-adventure {
+    background: color-mix(in srgb, var(--kimi-chart-3, #22c55e) 12%, transparent);
+    color: color-mix(in srgb, var(--kimi-chart-3, #22c55e) 80%, #000);
+    }
+    /* Year at a glance timeline */
+    .timeline {
+    margin-bottom: 24px;
+    }
+    .timeline-track {
+    display: flex; gap: 2px;
+    height: 44px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--kimi-color-surface-muted);
+    padding: 4px;
+    }
+    .month-col {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    border-radius: 6px;
+    position: relative;
+    transition: background var(--t-fast, 120ms) var(--ease-out);
+    }
+    .month-col:hover { background: var(--kimi-color-surface-raised); }
+    .month-label {
+    font-size: 10px; font-weight: 500;
+    color: var(--kimi-color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    }
+    .month-dots {
+    display: flex; gap: 3px; align-items: center; justify-content: center;
+    height: 10px;
+    }
+    .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    }
+    .dot-family { background: var(--kimi-chart-4, #8b5cf6); }
+    .dot-work { background: var(--kimi-chart-5, #64748b); }
+    .dot-race { background: var(--kimi-chart-2, #ef4444); }
+    .dot-adventure { background: var(--kimi-chart-3, #22c55e); }
+    /* List view */
+    .list-view { display: none; }
+    .list-view.active { display: block; }
+    .list-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--kimi-color-border, rgba(0,0,0,0.06));
+    }
+    .list-thumb {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: var(--kimi-color-surface-muted);
+    color: var(--kimi-color-text-secondary);
+    }
+    .list-thumb svg { width: 20px; height: 20px; }
+    .list-info { flex: 1; min-width: 0; }
+    .list-title {
+    font-size: 15px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .list-sub {
+    font-size: 12px; color: var(--kimi-color-text-tertiary);
+    margin-top: 2px;
+    }
+    .list-arrow {
+    color: var(--kimi-color-text-quaternary);
+    flex-shrink: 0;
+    }
+    .list-arrow svg { width: 18px; height: 18px; }
+    /* Calendar view */
+    .calendar-view { display: none; }
+    .calendar-view.active { display: block; }
+    /* Responsive */
+    @media (max-width: 480px) {
+    .wrap { padding: 16px 12px 24px; }
+    .card-body { padding: 12px 14px; }
+    }
+    </style>  
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.9003 10.7998C18.9002 7.08572 16.2547 3.90039 11.9999 3.90039C7.74237 3.90047 5.10056 7.05052 5.10046 10.7998C5.10046 13.0829 6.29178 15.183 7.80359 16.916C9.30556 18.6377 11.0351 19.8955 11.91 20.4775C11.9433 20.4997 11.9743 20.5068 11.9999 20.5068C12.0255 20.5068 12.0564 20.4997 12.0897 20.4775C12.9646 19.8955 14.695 18.638 16.1971 16.916C17.7089 15.183 18.9003 13.0828 18.9003 10.7998ZM14.1005 10.7998C14.1004 9.6401 13.1596 8.7002 11.9999 8.7002C10.8402 8.70027 9.90037 9.64014 9.90027 10.7998C9.90027 11.9596 10.8401 12.9003 11.9999 12.9004C13.1597 12.9004 14.1005 11.9596 14.1005 10.7998ZM15.9003 10.7998C15.9003 12.9537 14.1538 14.7002 11.9999 14.7002C9.84603 14.7001 8.10046 12.9537 8.10046 10.7998C8.10057 8.64603 9.8461 6.90047 11.9999 6.90039C14.1537 6.90039 15.9002 8.64598 15.9003 10.7998Z" fill="currentColor"/>
+      </svg>
+      Wanderer
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="year-ctrl">
+        <button onclick="changeYear(-1)" aria-label="Previous year">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.16127 12.814C1.81197 12.4622 1.81299 11.8941 2.16357 11.5435L7.70203 6.00506C8.0535 5.65359 8.62335 5.65359 8.97482 6.00506C9.32629 6.35653 9.32629 6.92638 8.97482 7.27785L4.97276 11.2799H20.8C21.297 11.2799 21.7 11.6829 21.7 12.1799C21.7 12.677 21.297 13.0799 20.8 13.0799H4.96171L8.97712 17.1244C9.32732 17.4772 9.32526 18.047 8.97252 18.3972C8.61978 18.7474 8.04993 18.7454 7.69973 18.3926L2.16127 12.814Z" fill="currentColor"/></svg>
+        </button>
+        <span class="year" id="yearLabel">2026</span>
+        <button onclick="changeYear(1)" aria-label="Next year">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.4387 12.814C21.788 12.4622 21.787 11.8941 21.4364 11.5436L15.8979 6.0051C15.5464 5.65363 14.9766 5.65363 14.6251 6.0051C14.2737 6.35657 14.2737 6.92642 14.6251 7.27789L18.6272 11.28H2.79998C2.30293 11.28 1.89998 11.6829 1.89998 12.18C1.89998 12.677 2.30293 13.08 2.79998 13.08H18.6382L14.6228 17.1245C14.2726 17.4772 14.2747 18.0471 14.6274 18.3973C14.9802 18.7475 15.55 18.7454 15.9002 18.3927L21.4387 12.814Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <span class="chip">14 trips</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('calendar')" id="tab-calendar">
+      <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M17.8998 4.09961C20.0537 4.09961 21.8002 5.84609 21.8002 8V16C21.8002 18.1539 20.0537 19.9004 17.8998 19.9004H5.89978C3.74598 19.9003 1.99939 18.1538 1.99939 16V8C1.99939 5.84617 3.74598 4.09974 5.89978 4.09961H17.8998ZM15.4867 12.2539C15.448 12.2184 15.3885 12.2192 15.351 12.2559L11.7338 15.8027C11.0146 16.5079 9.87305 16.5222 9.13708 15.835L6.98669 13.8262C6.95049 13.7924 6.89516 13.791 6.85681 13.8223L3.82361 16.2988C3.96873 17.3168 4.84165 18.0995 5.89978 18.0996H17.8998C18.9375 18.0996 19.7964 17.3466 19.9662 16.3574L15.4867 12.2539ZM5.89978 5.90039C4.74009 5.90052 3.80017 6.84028 3.80017 8V14.002L5.73181 12.4238C6.46046 11.8286 7.51253 11.8634 8.20056 12.5059L10.351 14.5146C10.3897 14.5508 10.4498 14.5497 10.4877 14.5127L14.1049 10.9658C14.819 10.2656 15.9506 10.2466 16.6879 10.9219L19.9994 13.9551V8C19.9994 6.8402 19.0596 5.90039 17.8998 5.90039H5.89978Z" fill="currentColor"/></svg>
+      Calendar
+    </button>
+    <button class="tab" onclick="switchTab('list')" id="tab-list">
+      <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.10001 5.99998C4.10001 5.50292 4.50295 5.09998 5.00001 5.09998H19C19.4971 5.09998 19.9 5.50292 19.9 5.99998C19.9 6.49703 19.4971 6.89998 19 6.89998H5.00001C4.50295 6.89998 4.10001 6.49703 4.10001 5.99998ZM4.10001 12C4.10001 11.5029 4.50295 11.1 5.00001 11.1H19C19.4971 11.1 19.9 11.5029 19.9 12C19.9 12.497 19.4971 12.9 19 12.9H5.00001C4.50295 12.9 4.10001 12.497 4.10001 12ZM4.10001 18C4.10001 17.5029 4.50295 17.1 5.00001 17.1H19C19.4971 17.1 19.9 17.5029 19.9 18C19.9 18.497 19.4971 18.9 19 18.9H5.00001C4.50295 18.9 4.10001 18.497 4.10001 18Z" fill="currentColor"/></svg>
+      List
+    </button>
+    <button class="tab" onclick="switchTab('library')" id="tab-library">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M8.00916 7.50488C8.47326 7.50488 8.91828 7.68943 9.24646 8.01758C9.57465 8.34577 9.75916 8.79075 9.75916 9.25488C9.75916 9.71901 9.57465 10.164 9.24646 10.4922C8.91828 10.8203 8.47326 11.0049 8.00916 11.0049C7.54507 11.0049 7.10001 10.8203 6.77185 10.4922C6.4437 10.164 6.25916 9.71898 6.25916 9.25488C6.25916 8.79078 6.4437 8.34576 6.77185 8.01758C7.10001 7.68942 7.54507 7.50492 8.00916 7.50488Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M17.8998 4.09961C20.0537 4.09961 21.8002 5.84609 21.8002 8V16C21.8002 18.1539 20.0537 19.9004 17.8998 19.9004H5.89978C3.74598 19.9003 1.99939 18.1538 1.99939 16V8C1.99939 5.84617 3.74598 4.09974 5.89978 4.09961H17.8998ZM15.4867 12.2539C15.448 12.2184 15.3885 12.2192 15.351 12.2559L11.7338 15.8027C11.0146 16.5079 9.87305 16.5222 9.13708 15.835L6.98669 13.8262C6.95049 13.7924 6.89516 13.791 6.85681 13.8223L3.82361 16.2988C3.96873 17.3168 4.84165 18.0995 5.89978 18.0996H17.8998C18.9375 18.0996 19.7964 17.3466 19.9662 16.3574L15.4867 12.2539ZM5.89978 5.90039C4.74009 5.90052 3.80017 6.84028 3.80017 8V14.002L5.73181 12.4238C6.46046 11.8286 7.51253 11.8634 8.20056 12.5059L10.351 14.5146C10.3897 14.5508 10.4498 14.5497 10.4877 14.5127L14.1049 10.9658C14.819 10.2656 15.9506 10.2466 16.6879 10.9219L19.9994 13.9551V8C19.9994 6.8402 19.0596 5.90039 17.8998 5.90039H5.89978Z" fill="currentColor"/></svg>
+      Library
+    </button>
+  </div>
+  <!-- CALENDAR VIEW -->
+  <div class="calendar-view active" id="view-calendar">
+    <div class="section-label">Upcoming trips</div>
+    <div class="cards">
+      <div class="card now">
+        <div class="card-strip"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-meta"><span class="live-dot"></span>In progress</span>
+            <span class="card-meta">Now</span>
+          </div>
+          <div class="card-title">Visit Sahani's in Indonesia</div>
+          <div class="card-date">Fri, Aug 14</div>
+          <span class="card-tag tag-family">Family</span>
+        </div>
+      </div>
+
+
+  <div class="card">
+    <div class="card-strip strip-work"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-meta">Leaves in 2 weeks</span>
+        <span class="card-meta">15 days away</span>
+      </div>
+      <div class="card-title">US Work-Life Trip</div>
+      <div class="card-date">Mon, Sep 7</div>
+      <span class="card-tag tag-work">Work</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-strip strip-race"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-meta">Oct 25</span>
+        <span class="card-meta">63 days away</span>
+      </div>
+      <div class="card-title">Lucerne Marathon</div>
+      <div class="card-date">Sun, Oct 25</div>
+      <span class="card-tag tag-race">Race</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-strip strip-adventure"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <span class="card-meta">Oct 31</span>
+        <span class="card-meta">69 days away</span>
+      </div>
+      <div class="card-title">Tuscany Bikepacking</div>
+      <div class="card-date">Sat, Oct 31</div>
+      <span class="card-tag tag-adventure">Adventure</span>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Year at a glance</div>
+<div class="timeline">
+  <div class="timeline-track">
+    <div class="month-col"><span class="month-label">Jan</span><div class="month-dots"><span class="dot dot-family"></span></div></div>
+    <div class="month-col"><span class="month-label">Feb</span><div class="month-dots"></div></div>
+    <div class="month-col"><span class="month-label">Mar</span><div class="month-dots"><span class="dot dot-race"></span><span class="dot dot-family"></span></div></div>
+    <div class="month-col"><span class="month-label">Apr</span><div class="month-dots"></div></div>
+    <div class="month-col"><span class="month-label">May</span><div class="month-dots"><span class="dot dot-family"></span><span class="dot dot-work"></span></div></div>
+    <div class="month-col"><span class="month-label">Jun</span><div class="month-dots"><span class="dot dot-race"></span><span class="dot dot-adventure"></span></div></div>
+    <div class="month-col"><span class="month-label">Jul</span><div class="month-dots"><span class="dot dot-adventure"></span></div></div>
+    <div class="month-col"><span class="month-label">Aug</span><div class="month-dots"><span class="dot dot-family"></span><span class="dot dot-work"></span></div></div>
+    <div class="month-col"><span class="month-label">Sep</span><div class="month-dots"><span class="dot dot-work"></span></div></div>
+    <div class="month-col"><span class="month-label">Oct</span><div class="month-dots"><span class="dot dot-race"></span><span class="dot dot-adventure"></span></div></div>
+    <div class="month-col"><span class="month-label">Nov</span><div class="month-dots"></div></div>
+    <div class="month-col"><span class="month-label">Dec</span><div class="month-dots"></div></div>
+  </div>
+</div>
+  </div>
+  <!-- LIST VIEW -->
+  <div class="list-view" id="view-list">
+    <div class="section-label">All trips</div>
+    <div class="list-item">
+      <div class="list-thumb" style="color:var(--kimi-chart-4,#8b5cf6);background:color-mix(in srgb,var(--kimi-chart-4,#8b5cf6) 10%,transparent);">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M11.7075 2.76001C12.0589 2.4086 12.6285 2.40873 12.9799 2.76001L21.2397 11.0198C21.5911 11.3713 21.5911 11.9408 21.2397 12.2922C20.8883 12.6436 20.3187 12.6436 19.9672 12.2922L19.9145 12.2395L15.4594 16.6956C15.474 18.3714 14.8988 20.0091 13.6684 21.2395C13.3169 21.591 12.7474 21.591 12.396 21.2395L8.21138 17.0559L4.90084 20.3469C4.54823 20.6971 3.97866 20.6946 3.62838 20.342C3.27809 19.9894 3.27971 19.4199 3.63228 19.0696L6.93892 15.7825L2.76021 11.6047C2.40876 11.2533 2.40875 10.6828 2.76021 10.3313C3.99062 9.10095 5.6283 8.52573 7.30416 8.54028L11.7592 4.08423L11.7075 4.03247C11.3562 3.68101 11.3562 3.11143 11.7075 2.76001ZM8.29927 10.0901C8.11572 10.2736 7.86199 10.3691 7.60299 10.3518C6.55349 10.2817 5.55898 10.5143 4.73873 11.0374L12.9624 19.261C13.4854 18.4407 13.7181 17.4462 13.6479 16.3967C13.6306 15.9378 13.7261 15.884 13.9096 15.7004L18.642 10.967L13.0317 5.35669L8.29927 10.0901Z" fill="currentColor"/></svg>
+      </div>
+      <div class="list-info">
+        <div class="list-title">Visit Sahani's in Indonesia</div>
+        <div class="list-sub">Aug 14 – Aug 21 · Family</div>
+      </div>
+      <div class="list-arrow">
+        <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.4387 12.814C21.788 12.4622 21.787 11.8941 21.4364 11.5436L15.8979 6.0051C15.5464 5.65363 14.9766 5.65363 14.6251 6.0051C14.2737 6.35657 14.2737 6.92642 14.6251 7.27789L18.6272 11.28H2.79998C2.30293 11.28 1.89998 11.6829 1.89998 12.18C1.89998 12.677 2.30293 13.08 2.79998 13.08H18.6382L14.6228 17.1245C14.2726 17.4772 14.2747 18.0471 14.6274 18.3973C14.9802 18.7475 15.55 18.7454 15.9002 18.3927L21.4387 12.814Z" fill="currentColor"/></svg>
+      </div>
+    </div>
+
+
+<div class="list-item">
+  <div class="list-thumb" style="color:var(--kimi-chart-5,#64748b);background:color-mix(in srgb,var(--kimi-chart-5,#64748b) 10%,transparent);">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M11.7075 2.76001C12.0589 2.4086 12.6285 2.40873 12.9799 2.76001L21.2397 11.0198C21.5911 11.3713 21.5911 11.9408 21.2397 12.2922C20.8883 12.6436 20.3187 12.6436 19.9672 12.2922L19.9145 12.2395L15.4594 16.6956C15.474 18.3714 14.8988 20.0091 13.6684 21.2395C13.3169 21.591 12.7474 21.591 12.396 21.2395L8.21138 17.0559L4.90084 20.3469C4.54823 20.6971 3.97866 20.6946 3.62838 20.342C3.27809 19.9894 3.27971 19.4199 3.63228 19.0696L6.93892 15.7825L2.76021 11.6047C2.40876 11.2533 2.40875 10.6828 2.76021 10.3313C3.99062 9.10095 5.6283 8.52573 7.30416 8.54028L11.7592 4.08423L11.7075 4.03247C11.3562 3.68101 11.3562 3.11143 11.7075 2.76001ZM8.29927 10.0901C8.11572 10.2736 7.86199 10.3691 7.60299 10.3518C6.55349 10.2817 5.55898 10.5143 4.73873 11.0374L12.9624 19.261C13.4854 18.4407 13.7181 17.4462 13.6479 16.3967C13.6306 15.9378 13.7261 15.884 13.9096 15.7004L18.642 10.967L13.0317 5.35669L8.29927 10.0901Z" fill="currentColor"/></svg>
+  </div>
+  <div class="list-info">
+    <div class="list-title">US Work-Life Trip</div>
+    <div class="list-sub">Sep 7 – Sep 21 · Work</div>
+  </div>
+  <div class="list-arrow">
+    <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.4387 12.814C21.788 12.4622 21.787 11.8941 21.4364 11.5436L15.8979 6.0051C15.5464 5.65363 14.9766 5.65363 14.6251 6.0051C14.2737 6.35657 14.2737 6.92642 14.6251 7.27789L18.6272 11.28H2.79998C2.30293 11.28 1.89998 11.6829 1.89998 12.18C1.89998 12.677 2.30293 13.08 2.79998 13.08H18.6382L14.6228 17.1245C14.2726 17.4772 14.2747 18.0471 14.6274 18.3973C14.9802 18.7475 15.55 18.7454 15.9002 18.3927L21.4387 12.814Z" fill="currentColor"/></svg>
+  </div>
+</div>
+
+<div class="list-item">
+  <div class="list-thumb" style="color:var(--kimi-chart-2,#ef4444);background:color-mix(in srgb,var(--kimi-chart-2,#ef4444) 10%,transparent);">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M11.7075 2.76001C12.0589 2.4086 12.6285 2.40873 12.9799 2.76001L21.2397 11.0198C21.5911 11.3713 21.5911 11.9408 21.2397 12.2922C20.8883 12.6436 20.3187 12.6436 19.9672 12.2922L19.9145 12.2395L15.4594 16.6956C15.474 18.3714 14.8988 20.0091 13.6684 21.2395C13.3169 21.591 12.7474 21.591 12.396 21.2395L8.21138 17.0559L4.90084 20.3469C4.54823 20.6971 3.97866 20.6946 3.62838 20.342C3.27809 19.9894 3.27971 19.4199 3.63228 19.0696L6.93892 15.7825L2.76021 11.6047C2.40876 11.2533 2.40875 10.6828 2.76021 10.3313C3.99062 9.10095 5.6283 8.52573 7.30416 8.54028L11.7592 4.08423L11.7075 4.03247C11.3562 3.68101 11.3562 3.11143 11.7075 2.76001ZM8.29927 10.0901C8.11572 10.2736 7.86199 10.3691 7.60299 10.3518C6.55349 10.2817 5.55898 10.5143 4.73873 11.0374L12.9624 19.261C13.4854 18.4407 13.7181 17.4462 13.6479 16.3967C13.6306 15.9378 13.7261 15.884 13.9096 15.7004L18.642 10.967L13.0317 5.35669L8.29927 10.0901Z" fill="currentColor"/></svg>
+  </div>
+  <div class="list-info">
+    <div class="list-title">Lucerne Marathon</div>
+    <div class="list-sub">Oct 25 · Race</div>
+  </div>
+  <div class="list-arrow">
+    <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.4387 12.814C21.788 12.4622 21.787 11.8941 21.4364 11.5436L15.8979 6.0051C15.5464 5.65363 14.9766 5.65363 14.6251 6.0051C14.2737 6.35657 14.2737 6.92642 14.6251 7.27789L18.6272 11.28H2.79998C2.30293 11.28 1.89998 11.6829 1.89998 12.18C1.89998 12.677 2.30293 13.08 2.79998 13.08H18.6382L14.6228 17.1245C14.2726 17.4772 14.2747 18.0471 14.6274 18.3973C14.9802 18.7475 15.55 18.7454 15.9002 18.3927L21.4387 12.814Z" fill="currentColor"/></svg>
+  </div>
+</div>
+
+<div class="list-item">
+  <div class="list-thumb" style="color:var(--kimi-chart-3,#22c55e);background:color-mix(in srgb,var(--kimi-chart-3,#22c55e) 10%,transparent);">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M11.7075 2.76001C12.0589 2.4086 12.6285 2.40873 12.9799 2.76001L21.2397 11.0198C21.5911 11.3713 21.5911 11.9408 21.2397 12.2922C20.8883 12.6436 20.3187 12.6436 19.9672 12.2922L19.9145 12.2395L15.4594 16.6956C15.474 18.3714 14.8988 20.0091 13.6684 21.2395C13.3169 21.591 12.7474 21.591 12.396 21.2395L8.21138 17.0559L4.90084 20.3469C4.54823 20.6971 3.97866 20.6946 3.62838 20.342C3.27809 19.9894 3.27971 19.4199 3.63228 19.0696L6.93892 15.7825L2.76021 11.6047C2.40876 11.2533 2.40875 10.6828 2.76021 10.3313C3.99062 9.10095 5.6283 8.52573 7.30416 8.54028L11.7592 4.08423L11.7075 4.03247C11.3562 3.68101 11.3562 3.11143 11.7075 2.76001ZM8.29927 10.0901C8.11572 10.2736 7.86199 10.3691 7.60299 10.3518C6.55349 10.2817 5.55898 10.5143 4.73873 11.0374L12.9624 19.261C13.4854 18.4407 13.7181 17.4462 13.6479 16.3967C13.6306 15.9378 13.7261 15.884 13.9096 15.7004L18.642 10.967L13.0317 5.35669L8.29927 10.0901Z" fill="currentColor"/></svg>
+  </div>
+  <div class="list-info">
+    <div class="list-title">Tuscany Bikepacking</div>
+    <div class="list-sub">Oct 31 – Nov 7 · Adventure</div>
+  </div>
+  <div class="list-arrow">
+    <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M21.4387 12.814C21.788 12.4622 21.787 11.8941 21.4364 11.5436L15.8979 6.0051C15.5464 5.65363 14.9766 5.65363 14.6251 6.0051C14.2737 6.35657 14.2737 6.92642 14.6251 7.27789L18.6272 11.28H2.79998C2.30293 11.28 1.89998 11.6829 1.89998 12.18C1.89998 12.677 2.30293 13.08 2.79998 13.08H18.6382L14.6228 17.1245C14.2726 17.4772 14.2747 18.0471 14.6274 18.3973C14.9802 18.7475 15.55 18.7454 15.9002 18.3927L21.4387 12.814Z" fill="currentColor"/></svg>
+  </div>
+</div>
+</div>
+  <!-- LIBRARY VIEW (placeholder) -->
+  <div class="list-view" id="view-library">
+    <div style="text-align:center;padding:48px 16px;color:var(--kimi-color-text-tertiary);">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="margin-bottom:12px;opacity:0.5;">
+        <path d="M8.00916 7.50488C8.47326 7.50488 8.91828 7.68943 9.24646 8.01758C9.57465 8.34577 9.75916 8.79075 9.75916 9.25488C9.75916 9.71901 9.57465 10.164 9.24646 10.4922C8.91828 10.8203 8.47326 11.0049 8.00916 11.0049C7.54507 11.0049 7.10001 10.8203 6.77185 10.4922C6.4437 10.164 6.25916 9.71898 6.25916 9.25488C6.25916 8.79078 6.4437 8.34576 6.77185 8.01758C7.10001 7.68942 7.54507 7.50492 8.00916 7.50488Z" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M17.8998 4.09961C20.0537 4.09961 21.8002 5.84609 21.8002 8V16C21.8002 18.1539 20.0537 19.9004 17.8998 19.9004H5.89978C3.74598 19.9003 1.99939 18.1538 1.99939 16V8C1.99939 5.84617 3.74598 4.09974 5.89978 4.09961H17.8998ZM15.4867 12.2539C15.448 12.2184 15.3885 12.2192 15.351 12.2559L11.7338 15.8027C11.0146 16.5079 9.87305 16.5222 9.13708 15.835L6.98669 13.8262C6.95049 13.7924 6.89516 13.791 6.85681 13.8223L3.82361 16.2988C3.96873 17.3168 4.84165 18.0995 5.89978 18.0996H17.8998C18.9375 18.0996 19.7964 17.3466 19.9662 16.3574L15.4867 12.2539ZM5.89978 5.90039C4.74009 5.90052 3.80017 6.84028 3.80017 8V14.002L5.73181 12.4238C6.46046 11.8286 7.51253 11.8634 8.20056 12.5059L10.351 14.5146C10.3897 14.5508 10.4498 14.5497 10.4877 14.5127L14.1049 10.9658C14.819 10.2656 15.9506 10.2466 16.6879 10.9219L19.9994 13.9551V8C19.9994 6.8402 19.0596 5.90039 17.8998 5.90039H5.89978Z" fill="currentColor"/>
+      </svg>
+      <div style="font-size:15px;font-weight:500;color:var(--kimi-color-text-secondary);">Library view</div>
+      <div style="font-size:13px;margin-top:4px;">Photos, documents, and trip memories appear here.</div>
+    </div>
+  </div>
+</div>
+<script>
+  let currentYear = 2026;
+  function changeYear(delta) {
+    currentYear += delta;
+    document.getElementById('yearLabel').textContent = currentYear;
+  }
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.querySelectorAll('.calendar-view, .list-view').forEach(v => v.classList.remove('active'));
+    if (name === 'calendar') document.getElementById('view-calendar').classList.add('active');
+    else if (name === 'list') document.getElementById('view-list').classList.add('active');
+    else document.getElementById('view-library').classList.add('active');
+  }
+</script>
+</body>
+</html>

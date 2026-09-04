@@ -497,12 +497,13 @@ async function init() {
     // its error UI if the element exists), so cards degrade gracefully
     // instead of showing a broken-fetch box.
     const keys = ['recipes', 'calories', 'training', 'budget', 'travel', 'horizon'];
-    for (const key of keys) {
-        allData[key] = await fetchFromGitHub(DATA_CONFIGS[key], '__no_such_el__');
-    }
+    const results = await Promise.all(
+    keys.map(key => fetchFromGitHub(DATA_CONFIGS[key], '__no_such_el__'))
+);
+    keys.forEach((key, i) => { allData[key] = results[i]; });
 
     render();
-}
+    }
 
 function render() {
     // 1. EAT: today's calorie phase target only. (Menu suggestion card is a

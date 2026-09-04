@@ -214,11 +214,15 @@ a:hover { text-decoration: underline }
   color: var(--app-on-primary3); font-size: 18px; line-height: 1;
   text-decoration: none; transition: color .15s; flex-shrink: 0;
   padding: 2px 4px;
+  display: inline-flex; /* Ensures icon/text centers inside bounding box */
+  align-items: center;
+  justify-content: center;
 }
 .header-home:hover { color: var(--app-on-primary); text-decoration: none }
  
 .header-title {
   font-size: 17px; font-weight: 600;
+  /*line-height: 1.2;  Normalizes line height across all pages */
   color: var(--app-on-primary); letter-spacing: -0.3px;
 }
 @media (min-width: 600px) { .header-title { font-size: var(--t-xl) } }
