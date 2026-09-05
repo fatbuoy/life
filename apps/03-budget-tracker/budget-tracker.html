@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../../images/icons/wallet.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../../images/icons/pocket-change.png">
-<title>Ⓟocket Change</title>
+<title>LifeOS / Pocket Change</title>
 
 <link rel="stylesheet" href="../../shared/base.css">
 <style>
@@ -27,12 +27,32 @@
   <div class="container">
     <div class="header-row">
       <div class="header-left">
-        <a class="header-home" href="../../index.html" title="Hub">⌂</a>
+        <a class="icon-btn" href="../../index.html" title="Hub">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </a>
         <span class="header-title">Pocket Change</span>
       </div>
       <div class="header-right">
-        <button class="privacy-btn" id="privacyBtn" onclick="togglePrivacy()">🔒</button>
-        <button class="header-btn" onclick="promptForGitToken()" title="Set GitHub token">🔑</button>
+        <button class="icon-btn" id="privacyToggle" onclick="togglePrivacy()" title="Toggle privacy mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" onclick="promptForGitToken()" title="Set GitHub token">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="15" r="4"/>
+            <path d="M12 15h8M16 11v8"/>
+          </svg>
+        </button>
         <span class="header-badge" id="yearBadge">—</span>
       </div>
     </div>

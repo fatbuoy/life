@@ -8,7 +8,10 @@
  *   Data:     fetchData(path) → Promise<any>
  *   Format:   fmt(n), fmtK(n), fmtPct(n), pn(val, display?)
  *   Tooltip:  showTT(e, title, rows), moveTT(e), hideTT()
- *   Privacy:  togglePrivacy(password), showPasswordModal()
+ *   Theme:    toggleTheme(), restoreTheme()
+ *             — dark/light toggle with localStorage persistence
+ *   Privacy:  togglePrivacy(), setPrivacyPassword(pw), privacyOn()
+ *             showPasswordModal() — still exported for back-compat
  *   Period:   renderPeriodStrip(containerId, periods, selected, onSelect)
  *   Charts:   drawTrendChart(canvas, series, labels, colors)
  *             drawHeroSparkline(canvas, current, prior, budget)
@@ -213,93 +216,192 @@ document.addEventListener('touchstart', e => {
 }, { passive: true });
 
 
+/* ─── THEME TOGGLE ──────────────────────────────────────────────────── */
+/*
+  Toggles data-theme="dark" / "light" on <html>, persists to localStorage
+  under 'sa_theme', and swaps the button icon between sun and moon SVGs.
+
+  USAGE IN HTML:
+    <button class="icon-btn" id="themeToggle" onclick="toggleTheme()"
+            title="Toggle dark mode">
+      <!-- icon injected by restoreTheme() / toggleTheme() -->
+    </button>
+
+  The button id must be "themeToggle". restoreTheme() is called
+  automatically by the IIFE below — no manual call needed.
+*/
+
+const _ICON_MOON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const _ICON_SUN  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`;
+
+/** Toggle between dark and light theme, persist preference. */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sa_theme', next);
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = next === 'dark' ? _ICON_SUN : _ICON_MOON;
+  // If the app registered a canvas-redraw callback, call it now —
+  // canvas colours are baked at paint time and must be redrawn.
+  if (typeof onThemeChange === 'function') onThemeChange(next);
+}
+
+/** Apply saved theme preference (called automatically on load). */
+function restoreTheme() {
+  const saved = localStorage.getItem('sa_theme');
+  if (!saved) return;
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.innerHTML = saved === 'dark' ? _ICON_SUN : _ICON_MOON;
+}
+
+// Apply immediately — before first paint — so there's no light-mode flash
+// on pages that defaulted to dark on last visit.
+(function () { restoreTheme(); })();
+
+
 /* ─── PRIVACY MODE ──────────────────────────────────────────────────── */
+/*
+  TURNING ON:  always instant — hiding numbers never needs a prompt.
+  TURNING OFF: gated behind a password modal when setPrivacyPassword()
+               has been called. Apps that don't set a password get an
+               ungated reveal toggle.
+
+  TWO-LAYER MASKING — see base.css §17 for the full explanation.
+  Short version: wrap HTML numbers in pn() for CSS blur; call privacyOn()
+  inside your formatter functions for canvas text (returns masked string
+  instead of a real value).
+
+  State persists to localStorage under 'sa_privacy'.
+  The IIFE at the bottom of this section restores it before first paint.
+
+  USAGE IN HTML:
+    <button class="icon-btn" id="privacyToggle" onclick="togglePrivacy()"
+            title="Toggle privacy mode">
+      <!-- icon injected by the restore IIFE and _setPrivacy() -->
+    </button>
+*/
 
 let _privacyPassword = null;
 
+const _ICON_EYE     = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const _ICON_EYE_OFF = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
 /**
- * Call once during app init to set the privacy unlock password.
+ * Call once during app init to set the password required to reveal numbers.
+ * If not called (or called with null/''), the toggle is ungated.
  * @param {string} password
  */
 function setPrivacyPassword(password) {
-  _privacyPassword = password;
+  _privacyPassword = password || null;
 }
 
-/** Toggle privacy mode. Turning off requires password if one is set. */
+/** Returns true when privacy masking is currently active. */
+function privacyOn() {
+  return document.body.classList.contains('privacy');
+}
+
+/**
+ * Toggle privacy mode.
+ * Turning ON is always instant. Turning OFF is gated behind a password
+ * modal when setPrivacyPassword() has been called with a non-empty string.
+ */
 function togglePrivacy() {
-  if (!document.body.classList.contains('privacy')) {
-    // Turn ON — no password needed
-    document.body.classList.add('privacy');
-    const btn = document.getElementById('privacyBtn');
-    if (btn) btn.textContent = '🔐';
-    // Re-render sections that use innerHTML so .num-private nodes exist
-    if (typeof onPrivacyChange === 'function') onPrivacyChange(true);
-  } else {
-    // Turn OFF — password gate
+  if (privacyOn()) {
+    // Currently masked → about to reveal → gate behind password if set.
     if (_privacyPassword) {
-      showPasswordModal();
+      _showPrivacyModal(() => _setPrivacy(false));
     } else {
-      _applyPrivacyOff();
+      _setPrivacy(false);
     }
+  } else {
+    // Currently visible → mask instantly, no prompt.
+    _setPrivacy(true);
   }
 }
 
-function _applyPrivacyOff() {
-  document.body.classList.remove('privacy');
-  const btn = document.getElementById('privacyBtn');
-  if (btn) btn.textContent = '🔒';
-  if (typeof onPrivacyChange === 'function') onPrivacyChange(false);
+function _setPrivacy(on) {
+  document.body.classList.toggle('privacy', on);
+  localStorage.setItem('sa_privacy', on ? '1' : '0');
+  // Update whichever button id the app uses (privacyToggle is preferred;
+  // privacyBtn kept for back-compat with older app markup).
+  const btn = document.getElementById('privacyToggle') ||
+              document.getElementById('privacyBtn');
+  if (btn) btn.innerHTML = on ? _ICON_EYE_OFF : _ICON_EYE;
+  // Notify app for canvas redraws (fmtCHF/fmtNum only mask on next render).
+  if (typeof onPrivacyChange === 'function') onPrivacyChange(on);
 }
 
-function showPasswordModal() {
+/**
+ * Builds and shows the .pw-overlay/.pw-modal from base.css §19.
+ * Calls onSuccess() once the correct password is entered.
+ * Self-contained — removes itself from the DOM on success, cancel,
+ * backdrop-click, or Escape.
+ * @param {Function} onSuccess
+ */
+function _showPrivacyModal(onSuccess) {
   const overlay = document.createElement('div');
   overlay.className = 'pw-overlay';
-  overlay.id = 'pwOverlay';
   overlay.innerHTML = `
     <div class="pw-modal">
-      <div class="pw-title">🔒 Privacy lock</div>
-      <div class="pw-sub">Enter the password to reveal your data</div>
-      <input class="pw-input" id="pwInput" type="password" placeholder="Password" autocomplete="off">
+      <div class="pw-title">Reveal amounts</div>
+      <div class="pw-sub">Enter the code to turn off Privacy mode.</div>
+      <input type="password" class="pw-input" id="pwInput" autocomplete="off">
       <div class="pw-error" id="pwError"></div>
       <div class="pw-actions">
-        <button class="pw-btn pw-btn-cancel" onclick="closePasswordModal()">Cancel</button>
-        <button class="pw-btn pw-btn-confirm" onclick="submitPassword()">Unlock</button>
+        <button class="pw-btn pw-btn-cancel" id="pwCancel">Cancel</button>
+        <button class="pw-btn pw-btn-confirm" id="pwConfirm">Unlock</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  requestAnimationFrame(() => {
-    const inp = document.getElementById('pwInput');
-    if (inp) {
-      inp.focus();
-      inp.addEventListener('keydown', e => {
-        if (e.key === 'Enter') submitPassword();
-        if (e.key === 'Escape') closePasswordModal();
-      });
+  const input   = overlay.querySelector('#pwInput');
+  const error   = overlay.querySelector('#pwError');
+  const confirm = overlay.querySelector('#pwConfirm');
+  const cancel  = overlay.querySelector('#pwCancel');
+  input.focus();
+  function close() { overlay.remove(); }
+  function attempt() {
+    if (input.value === _privacyPassword) {
+      close(); onSuccess();
+    } else {
+      error.textContent = 'Incorrect code.';
+      input.value = '';
+      input.classList.add('shake');
+      setTimeout(() => input.classList.remove('shake'), 300);
+      input.focus();
     }
+  }
+  confirm.addEventListener('click', attempt);
+  cancel.addEventListener('click', close);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter')  attempt();
+    if (e.key === 'Escape') close();
   });
 }
 
-function closePasswordModal() {
-  const el = document.getElementById('pwOverlay');
-  if (el) el.remove();
-}
+/**
+ * @deprecated Use togglePrivacy() instead.
+ * Kept for back-compat with apps that called showPasswordModal() directly.
+ */
+function showPasswordModal() { _showPrivacyModal(() => _setPrivacy(false)); }
+function closePasswordModal() { document.querySelector('.pw-overlay')?.remove(); }
 
-function submitPassword() {
-  const input = document.getElementById('pwInput');
-  if (!input) return;
-  if (input.value === _privacyPassword) {
-    closePasswordModal();
-    _applyPrivacyOff();
-  } else {
-    const err = document.getElementById('pwError');
-    if (err) err.textContent = 'Incorrect password — try again';
-    input.value = '';
-    input.classList.remove('shake');
-    void input.offsetWidth;
-    input.classList.add('shake');
-    input.focus();
+// Restore saved privacy preference before first paint.
+(function () {
+  if (localStorage.getItem('sa_privacy') === '1') {
+    document.body.classList.add('privacy');
+    // Icon will be set once the DOM is ready; queue it so the button
+    // exists (scripts in <head> run before <body> is parsed).
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('privacyToggle') ||
+                  document.getElementById('privacyBtn');
+      if (btn) btn.innerHTML = _ICON_EYE_OFF;
+    });
   }
-}
+})();
 
 /* ─── GITHUB TOKEN ENTRY ────────────────────────────────────────────── */
 

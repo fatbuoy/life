@@ -229,11 +229,32 @@ body {
       <div class="header-left"><span class="header-title">FatBoy's LifeOS</span></div>
       <div class="header-right">
         <button onclick="promptForGitToken()" style="background:none;border:none;font-size:16px;cursor:pointer;padding:2px 6px;" title="GitHub token">🔑</button>
+         <button class="icon-btn" id="privacyToggle" onclick="togglePrivacy()" title="Toggle privacy mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
         <span class="header-badge" id="todayBadge">--</span>
       </div>
     </div>
   </div>
 </header>
+
+
+
+        <!-- <button class="icon-btn" onclick="promptForGitToken()" title="Set GitHub token">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="15" r="4"/>
+            <path d="M12 15h8M16 11v8"/>
+          </svg>
+        </button> -->
+
 
 <div class="container">
   <div id="error-toast">⚠️ Some data could not be loaded. Showing latest available.</div>
@@ -354,7 +375,7 @@ body {
   </div><!-- /hub-body -->
 </div>
 
-<script src="./shared/utils.js"></script>
+<script src="shared/utils.js"></script>
 <script>
 // 1. Precise Date Logic for Data Matching
 const now = new Date();
