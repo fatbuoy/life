@@ -10,50 +10,73 @@
 <link rel="stylesheet" href="./shared/base.css">
 <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
-<!-- Two supporting faces on top of the system sans already used for labels:
-     Fraunces (display serif — greeting + hero destination, the one warm
-     voice on the page) and IBM Plex Mono (every KPI number + timestamp —
-     this page reads like an instrument panel, so data gets a data face).
-     Both have solid system fallbacks below if this fails to load offline. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --app-primary: #16241d;
-  --bg-light: #eef1f4;
-  --border:   #d7dde2;
-  --muted:    #5e6b73;
-  --white:    #ffffff;
-  --text:     #16241d;
+  /* App Branding for Base Header & Accents */
+  --app-primary:    #16241d;
+  --app-primary2:   #1f3329;
+  --app-primary3:   #2c473a;
+  --app-accent:     #1f6f5c;
+  --app-on-primary:  #ffffff;
+  --app-on-primary2: #a3c2b2;
+  --app-on-primary3: #759e88;
 
-  --ink:          #16241d;
-  --ink-raised:   #1b2b23;
-  --paper:        #eef1f4;
+  /* Pillar Specific Colors */
   --color-eat:    #a6432f;
   --color-run:    #d5722d;
   --color-live:   #1f6f5c;
-  --color-warn:   #c0392b;
+  --color-warn:   var(--c-danger, #c0392b);
+
+  --ink-raised:   #1b2b23;
 
   --font-display: 'Fraunces', Georgia, 'Iowan Old Style', serif;
   --font-mono:    'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Page Surface Customizations */
+  --bg-radial:    rgba(22, 36, 29, 0.035);
+  --card-shadow: 0 1px 2px rgba(22, 36, 29, 0.05);
+  --card-shadow-hover: 0 10px 22px rgba(22, 36, 29, 0.12);
 }
 
-* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+/* ── DARK THEME OVERRIDES ── */
+[data-theme="dark"] {
+  --app-primary:    #0a120e;
+  --app-primary2:   #14201a;
+  --app-primary3:   #1f3329;
+  --app-accent:     #2da387;
+  --app-on-primary:  #e2e8f0;
+  --app-on-primary2: #94a3b8;
+  --app-on-primary3: #64748b;
 
+  /* Pillar Contrast Adjustments for Dark Mode */
+  --color-eat:    #e0634c;
+  --color-run:    #e0813c;
+  --color-live:   #2da387;
+
+  --ink-raised:   #15221b;
+
+  --bg-radial:    rgba(255, 255, 255, 0.025);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* Page Background Pattern */
 body {
-  background: var(--paper);
-  color: var(--text);
-  font-family: -apple-system, system-ui, sans-serif;
-  margin: 0;
-  padding-bottom: 40px;
-  background-image:
-    repeating-radial-gradient(circle at 90% 0%, rgba(22,36,29,0.035) 0px, rgba(22,36,29,0.035) 1px, transparent 1px, transparent 30px);
+  background-image: repeating-radial-gradient(
+    circle at 90% 0%, 
+    var(--bg-radial) 0px, 
+    var(--bg-radial) 1px, 
+    transparent 1px, 
+    transparent 30px
+  );
   background-attachment: fixed;
 }
 
-/* ── HUB CARD ── */
+/* ── HUB CARDS ── */
 .hub-card {
   background: var(--white);
   border: 1px solid var(--border);
@@ -64,10 +87,10 @@ body {
   display: flex;
   flex-direction: column;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(22,36,29,0.05);
+  box-shadow: var(--card-shadow);
 }
 @media (hover: hover) {
-  .hub-card:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(22,36,29,0.09); }
+  .hub-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
   .pillar-eat:hover  { border-color: var(--color-eat); }
   .pillar-run:hover  { border-color: var(--color-run); }
   .pillar-live:hover { border-color: var(--color-live); }
@@ -77,28 +100,18 @@ body {
 .hub-card.is-placeholder { cursor: default; }
 .hub-card.is-placeholder:active { transform: none; }
 @media (hover: hover) {
-  .hub-card.is-placeholder:hover { transform: none; box-shadow: 0 1px 2px rgba(22,36,29,0.05); border-color: var(--border); }
+  .hub-card.is-placeholder:hover { transform: none; box-shadow: var(--card-shadow); border-color: var(--border); }
 }
 
-/* ── LAYOUT ── */
-.container { max-width: 480px; padding: 0 14px; margin: 0 auto; }
+/* ── LAYOUT BREAKPOINTS ── */
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .full-card { grid-column: 1 / -1; }
 
-/* Desktop Breakpoints */
 @media (min-width: 860px) {
   .container { max-width: 960px; padding: 0 28px; }
   .dash-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
   .hub-body { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 32px; align-items: start; }
   .hub-pillar-live { grid-column: 1 / -1; }
-
-  .dashboard-header {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: center;
-    margin-bottom: 24px;
-  }
 }
 
 @media (min-width: 1100px) {
@@ -128,10 +141,10 @@ body {
 .kpi-sub { font-size: 11px; margin-top: 4px; font-weight: 600; }
 .kpi-warn { font-size: 11px; margin-top: 4px; font-weight: 700; color: var(--color-warn); }
 
-#error-toast { background: #fbe3e0; color: var(--color-warn); padding: 10px; border-radius: 8px; font-size: 12px; display: none; margin-bottom: 10px; }
+#error-toast { background: var(--bg-danger); color: var(--c-danger); padding: 10px; border-radius: var(--r-md); border: 1px solid var(--border); font-size: 12px; display: none; margin-bottom: 10px; }
 
 /* ── GREETING ── */
-#greeting { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+#greeting { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
 #todayBadge { font-family: var(--font-mono); }
 
 /* ── HERO CARD ── */
@@ -139,17 +152,18 @@ body {
   position: relative;
   overflow: hidden;
   background: var(--ink-raised);
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 20px 20px 18px;
   margin-bottom: 22px;
-  box-shadow: 0 12px 30px rgba(16,24,20,0.28);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.28);
   display: block;
   text-decoration: none !important;
-  color: inherit;
+  color: #ffffff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 @media (hover: hover) {
-  #heroCard:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(16,24,20,0.34); }
+  #heroCard:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(0,0,0,0.34); }
 }
 #heroCard:active { transform: scale(0.98); }
 .hero-contours {
@@ -184,7 +198,7 @@ body {
 .agenda-row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-top: 1px solid rgba(255,255,255,0.1); }
 .agenda-row:first-child { border-top: none; padding-top: 2px; }
 .agenda-time { font-family: var(--font-mono); font-size: 11.5px; color: rgba(238,241,244,0.55); min-width: 42px; padding-top: 1px; flex-shrink: 0; }
-.agenda-icon { color: var(--paper); opacity: 0.9; flex-shrink: 0; font-size: 16px; padding-top: 1px; }
+.agenda-icon { color: var(--white); opacity: 0.9; flex-shrink: 0; font-size: 16px; padding-top: 1px; }
 .agenda-body { min-width: 0; }
 .agenda-label { font-weight: 600; font-size: 13.5px; color: #fff; }
 .agenda-detail { font-size: 11.5px; color: rgba(238,241,244,0.62); margin-top: 1px; }
@@ -196,15 +210,15 @@ body {
 .trip-row {
   display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
   text-decoration: none !important; color: inherit;
-  margin: 0 -6px; padding: 0 6px; border-radius: 6px;
+  margin: 0 -6px; padding: 6px; border-radius: 6px;
   transition: background 0.15s ease;
 }
-.trip-row + .trip-row { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+.trip-row + .trip-row { border-top: 1px solid var(--border); margin-top: 2px; }
 @media (hover: hover) {
-  .trip-row:hover { background: var(--paper); }
+  .trip-row:hover { background: var(--surface); }
 }
-.trip-row:active { background: var(--paper); }
-.trip-row-dest { font-weight: 700; font-size: 14px; }
+.trip-row:active { background: var(--surface); }
+.trip-row-dest { font-weight: 700; font-size: 14px; color: var(--text); }
 .trip-row-dates { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
 .trip-row-days { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--color-live); white-space: nowrap; }
 
@@ -228,8 +242,8 @@ body {
     <div class="header-row">
       <div class="header-left"><span class="header-title">FatBoy's LifeOS</span></div>
       <div class="header-right">
-        <button onclick="promptForGitToken()" style="background:none;border:none;font-size:16px;cursor:pointer;padding:2px 6px;" title="GitHub token">🔑</button>
-         <button class="icon-btn" id="privacyToggle" onclick="togglePrivacy()" title="Toggle privacy mode">
+        <button onclick="promptForGitToken()" class="icon-btn" title="GitHub token">🔑</button>
+        <button class="icon-btn" id="privacyToggle" onclick="togglePrivacy()" title="Toggle privacy mode">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
             <circle cx="12" cy="12" r="3"/>
@@ -246,16 +260,6 @@ body {
   </div>
 </header>
 
-
-
-        <!-- <button class="icon-btn" onclick="promptForGitToken()" title="Set GitHub token">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="8" cy="15" r="4"/>
-            <path d="M12 15h8M16 11v8"/>
-          </svg>
-        </button> -->
-
-
 <div class="container">
   <div id="error-toast">⚠️ Some data could not be loaded. Showing latest available.</div>
 
@@ -264,10 +268,7 @@ body {
     <p id="greetingDate" style="color: var(--muted); font-size: 13px; margin-top: 4px;"></p>
   </header>
 
-  <!-- HERO: field report — only shown when a trip is currently in progress.
-       Summarises everything on today's date in the trip's itinerary array
-       (activity stages, transit legs, sightseeing, accommodation), sorted
-       chronologically, not just a single hiking/biking stage. -->
+  <!-- HERO CARD -->
   <a id="heroCard" href="#" style="display:none;">
     <div class="hero-contours" aria-hidden="true"></div>
     <div class="hero-content">
@@ -283,120 +284,103 @@ body {
 
   <div class="hub-body">
 
-  <div class="hub-pillar-eat">
-  <div class="pillar-header">
-    <span class="pillar-badge" style="color: var(--color-eat);"><span class="iconify" data-icon="mdi:fire" style="color: var(--color-eat)"></span></span>
-    <span class="pillar-title">Eat • Fuel</span>
-  </div>
-  <div class="dash-grid">
-    <a href="./apps/01-calorie-planner/calorie-planner.html" class="hub-card pillar-eat">
-      <div class="kpi-lbl">Today's Target</div>
-      <div class="kpi-val" id="kcal-val">----</div>
-      <div class="kpi-sub" style="color: var(--color-eat)" id="kcal-label">LOCKED</div>
-    </a>
-    <!-- Recipe planner isn't built yet — honest placeholder, not a link to a
-         half-finished app. Swap for a real "today's menu" card once
-         02-recipe-book has a per-day slot to read from. -->
-    <div class="hub-card pillar-eat is-placeholder">
-      <div class="kpi-lbl">Today's Menu</div>
-      <div class="kpi-val" style="font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--muted);">Coming soon</div>
-      <div class="kpi-sub" style="color: var(--muted)">Recipe planner in progress</div>
-    </div>
-  </div>
-  </div><!-- /pillar-eat -->
-
-  <div class="hub-pillar-run">
-  <div class="pillar-header">
-    <span class="pillar-badge" style="color: var(--color-run);"><span class="iconify" data-icon="mdi:run-fast" style="color: var(--color-run)"></span></span>
-    <span class="pillar-title">Run • Training</span>
-  </div>
-  <div class="dash-grid">
-    <a href="./apps/05-training-planner/training-planner.html" class="hub-card full-card pillar-run" style="border-left: 4px solid var(--color-run)">
-      <div class="kpi-lbl" id="run-phase">Current Phase</div>
-      <div class="kpi-val" id="today-session" style="font-size: 17px;">Rest Day</div>
-      <div class="kpi-sub" id="run-notes" style="font-weight: 400; color: var(--muted)">No notes recorded</div>
-      <div class="kpi-sub" id="trip-activity-line" style="display:none; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); color: var(--color-run); font-weight:600;"></div>
-    </a>
-    <div class="hub-card pillar-run">
-      <div class="kpi-lbl">Race Goal</div>
-      <div class="kpi-val" id="race-days">0</div>
-      <div class="kpi-sub" style="color: var(--color-run)">DAYS TO GO</div>
-    </div>
-    <!-- actualKm exists in training.json but there's no logging flow yet,
-         so every session sits at 0. Show planned as the headline number and
-         be explicit when actual hasn't been logged, rather than displaying
-         a misleading "0.0 km" as if that were real progress. -->
-    <div class="hub-card pillar-run">
-      <div class="kpi-lbl">This Week</div>
-      <div class="kpi-val" id="week-vol-planned" style="font-size: 18px;">0.0</div>
-      <div class="kpi-sub" style="color: var(--muted)">PLANNED KM</div>
-      <div class="kpi-sub" id="week-vol-actual" style="margin-top:4px; color: var(--color-run)">Actual: not logged yet</div>
-    </div>
-  </div>
-  </div><!-- /pillar-run -->
-
-  <div class="hub-pillar-live">
-  <div class="pillar-header">
-    <span class="pillar-badge" style="color: var(--color-live);"><span class="iconify" data-icon="mdi:currency-chf" style="color: var(--color-live)"></span></span>
-    <span class="pillar-title">Live • Logistics</span>
-  </div>
-  <div class="dash-grid">
-    <a href="./apps/03-budget-tracker/budget-tracker.html" class="hub-card pillar-live">
-      <div class="kpi-lbl">YTD Spend</div>
-      <div class="kpi-val" id="spend-val" style="font-size: 18px;">CHF --</div>
-      <div class="kpi-sub" id="spend-budget-sub" style="color: var(--color-live)">vs budget --</div>
-      <!-- Only shown when an elapsed month has zero Actuals rows — catches
-           gaps in the middle of the year (e.g. May skipped), not just a
-           stale trailing tail. -->
-      <div class="kpi-warn" id="spend-stale-flag" style="display:none;">⚠ --</div>
-    </a>
-    <a href="./apps/04-travel-planner/travel-planner.html" id="next-trip-card" class="hub-card pillar-live">
-      <div class="kpi-lbl" id="live-trip-label">Next Trip</div>
-      <div class="kpi-val" id="next-trip" style="font-size: 17px;">---</div>
-      <div class="kpi-sub" id="trip-days" style="color: var(--muted)">---</div>
-    </a>
-    <!-- Upcoming trips (any type — visits and travel both belong here),
-         not just the single next one. -->
-    <div class="hub-card full-card pillar-live" id="upcoming-trips-card" style="display:none;">
-      <div class="kpi-lbl">Upcoming</div>
-      <div id="upcoming-trips-list" style="margin-top:6px;"></div>
-    </div>
-    <div class="hub-card full-card pillar-live" id="horizon-card" style="display:none;">
-      <div class="kpi-lbl">Wealth Runway</div>
-      <div style="display:flex; align-items:center; gap:10px; margin-top:2px;">
-        <span id="horizon-rag-dot"></span>
-        <div class="kpi-val" id="horizon-runway" style="font-size:17px;">--</div>
+    <!-- PILLAR 1: EAT -->
+    <div class="hub-pillar-eat">
+      <div class="pillar-header">
+        <span class="pillar-badge" style="color: var(--color-eat);"><span class="iconify" data-icon="mdi:fire"></span></span>
+        <span class="pillar-title">Eat • Fuel</span>
       </div>
-      <div class="kpi-sub" id="horizon-liquidity-label" style="color:var(--muted)">--</div>
+      <div class="dash-grid">
+        <a href="./apps/01-calorie-planner/calorie-planner.html" class="hub-card pillar-eat">
+          <div class="kpi-lbl">Today's Target</div>
+          <div class="kpi-val" id="kcal-val">----</div>
+          <div class="kpi-sub" style="color: var(--color-eat)" id="kcal-label">LOCKED</div>
+        </a>
+        <div class="hub-card pillar-eat is-placeholder">
+          <div class="kpi-lbl">Today's Menu</div>
+          <div class="kpi-val" style="font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--muted);">Coming soon</div>
+          <div class="kpi-sub" style="color: var(--muted)">Recipe planner in progress</div>
+        </div>
+      </div>
     </div>
-  </div>
-  </div><!-- /pillar-live -->
 
-  </div><!-- /hub-body -->
+    <!-- PILLAR 2: RUN -->
+    <div class="hub-pillar-run">
+      <div class="pillar-header">
+        <span class="pillar-badge" style="color: var(--color-run);"><span class="iconify" data-icon="mdi:run-fast"></span></span>
+        <span class="pillar-title">Run • Training</span>
+      </div>
+      <div class="dash-grid">
+        <a href="./apps/05-training-planner/training-planner.html" class="hub-card full-card pillar-run" style="border-left: 4px solid var(--color-run)">
+          <div class="kpi-lbl" id="run-phase">Current Phase</div>
+          <div class="kpi-val" id="today-session" style="font-size: 17px;">Rest Day</div>
+          <div class="kpi-sub" id="run-notes" style="font-weight: 400; color: var(--muted)">No notes recorded</div>
+          <div class="kpi-sub" id="trip-activity-line" style="display:none; margin-top:6px; padding-top:6px; border-top:1px dashed var(--border); color: var(--color-run); font-weight:600;"></div>
+        </a>
+        <div class="hub-card pillar-run">
+          <div class="kpi-lbl">Race Goal</div>
+          <div class="kpi-val" id="race-days">0</div>
+          <div class="kpi-sub" style="color: var(--color-run)">DAYS TO GO</div>
+        </div>
+        <div class="hub-card pillar-run">
+          <div class="kpi-lbl">This Week</div>
+          <div class="kpi-val" id="week-vol-planned" style="font-size: 18px;">0.0</div>
+          <div class="kpi-sub" style="color: var(--muted)">PLANNED KM</div>
+          <div class="kpi-sub" id="week-vol-actual" style="margin-top:4px; color: var(--color-run)">Actual: not logged yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PILLAR 3: LIVE -->
+    <div class="hub-pillar-live">
+      <div class="pillar-header">
+        <span class="pillar-badge" style="color: var(--color-live);"><span class="iconify" data-icon="mdi:currency-chf"></span></span>
+        <span class="pillar-title">Live • Logistics</span>
+      </div>
+      <div class="dash-grid">
+        <a href="./apps/03-budget-tracker/budget-tracker.html" class="hub-card pillar-live">
+          <div class="kpi-lbl">YTD Spend</div>
+          <div class="kpi-val" id="spend-val" style="font-size: 18px;">CHF --</div>
+          <div class="kpi-sub" id="spend-budget-sub" style="color: var(--color-live)">vs budget --</div>
+          <div class="kpi-warn" id="spend-stale-flag" style="display:none;">⚠ --</div>
+        </a>
+        <a href="./apps/04-travel-planner/travel-planner.html" id="next-trip-card" class="hub-card pillar-live">
+          <div class="kpi-lbl" id="live-trip-label">Next Trip</div>
+          <div class="kpi-val" id="next-trip" style="font-size: 17px;">---</div>
+          <div class="kpi-sub" id="trip-days" style="color: var(--muted)">---</div>
+        </a>
+        <div class="hub-card full-card pillar-live" id="upcoming-trips-card" style="display:none;">
+          <div class="kpi-lbl">Upcoming</div>
+          <div id="upcoming-trips-list" style="margin-top:6px;"></div>
+        </div>
+        <div class="hub-card full-card pillar-live" id="horizon-card" style="display:none;">
+          <div class="kpi-lbl">Wealth Runway</div>
+          <div style="display:flex; align-items:center; gap:10px; margin-top:2px;">
+            <span id="horizon-rag-dot"></span>
+            <div class="kpi-val" id="horizon-runway" style="font-size:17px;">--</div>
+          </div>
+          <div class="kpi-sub" id="horizon-liquidity-label" style="color:var(--muted)">--</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script src="shared/utils.js"></script>
 <script>
-// 1. Precise Date Logic for Data Matching
 const now = new Date();
 const todayStr = [
     now.getFullYear(),
     String(now.getMonth() + 1).padStart(2, '0'),
     String(now.getDate()).padStart(2, '0')
-].join('-'); // Guaranteed "2026-05-12"
+].join('-');
 
 const curYear = now.getFullYear();
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 let allData = {};
 
-// All app data lives in the private fatbuoy/app-data repo, not as local
-// files on GitHub Pages. Every key below is read via fetchFromGitHub()
-// (utils.js) using the gh_pat_token PAT — same auth as the sync features,
-// shared across all Sahani Suite pages on this origin/device.
-// NOTE: assumes each file sits at repo root as "<key>.json" — adjust
-// `path` below if your app-data repo nests these differently.
 const DATA_CONFIGS = {
-
     recipes:  { owner: 'fatbuoy', repo: 'app-data', path: 'data/recipes.json',  branch: 'main' },
     calories: { owner: 'fatbuoy', repo: 'app-data', path: 'data/calories.json', branch: 'main' },
     training: { owner: 'fatbuoy', repo: 'app-data', path: 'data/training.json', branch: 'main' },
@@ -405,39 +389,24 @@ const DATA_CONFIGS = {
     horizon:  { owner: 'fatbuoy', repo: 'app-data', path: 'data/horizon-summary.json', branch: 'main' },
 };
 
-/** In-progress trip, matching travel-planner's own core.js renderUpcomingStrip() convention. */
 function getActiveTrip(trips) {
     return (trips || []).find(t => t.startDate <= todayStr && t.endDate >= todayStr) || null;
 }
 
-/**
- * A hiking/biking/running stage has type: 'activity' AND a real
- * distance_km. type: 'activity' alone isn't enough — arrival/rest entries
- * (e.g. "Arrive in Sevelen") also carry type: 'activity' but with
- * distance_km: "" (empty string), so a presence-check alone would
- * misclassify them as trek stages.
- */
 function isHikingStage(it) {
     return it.type === 'activity' && parseFloat(it.distance_km) > 0;
 }
 
-/** Today's hiking/activity stage on the active trip, if any. */
 function getTodayStage(trip) {
     const items = trip?.itinerary || [];
     return items.find(s => s.date === todayStr && isHikingStage(s)) || null;
 }
 
-/** Icon for a hiking/biking/running stage, keyed off activitySubtype (defaults to 'hike' if absent — matches existing read-time default). */
 function disciplineIcon(subtype) {
     const map = { hike: 'mdi:hiking', bike: 'mdi:bike', run: 'mdi:run-fast', ski: 'mdi:ski', kayak: 'mdi:kayaking' };
     return map[subtype] || 'mdi:map-marker-path';
 }
 
-/**
- * Every itinerary item on the active trip that falls on today's date,
- * sorted chronologically. Unknown item.type values still render via a
- * generic fallback rather than being silently dropped.
- */
 function getTodayAgenda(trip) {
     const items = trip?.itinerary || [];
     return items
@@ -446,8 +415,6 @@ function getTodayAgenda(trip) {
         .sort((a, b) => a.time.localeCompare(b.time));
 }
 
-/** Route summary for a transit item — handles the multi-leg array (adventure
- *  trips) and falls back to a flat location string (older/simpler trips). */
 function transitDetail(it) {
     if (Array.isArray(it.legs) && it.legs.length) {
         const first = it.legs[0], last = it.legs[it.legs.length - 1];
@@ -457,7 +424,6 @@ function transitDetail(it) {
     return it.location || '';
 }
 
-/** Icon + label + detail line for one agenda entry. */
 function describeAgendaItem(it) {
     const detailParts = [];
     let icon, label;
@@ -480,7 +446,6 @@ function describeAgendaItem(it) {
         const td = transitDetail(it);
         if (td) detailParts.push(td);
     } else if (it.type === 'activity') {
-        // non-hiking activity entries: arrivals, rest, free time, etc.
         icon = 'mdi:map-marker';
         label = it.title || 'Activity';
         if (it.notes) detailParts.push(String(it.notes).split('\n')[0]);
@@ -499,8 +464,6 @@ function describeAgendaItem(it) {
         if (it.location) detailParts.push(it.location);
     }
 
-    // Flag anything not yet locked down — booked/confirmed items stay quiet,
-    // everything else (not-booked, pending, tentative, etc.) surfaces here.
     if (it.status && !['booked', 'confirmed'].includes(String(it.status).toLowerCase())) {
         detailParts.push(it.status);
     }
@@ -509,30 +472,21 @@ function describeAgendaItem(it) {
 }
 
 async function init() {
-    // UI Basics
     document.getElementById('todayBadge').textContent = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).toUpperCase();
     document.getElementById('greetingDate').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
     const hour = now.getHours();
     document.getElementById('greeting').textContent = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
-    // Data Loading — all keys read from the private repo. The nonexistent
-    // container id means a missing/expired token, offline state, or a
-    // 404'd file all fail silently per-key (fetchFromGitHub only renders
-    // its error UI if the element exists), so cards degrade gracefully
-    // instead of showing a broken-fetch box.
     const keys = ['recipes', 'calories', 'training', 'budget', 'travel', 'horizon'];
     const results = await Promise.all(
-    keys.map(key => fetchFromGitHub(DATA_CONFIGS[key], '__no_such_el__'))
-);
+        keys.map(key => fetchFromGitHub(DATA_CONFIGS[key], '__no_such_el__'))
+    );
     keys.forEach((key, i) => { allData[key] = results[i]; });
 
     render();
-    }
+}
 
 function render() {
-    // 1. EAT: today's calorie phase target only. (Menu suggestion card is a
-    // static placeholder in the markup — recipe planner has no per-day slot
-    // to read from yet, so there's nothing live to wire up here.)
     if (allData.calories) {
         const phase = (allData.calories.phases || [])
             .find(p => todayStr >= p.start_date && todayStr <= p.end_date);
@@ -540,44 +494,41 @@ function render() {
         document.getElementById('kcal-label').textContent = phase ? 'PHASE TARGET' : 'NO ACTIVE PHASE';
     }
 
-    // 2. RUN: Training Integration + Active-Trip Activity
     const activeTrip = getActiveTrip(allData.travel?.trips);
     const todayStage = activeTrip ? getTodayStage(activeTrip) : null;
 
     if (allData.training) {
-    const todayStr10 = todayStr; // already defined above as YYYY-MM-DD
+        const todayStr10 = todayStr;
+        const races = allData.training.races || [];
+        const activeRace = races.find(r => r.date >= todayStr10) || races[races.length - 1];
 
-    // Find next upcoming race (mirrors pickActiveRace() in training-planner.html)
-    const races = allData.training.races || [];
-    const activeRace = races.find(r => r.date >= todayStr10) || races[races.length - 1];
+        if (activeRace) {
+            const diff = Math.ceil((new Date(activeRace.date) - now) / 86400000);
+            document.getElementById('race-days').textContent = diff;
 
-    if (activeRace) {
-        const diff = Math.ceil((new Date(activeRace.date) - now) / 86400000);
-        document.getElementById('race-days').textContent = diff;
+            const currentWeek = activeRace.weeks.find(w => {
+                const s = new Date(w.weekStart + 'T00:00:00');
+                const e = new Date(s.getTime() + 7 * 86400000);
+                return now >= s && now < e;
+            });
 
-        const currentWeek = activeRace.weeks.find(w => {
-            const s = new Date(w.weekStart + 'T00:00:00');
-            const e = new Date(s.getTime() + 7 * 86400000);
-            return now >= s && now < e;
-        });
-
-        if (currentWeek) {
-            document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
-            const sess = currentWeek.sessions.find(s => s.date === todayStr10);
-            if (sess) {
-                document.getElementById('today-session').textContent =
-                    sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
-                document.getElementById('run-notes').textContent = sess.notes || 'No notes';
+            if (currentWeek) {
+                document.getElementById('run-phase').textContent = currentWeek.phase.toUpperCase();
+                const sess = currentWeek.sessions.find(s => s.date === todayStr10);
+                if (sess) {
+                    document.getElementById('today-session').textContent =
+                        sess.type === 'rest' ? 'Rest Day' : `${sess.plannedKm}km ${sess.type.toUpperCase()}`;
+                    document.getElementById('run-notes').textContent = sess.notes || 'No notes';
+                }
+                const plannedTotal = currentWeek.sessions.reduce((acc, s) => acc + (s.plannedKm || 0), 0);
+                const actualTotal  = currentWeek.sessions.reduce((acc, s) => acc + (s.actualKm  || 0), 0);
+                document.getElementById('week-vol-planned').textContent = plannedTotal.toFixed(1);
+                document.getElementById('week-vol-actual').textContent = actualTotal > 0
+                    ? `Actual: ${actualTotal.toFixed(1)} km`
+                    : 'Actual: not logged yet';
             }
-            const plannedTotal = currentWeek.sessions.reduce((acc, s) => acc + (s.plannedKm || 0), 0);
-            const actualTotal  = currentWeek.sessions.reduce((acc, s) => acc + (s.actualKm  || 0), 0);
-            document.getElementById('week-vol-planned').textContent = plannedTotal.toFixed(1);
-            document.getElementById('week-vol-actual').textContent = actualTotal > 0
-                ? `Actual: ${actualTotal.toFixed(1)} km`
-                : 'Actual: not logged yet';
         }
     }
-}
 
     const activityLine = document.getElementById('trip-activity-line');
     if (todayStage) {
@@ -590,14 +541,8 @@ function render() {
         activityLine.style.display = 'none';
     }
 
-    // 3. LIVE: YTD Spend vs. YTD Budget, both scoped to fully-elapsed
-    // months only (Jan..month-before-current) so they're comparing like
-    // for like. Any elapsed month with zero Actuals rows is flagged as a
-    // gap — catches a month skipped mid-year (e.g. May), not just a
-    // stale trailing tail.
     if (allData.budget) {
-        const elapsedMonths = MONTHS.slice(0, now.getMonth()); // months fully before this one
-
+        const elapsedMonths = MONTHS.slice(0, now.getMonth());
         const yearRows = allData.budget.data.filter(d => d.year === curYear);
         const actualsByMonth = {};
         const budgetByMonth  = {};
@@ -632,7 +577,6 @@ function render() {
         }
     }
 
-    // 4. LIVE: Active trip in progress, else next upcoming (quick-glance stat)
     const liveLabel = document.getElementById('live-trip-label');
     const nextTripCard = document.getElementById('next-trip-card');
     if (activeTrip) {
@@ -656,14 +600,10 @@ function render() {
         }
     }
 
-    // 4b. LIVE: Upcoming trips list — everything with a future startDate,
-    // travel or visitors both, not just the single next one.
     if (allData.travel) {
         renderUpcomingTripsList(allData.travel.trips);
     }
 
-    // 5. HERO: field report — only when a trip is currently in progress.
-    // Summarises every itinerary item on today's date, not just one stage.
     const hero = document.getElementById('heroCard');
     if (activeTrip) {
         hero.href = `./apps/04-travel-planner/travel-planner.html?trip=${encodeURIComponent(activeTrip.id)}`;
@@ -700,7 +640,6 @@ function render() {
         hero.style.display = 'none';
     }
 
-    // 6. HORIZON: RAG light + runway, pushed from the local wealth app
     const hCard = document.getElementById('horizon-card');
     if (allData.horizon) {
         const ragColors = { green: '#2e7d32', amber: '#e0a020', red: '#c0392b' };
@@ -711,7 +650,6 @@ function render() {
     }
 }
 
-/** Renders the next 3 upcoming trips (any type) into #upcoming-trips-list. */
 function renderUpcomingTripsList(trips) {
     const card = document.getElementById('upcoming-trips-card');
     const list = document.getElementById('upcoming-trips-list');

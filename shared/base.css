@@ -132,71 +132,53 @@
  
 /* ── §2b DARK THEME ───────────────────────────────────────────────── */
 /*
-  Apply data-theme="dark" to <html> (or <body>) to activate.
-  Override any of these in your app's theme block if the palette needs
-  adjusting — the app-primary/accent tokens from §2 are intentionally
-  NOT redefined here, because each app's dark-mode primary palette is
-  app-specific (a dark navy vs. a dark forest-green look different).
-  Set your own [data-theme="dark"] :root { --app-primary: … } block
-  in the app's own stylesheet.
+  Remaps only the §1 neutral surface/text/border tokens that are
+  guaranteed correct for ANY app in dark mode. Everything else —
+  app-primary/accent colours, status colours (--c-*, --bg-*), and
+  any app-specific semantic aliases — belongs in the app's own
+  [data-theme="dark"] block, because those vary per palette.
 
-  Restoration on page load — call restoreTheme() from utils.js, or add
-  this one-liner before your first render: the restore IIFE in utils.js
-  does this automatically when included.
+  Restore on page load: call restoreTheme() from utils.js, or use the
+  IIFE that ships with it (runs automatically when utils.js is loaded).
+
+  HOW TO USE IN AN APP
+  ─────────────────────
+  1. Add `id="themeToggle"` button to your header — utils.js injects
+     the correct sun/moon SVG on load.
+  2. In your app stylesheet, add a [data-theme="dark"] block that
+     overrides your --app-primary/2/3, --app-accent, --app-on-primary*,
+     any status colours you use, and any app-specific semantic tokens.
+  3. That's it — the neutral surface/text/border tokens below apply
+     automatically via this block.
 */
 [data-theme="dark"] {
   /* Page surfaces */
-  --bg:       #0f1117;
-  --white:    #1a1d27;
-  --surface:  #1a1d27;
-
-  /* Nested surfaces */
-  --surface2: #21253a;
-  --surface3: #2a2f47;
+  --bg:      #0f1117;
+  --white:   #1a1d27;
+  --surface: #1a1d27;
 
   /* Text */
-  --text:     #e2e8f0;
-  --muted:    #94a3b8;
-  --faint:    #64748b;
+  --text:    #e2e8f0;
+  --muted:   #94a3b8;
+  --faint:   #64748b;
 
   /* Borders */
-  --border:   #2e3455;
-  --border2:  #3d4568;
-
-  /* Status colours keep their hue but lighten for dark backgrounds */
-  --c-success:  #3ecf8e;
-  --c-warning:  #f6c90e;
-  --c-danger:   #f56565;
-  --c-info:     #60a5fa;
-  --c-neutral:  #94a3b8;
-  --c-purple:   #a78bfa;
-  --c-teal:     #2dd4bf;
-
-  --bg-success: rgba(62,207,142,.12);
-  --bg-warning: rgba(246,201,14,.12);
-  --bg-danger:  rgba(245,101,101,.12);
-  --bg-info:    rgba(96,165,250,.12);
-  --bg-neutral: rgba(148,163,184,.12);
-  --bg-purple:  rgba(167,139,250,.12);
-  --bg-teal:    rgba(45,212,191,.12);
-
-  /* Grid helpers */
-  --grid-line:  #2e3455;
-  --grid-label: #64748b;
-  --pie-hole:   #1a1d27;
+  --border:  #2e3455;
+  --border2: #3d4568;
 }
 
-/* Dark mode filter-pill override — base.css's .filter-pill is hardcoded
-   (white bg / #636366 text) with no theme awareness. Scoped override so
-   unselected pills don't glow bright-white on dark surfaces. */
+/* Dark mode filter-pill override — base.css's .filter-pill hardcodes
+   white bg / #636366 text, so unselected pills glow on dark surfaces.
+   Using surface/text/border tokens (already remapped above) keeps this
+   correct for any app without needing a per-app override. */
 [data-theme="dark"] .filter-pill {
-  background: var(--surface2, #21253a);
-  color: var(--muted, #94a3b8);
-  border-color: var(--border2, #3d4568);
+  background: var(--white);
+  color: var(--muted);
+  border-color: var(--border2);
 }
 [data-theme="dark"] .filter-pill:hover {
   border-color: var(--app-accent);
-  color: var(--text, #e2e8f0);
+  color: var(--text);
 }
 [data-theme="dark"] .filter-pill.active {
   background: color-mix(in srgb, var(--app-accent) 70%, #000 30%);
@@ -228,10 +210,9 @@ a:hover { text-decoration: underline }
 @media (min-width: 900px)  { .container { max-width: 860px } }
 @media (min-width: 1200px) { .container { max-width: 1200px } }
 
-/* Wide content area — use instead of .container for data-dense apps
-   that benefit from the full 1200px column (e.g. dashboards, tables).
-   Always paired with a sticky header that also uses --content-max so
-   the two widths are guaranteed-identical without extra overrides. */
+/* Wide content area for data-dense apps (dashboards, tables).
+   Pair with .header-inner and .nav-inner so all three share the same
+   column width — see §5 and §20. */
 .main {
   max-width: var(--content-max);
   margin: 0 auto;
@@ -291,9 +272,9 @@ a:hover { text-decoration: underline }
 }
 @media (min-width: 600px) { .header { padding: 13px var(--sp-6) 11px } }
 
-/* When the app uses .main (1200px content), the header's inner .container
-   or .header-inner should match. Apply .header-inner as a sibling wrapper
-   pattern so apps using the narrow .container aren't affected. */
+/* Inner wrapper for wide-layout apps — aligns header content to the
+   same --content-max column as .main. Use instead of .container inside
+   .header when the app uses .main for its content area. */
 .header-inner {
   width: 100%;
   max-width: var(--content-max);
@@ -367,10 +348,9 @@ a:hover { text-decoration: underline }
 }
 .privacy-btn:hover { color: var(--app-on-primary) }
 
-/* Icon-only header button — for SVG icon controls (theme, privacy, home,
-   and any other header-right action). No background/border; sits flush
-   alongside text controls. Use inline SVG with stroke="currentColor" so
-   the icon inherits the button's colour on hover. */
+/* Icon-only header button for SVG icon controls (theme, privacy, home).
+   Use inline SVG with stroke="currentColor" so the icon inherits the
+   button colour. Preferred over .privacy-btn for new apps. */
 .icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
   background: none; border: none; cursor: pointer;
@@ -715,29 +695,8 @@ a:hover { text-decoration: underline }
  
 /* ── §17 PRIVACY MODE ─────────────────────────────────────────────── */
 /*
-  Add class="privacy" to <body> to activate privacy masking.
+  Add class="privacy" to <body> to blur all .num-private elements.
   Controlled by togglePrivacy() in utils.js.
-
-  TWO-LAYER MASKING STRATEGY
-  ──────────────────────────
-  1. CSS blur (this block) — catches plain DOM text nodes that were
-     wrapped in <span class="num-private"> via the pn() helper in
-     utils.js. Quick to implement; sufficient for HTML-only apps.
-
-  2. Source-level masking (recommended for canvas apps) — apps that
-     draw numbers to <canvas> (chart axis labels, bar annotations, etc.)
-     cannot be blurred by CSS. Those apps should check privacyOn() from
-     utils.js inside their formatter functions and return "•••" instead
-     of the real value. Both layers together mean every number is masked
-     regardless of whether it reached the screen via DOM or canvas.
-
-  TURNING ON:  instant, no prompt. Just sets body.classList 'privacy'.
-  TURNING OFF: gated behind a password modal when a password is set via
-               setPrivacyPassword(pw) in utils.js. Apps that don't call
-               setPrivacyPassword() get an ungated reveal toggle.
-
-  State persists to localStorage under the key 'sa_privacy'.
-  The restore IIFE in utils.js applies it before the first paint.
 */
 body.privacy .num-private {
   filter: blur(10px);
@@ -774,8 +733,7 @@ body.privacy .num-private {
  
 /* ── §19 PASSWORD MODAL ───────────────────────────────────────────── */
 /*
-  Injected into <body> by the privacy-reveal modal in utils.js.
-  Also reused by promptForGitToken() in utils.js (same .pw-* classes).
+  Injected into <body> by showPasswordModal() in utils.js.
 */
 .pw-overlay {
   position: fixed; inset: 0;
@@ -831,23 +789,12 @@ body.privacy .num-private {
  
 /* ── App tab nav — sticky bar below the header ── */
 /*
-  Two markup patterns supported:
-
-  A) Simple (narrow apps using .container):
-     <nav class="app-nav">
-       <button class="nav-btn active" onclick="showTab('overview',this)">Overview</button>
-     </nav>
-
-  B) Wide (apps using .main / --content-max):
-     <nav class="app-nav">
-       <div class="nav-inner">
-         <button class="nav-btn active" onclick="showTab('overview',this)">Overview</button>
-       </div>
-     </nav>
-     .nav-inner constrains buttons to the same 1200px column as .main
-     so the nav tabs align with page content on wide viewports.
-
-  Both: .tab-panel { display:none } .tab-panel.active { display:block }
+  Usage:
+  <nav class="app-nav">
+    <button class="nav-btn active" onclick="showTab('overview',this)">📊 Overview</button>
+    <button class="nav-btn" onclick="showTab('detail',this)">📋 Detail</button>
+  </nav>
+  .tab-panel { display:none } .tab-panel.active { display:block }
 */
 .app-nav {
   background: var(--app-primary);
@@ -873,12 +820,9 @@ body.privacy .num-private {
   align-items: center;
   justify-content: flex-start;
 }
-/* Remove indent on first tab so it aligns with the left edge of the
-   content column (the padding-left above accounts for the offset). */
 .nav-inner > .nav-btn:first-child { padding-left: 0 }
 
-/* Period/year strip inner wrapper — same alignment pattern as .nav-inner,
-   for year-pill bars that should align with .main on wide viewports. */
+/* Year/period strip inner wrapper — same alignment as .nav-inner. */
 .year-strip-inner {
   width: 100%;
   max-width: var(--content-max);
